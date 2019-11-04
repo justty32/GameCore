@@ -64,7 +64,7 @@ namespace GameCore.Base
             return true;
         }
         public bool Has(string type_name){
-            if (components.ContainsKey(Component.GetTypeNumber(dst_num)))
+            if (components.ContainsKey(Component.GetTypeNumber(type_name)))
             {
                 return true;
             }
@@ -74,9 +74,9 @@ namespace GameCore.Base
         {
             if (type_names == null)
                 return false;
-            foreach(int type_name in type_names)
+            foreach(string type_name in type_names)
             {
-                if (!components.ContainsKey(Component.GetTypeNumber(dst_num)))
+                if (!components.ContainsKey(Component.GetTypeNumber(type_name)))
                     return false;
             }
             return true;
@@ -127,7 +127,7 @@ namespace GameCore.Base
                 if (Has(str))
                     Replace(value);
                 else
-                    Add(Component.GetTypeNumber(str));
+                    Add(value);
             }
         }
         public Component[] Get(int[] dst_nums)
