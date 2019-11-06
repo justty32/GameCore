@@ -9,6 +9,7 @@ namespace GameCore.Base
         /*
          * Name will be "none" initially
          * Number will be -1 initially
+         * If Components being null while getting it, new() and return it.
          */
         public int Number { get; set; } = -1;
         public string Name { get; set; } = null;
@@ -18,7 +19,12 @@ namespace GameCore.Base
         }
         public ComponentSet Components
         {
-            get => Components;
+            get
+            {
+                if (Components == null)
+                    Components = new ComponentSet(50);
+                return Components;
+            }
             set
             {
                 if (Components != null)
