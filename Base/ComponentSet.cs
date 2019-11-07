@@ -7,10 +7,13 @@ namespace GameCore.Base
     public class ComponentSet
     {
         /*
-         * Restore Components, Do Not allow multiple entity of same Component Type
-         *
-         * dst_num means TypeNumber
-         *
+         * Not allow more than one entity of same type
+         * 
+         * While doing base controlling (Has, Get, Add, Remove), should care about parameters.
+         * if don't put name, that's means to do it for all things of the type.
+         * if put array, that's means do several times for things in array
+         * 
+         * Replace is same as Add(), but do remove while there's already one.
          */
         private SortedList<int, Component> components;
         public List<Card> Owners { get; } = new List<Card>();
@@ -28,7 +31,7 @@ namespace GameCore.Base
             {
                 if (add_new_components[i] >= 0)
                 {
-                    var c = Component.GetSpawner(add_new_components[i])?.SpawnBaseComponent();
+                    var c = Component.GetSpawner(add_new_components[i])?.SpawnBase();
                     if (c != null)
                         components.Add(add_new_components[i], c);
                 }
@@ -39,26 +42,82 @@ namespace GameCore.Base
             components = new SortedList<int, Component>(add_existing_components.Length);
             Add(add_existing_components);
         }
+        public ComponentSet(ComponentList component_list, SortedList<int, string> type_choose_name)
+        {
+            if(component_list != null)
+            { // if list not null
+                if (type_choose_name != null)
+                { // if the type has specific-name thing to add.
+                    foreach (int type_number in component_list.GetComponentTypeNumbers())
+                    { // for all type's
+                        if (type_choose_name.ContainsKey(type_number)
+                            && type_choose_name[type_number] != null)
+                        { // if there is a specific name to type_number
+                            if (component_list.Get(type_number).ContainsKey(type_choose_name[type_number]))
+                            { // and there is containing the thing with specific name in list
+                                Add(component_list.Get(type_number)[type_choose_name[type_number]]);
+                            }
+                            else
+                            { // there is no thing with specific name in list
+                                if (component_list.Get(type_number).Values.Count > 0)
+                                { //add it with index 0's thing
+                                    Add(component_list.Get(type_number).Values[0]);
+                                }
+                            }
+                        }
+                        else
+                        { // if type-specific-name list not have specific name
+                            if (component_list.Get(type_number).Values.Count > 0)
+                            {// if there has thing
+                                Add(component_list.Get(type_number).Values[0]);
+                            }
+                        }
+                    }
+                }
+                else
+                {// if the type thing don't has specific-name
+                    foreach (int type_number in component_list.GetComponentTypeNumbers())
+                    { // for all types, add its index 0 's thing.
+                        if (component_list.Get(type_number).Values.Count > 0)
+                        { // if there has thing
+                            Add(component_list.Get(type_number).Values[0]);
+                        }
+                    }
+                }
+            }
+        }
+        public int Count => components.Count;
         public IList<int> GetComponentTypeNumbers()
         {
             //return what types of component it have
             return components.Keys;
         }
-        public bool Has(int dst_num)
+        public bool Has(int type_number)
         {
-            if (components.ContainsKey(dst_num))
+            if (components.ContainsKey(type_number))
             {
                 return true;
             }
             return false;
         }
-        public bool Has(int[] dst_nums)
+        public bool Has(int[] type_numbers)
         {
-            if (dst_nums == null)
+            if (type_numbers == null)
                 return false;
-            foreach(int dst_num in dst_nums)
+            foreach(int type_number in type_numbers)
             {
-                if (!components.ContainsKey(dst_num))
+                if (!components.ContainsKey(type_number))
+                    return false;
+            }
+            return true;
+        }
+        public bool Has(IList<int> type_numbers)
+        {
+            if (type_numbers == null)
+                return false;
+            foreach (int type_number in type_numbers)
+            {
+                if (!components.ContainsKey(type_number))
                     return false;
             }
             return true;
@@ -81,11 +140,11 @@ namespace GameCore.Base
             }
             return true;
         }
-        public Component Get(int dst_num)
+        public Component Get(int type_number)
         {
             foreach (var node in components)
             {
-                if (node.Key == dst_num)
+                if (node.Key == type_number)
                     return node.Value;
             }
             return null;
@@ -130,17 +189,32 @@ namespace GameCore.Base
                     Add(value);
             }
         }
-        public Component[] Get(int[] dst_nums)
+        public List<Component> Get(int[] type_numbers)
         {
-            if (dst_nums == null)
+            if (type_numbers == null)
                 return null;
-            Component[] cs = new Component[dst_nums.Length];
-            for(int i = 0; i < dst_nums.Length; i++)
+            List<Component> cs = new List<Component>(type_numbers.Length);
+            for(int i = 0; i < type_numbers.Length; i++)
             {
                 foreach (var node in components)
                 {
-                    if (node.Key == dst_nums[i])
-                        cs[i] = node.Value;
+                    if (node.Key == type_numbers[i])
+                        cs.Add(node.Value);
+                }
+            }
+            return cs;
+        }
+        public List<Component> Get(IList<int> type_numbers)
+        {
+            if (type_numbers == null)
+                return null;
+            List<Component> cs = new List<Component>(type_numbers.Count);
+            for (int i = 0; i < type_numbers.Count; i++)
+            {
+                foreach (var node in components)
+                {
+                    if (node.Key == type_numbers[i])
+                        cs.Add(node.Value);
                 }
             }
             return cs;
@@ -178,56 +252,55 @@ namespace GameCore.Base
                 }
             }
         }
-        public void Remove(int dst_num)
+        public void Remove(int type_number)
         {
-            if (Has(dst_num))
+            if (Has(type_number))
             {
-                components[dst_num].Owners.Remove(this);
-                components.Remove(dst_num);
+                components[type_number].Owners.Remove(this);
+                components.Remove(type_number);
             }
         }
-        public void Remove(int[] dst_nums)
+        public void Remove(int[] type_numbers)
         {
-            if(dst_nums != null)
-            foreach (int dst_num in dst_nums)
+            if(type_numbers != null)
+            foreach (int type_number in type_numbers)
             {
-            if (Has(dst_num))
+            if (Has(type_number))
                 {
-                    components[dst_num].Owners.Remove(this);
-                    components.Remove(dst_num);
+                    components[type_number].Owners.Remove(this);
+                    components.Remove(type_number);
                 }
             }
         }
+        public void Remove(IList<int> type_numbers)
+        {
+            if (type_numbers != null)
+                foreach (int type_number in type_numbers)
+                {
+                    if (Has(type_number))
+                    {
+                        components[type_number].Owners.Remove(this);
+                        components.Remove(type_number);
+                    }
+                }
+        }
         public void Replace(Component thing)
         {
-            /* 
-             * It only do Replace, not Add.
-             * If the parameter is null, Do Nothing.
-             * If there isn't have one yet, Do Nothing.
-             */
-            if(thing != null)
-            if (Has(thing.TypeNumber))
+            // Same as Add(), but remove the target while there is
+            if (thing != null)
             {
-                components.Remove(thing.TypeNumber);
+                if (Has(thing.TypeNumber))
+                    components.Remove(thing.TypeNumber);
                 components.Add(thing.TypeNumber, thing);
             }
         }
         public void Replace(Component[] things)
         {
-            /* 
-             * It only do Replace, not Add.
-             * If the array is null, Do Nothing.
-             * If there isn't have one yet, Do Nothing.
-             * If one of the array is null, Not Replace that one.
-             */
+            // Same as Add(), but remove the target while there is
             if (things != null)
             for (int i = 0; i< things.Length; i++)
             {
-                if (Has(things[i].TypeNumber))
-                {
-                    components.Remove(things[i].TypeNumber);
-                    components.Add(things[i].TypeNumber, things[i]);
-                }
+                Replace(things[i]);
             }
         }
     }

@@ -43,6 +43,11 @@ namespace GameCore.Base
                 return _spawnerTypeNameSet[type_name];
             return -1;
         }
+        public static int GetTypeNumber<TComponentType>()
+            where TComponentType : Component, new()
+        {
+            return GetSpawner<TComponentType>().Type_Number;
+        }
         public Component() {
             /*
              * default create, not recommend. please use Component.GetSpawner().Spawn().
@@ -54,7 +59,7 @@ namespace GameCore.Base
              */
         }
         public interface ISpawner {
-            Component SpawnBaseComponent();
+            Component SpawnBase();
             int Type_Number { get; }
             string Type_Name { get; }
         }
@@ -103,8 +108,9 @@ namespace GameCore.Base
                 component.TypeNumber = Type_Number;
                 return component;
             }
-            public Component SpawnBaseComponent()
+            public Component SpawnBase()
             {
+                // Same as Spawn(), but return base reference
                 return Spawn();
             }
         }

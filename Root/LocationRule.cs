@@ -92,6 +92,5 @@ namespace GameCore.Root
                 return HashCode.Combine(TypeName, number_distribute_reference, Number, _belong, _level, Level, Belong);
             }
         }
-
     }
 }
