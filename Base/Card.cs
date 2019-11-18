@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GameCore.Base
 {
-    public class Card
+    public class Card : ComponentList
     {
         /*
          * Name will be "none" initially
@@ -13,25 +13,5 @@ namespace GameCore.Base
          */
         public int Number { get; set; } = -1;
         public string Name { get; set; } = null;
-        public Card()
-        {
-            Name = "none";
-        }
-        public ComponentSet Components
-        {
-            get
-            {
-                if (Components == null)
-                    Components = new ComponentSet(50);
-                return Components;
-            }
-            set
-            {
-                if (Components != null)
-                    Components.Owners.Remove(this);
-                Components = value;
-                Components.Owners.Add(this);
-            }
-        }
     }
 }

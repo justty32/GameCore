@@ -11,8 +11,7 @@ namespace GameCore.Base
          * Allow same type entities, but need to name it.
          * 
          * While doing base controlling (Has, Get, Add, Remove), should care about parameters.
-         * if don't put name, that's means to do it for all things of the type.
-         * if put array, that's means do several times for things in array
+         * if only put type_number, that means to do it for all things of the type.
          * 
          * Replace is same as Add(), but do remove while there's already one.
          */
@@ -23,13 +22,13 @@ namespace GameCore.Base
         }
         public ComponentList(ComponentSet component_set, SortedList<int, string> type_specific_name = null)
         {
-            // If don't specific the name, set it defaultly "_"
+            // If don't specific the name, set it as its TypeName
             if (component_set != null)
             if (type_specific_name == null)
             {
                 foreach (var thing in component_set.Components)
                     if (thing != null)
-                        Add("_", thing);
+                        Add(thing.TypeName, thing);
             }
             else
             {
@@ -39,7 +38,7 @@ namespace GameCore.Base
                     if (type_specific_name.ContainsKey(thing.TypeNumber))
                         Add(type_specific_name[thing.TypeNumber], thing);
                     else
-                        Add("_", thing);
+                        Add(thing.TypeName, thing);
                 }
             }
         }
@@ -56,29 +55,35 @@ namespace GameCore.Base
         public int GetCountOfType(int type_number) => components[type_number].Count;
         public IList<int> GetComponentTypeNumbers()
         {
+            // get how many types in list.
             return components.Keys;
         }
-        public bool Has(int type_number, string name)
+        public bool Has(string name)
         {
-            if (Has(type_number))
-                return components[type_number].ContainsKey(name);
-            else
-                return false;
+            if(name != null)
+            foreach(var sort_list in components)
+            {
+                if (sort_list.Value.ContainsKey(name))
+                    return true;
+            }
+            return false;
         }
         public bool Has(int type_number)
         {
             return components.ContainsKey(type_number);    
         }
-        public int GetComponentCount(int type_number)
+        public Component Get(string name)
         {
-            return components[type_number].Count;
-        }
-        public Component Get(int type_number, string name)
-        {
-            if (Has(type_number, name))
-                return components[type_number][name];
-            else
-                return null;
+            if(name != null)
+            if (Has(name))
+            {
+                foreach(var sort_list in components)
+                {
+                    if (sort_list.Value.ContainsKey(name))
+                        return sort_list.Value[name];
+                }
+            }
+            return null;
         }
         public SortedList<string, Component> Get(int type_number)
         {
@@ -89,58 +94,80 @@ namespace GameCore.Base
         }
         public void Add(string name, Component thing)
         {
-            if(thing != null)
-            if (Has(thing.TypeNumber))
+            if(name != null && thing != null)
+            if (!Has(thing.TypeNumber))
             {
-                // if already have component(s) of that type
+                if(!components.ContainsKey(thing.TypeNumber))
+                    components.Add(thing.TypeNumber, new SortedList<string, Component>());
                 components[thing.TypeNumber].Add(name, thing);
-            }
-            else
-            {
-                // if not yet have that type
-                components.Add(thing.TypeNumber, new SortedList<string, Component>());
-                components[thing.TypeNumber].Add(name, thing);
+                thing.Belong = this;
             }
         }
         public void Add(SortedList<string, Component> things)
         {
+            if(things != null)
             foreach(var thing in things)
             {
                 Add(thing.Key, thing.Value);
+                thing.Value.Belong = this;
             }
         }
-        public void Remove(int type_number, string name)
+        public void Remove(string name)
         {
-            if (Has(type_number, name))
-                components[type_number].Remove(name);
+            if(name != null)
+                foreach(var sort_list in components)
+                {
+                    if (sort_list.Value.ContainsKey(name))
+                    {
+                        sort_list.Value[name].Belong = null;
+                        sort_list.Value.Remove(name);
+                        break;
+                    }
+                }
         }
         public void Remove(int type_number)
         {
             // Remove all components of that type
             if (Has(type_number))
+            {
+                foreach(var thing in components[type_number])
+                {
+                    thing.Value.Belong = null;
+                    components[type_number].Remove(thing.Key);
+                }
                 components.Remove(type_number);
+            }
         }
         public void Replace(string name, Component component)
         {
             // Same as Add(), but remove the target while there is
-            if (component != null)
+            if (name != null && component != null)
             {
-                if (Has(component.TypeNumber, name))
-                    Remove(component.TypeNumber, name);
+                if (Has(name))
+                    Remove(name);
                 Add(name, component);
             }
         }
-        public Component this[int type_number, string name]
+        public Component this[string name]
         {
             get
             {
-                return Get(type_number, name);
+                return Get(name);
             }
             set
             {
-                if(value != null)
-                if(type_number == value.TypeNumber)
+                if (value != null)
                     Replace(name, value);
+            }
+        }
+        public SortedList<string, Component> this[int type_number]
+        {
+            get { return Get(type_number); }
+            set
+            {
+                if (Has(type_number))
+                    Remove(type_number);
+                Add(value);
             }
         }
         public string GetName(Component component)

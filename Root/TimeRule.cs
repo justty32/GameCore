@@ -4,31 +4,29 @@ using System.Text;
 
 namespace GameCore.Root
 {
-    class TimeRule
+    public class TimeRule
     {
         // A world need a Time Engine.
         // After create entity, you got a NowTime(not static)
         // Use GoOneDay() to drive the time
         // SetNowTime() is jumping into that time point, without triggering hooks.
         // A day has 24 hours, so HourMax is 24, use SetTimeMax() to change it.
-        public class CTime : Base.Component
+        public class Time
         {
             // Purely store time data 
             // year, month, day, hour
-            private const string type_name = "CTime";
-            public override string TypeName => type_name;
             public int year { get; set; } = -1;
             public int month { get; set; } = -1;
             public int day { get; set; } = -1;
             public int hour { get; set; } = -1;
         }
-        public CTime NowTime { get; }
+        public Time NowTime { get; }
         private readonly Base.Hook HHourChange = new Base.Hook("TimeRule.HourChange");
         private readonly Base.Hook HDayChange = new Base.Hook("TimeRule.DayChange");
         private readonly Base.Hook HMonthChange = new Base.Hook("TimeRule.MonthChange");
         private readonly Base.Hook HYearChange = new Base.Hook("TimeRule.YearChange");
         public TimeRule() {
-            NowTime = Base.Component.GetSpawner<CTime>().Spawn();
+            NowTime = new Time();
             SetNowTime(0, 1, 1, 0);
         }
         public void SetNowTime(int year = -1, int month = -1 , int day = -1, int hour = -1)
@@ -44,6 +42,17 @@ namespace GameCore.Root
                 NowTime.month = month;
             if (year >= 0)
                 NowTime.year = year;
+        }
+        public void SetNowTime(Time time)
+        {
+            if (time.hour >= 0)
+                NowTime.hour = time.hour;
+            if (time.day > 0)
+                NowTime.day = time.day;
+            if (time.month > 0)
+                NowTime.month = time.month;
+            if (time.year >= 0)
+                NowTime.year = time.year;
         }
         public void SetTimeMax(int month_max = -1, int day_max = -1, int hour_max = -1)
         {

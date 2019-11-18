@@ -15,7 +15,7 @@ namespace GameCore.Base
          */
         public int TypeNumber { get; set; } = -1; // Which is auto distributed by GameCore, Don't set it Directly ! 
         public abstract string TypeName { get; }
-        public List<ComponentSet> Owners { get; } = new List<ComponentSet>();
+        public ComponentList Belong { get; set; }
         private static SortedList<string, int> _spawnerTypeNameSet = new SortedList<string, int>();
         private static SortedList<int, ISpawner> _spawnerList = new SortedList<int, ISpawner>();
         public static int TypeCount => _spawnerList.Count; //return how many types of component.

@@ -16,7 +16,6 @@ namespace GameCore.Base
          * Replace is same as Add(), but do remove while there's already one.
          */
         private SortedList<int, Component> components;
-        public List<Card> Owners { get; } = new List<Card>();
         public ComponentSet() => components = new SortedList<int, Component>();
         public ComponentSet(int components_count)
         {
@@ -231,7 +230,6 @@ namespace GameCore.Base
             else
             {
                 components.Add(thing.TypeNumber, thing);
-                thing.Owners.Add(this);
                 return false;
             }
         }
@@ -247,7 +245,6 @@ namespace GameCore.Base
                     if (!Has(thing.TypeNumber))
                     {
                         components.Add(thing.TypeNumber, thing);
-                        thing.Owners.Add(this);
                     }
                 }
             }
@@ -256,7 +253,6 @@ namespace GameCore.Base
         {
             if (Has(type_number))
             {
-                components[type_number].Owners.Remove(this);
                 components.Remove(type_number);
             }
         }
@@ -267,7 +263,6 @@ namespace GameCore.Base
             {
             if (Has(type_number))
                 {
-                    components[type_number].Owners.Remove(this);
                     components.Remove(type_number);
                 }
             }
@@ -279,7 +274,6 @@ namespace GameCore.Base
                 {
                     if (Has(type_number))
                     {
-                        components[type_number].Owners.Remove(this);
                         components.Remove(type_number);
                     }
                 }

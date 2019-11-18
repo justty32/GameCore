@@ -4,36 +4,23 @@ using System.Text;
 
 namespace GameCore.Root
 {
-    class LocationRule
+    public class LocationRule 
     {
         public class CLocation : Base.Component
         {
-            // Some Card defined as an entity, need CLocation to represent its location.
-            // This is Not Position, don't have coordinates.
-            //
-            // BeNew(), set it a new location, with distributing a new Number.
-            // After BeNew(), this will be an another location, previous one will be loss.
-            //
-            // While SetBelong(), the belong's belong can't be this,
-            // and belong's level can't <= to this.
-            //
-            // GameCore.Core TODO: CLocation.RootLocation use Component.AutoSetTypeNumber()
+            // Level: Small can't contains Big. Box can contains Box
             public enum TypeLevel
             {
-                Box, Room, Building, Village, City, Tile, Region, Land, Planet, World, Root
+                Box, Room, Building, Village, City, Tile, Region, Land, World, Planet, Root
             }
-            private new const string type_name = "CLocation";
+            private const string type_name = "CLocation";
             public override string TypeName => type_name;
-            private int number_distribute_reference = 1;
-            public int Number { get; set; } = -1;
-            public static CLocation RootLocation { get; } = new CLocation(0); // Number = 0
-            private CLocation _belong = RootLocation;
-            private TypeLevel _level = TypeLevel.Box;
-            private CLocation(int this_is_only_for_RootLocation)
-            {
-                Number = 0;
-                _level = TypeLevel.Root;
-            }
+            private int _number = -1; private int _upper_number = 0; private TypeLevel _level = TypeLevel.Box;
+            public int Number { get => _number; }
+            public int UpperNumber { get => _upper_number; }
+            public TypeLevel Level { get => _level; }
+            public List<int> BelowNumbers { get; } = new List<int>(); // most time not be used
+            public CLocation() {}
             public static bool operator ==(CLocation a, CLocation b)
             {
                 return a.Number == b.Number;
@@ -42,55 +29,110 @@ namespace GameCore.Root
             {
                 return a.Number != b.Number;
             }
-            public void BeNew(TypeLevel level = TypeLevel.Box, CLocation belong_location_number = null)
-            {
-                // If belong_location is null, set to RootLocation
-                SetLevel(level);
-                if (SetBelong(belong_location_number))
-                    SetBelong(RootLocation);
-                if (number_distribute_reference == int.MaxValue)
-                    number_distribute_reference = int.MinValue;
-                if (number_distribute_reference == 0)
-                    number_distribute_reference = 1000;
-                Number = number_distribute_reference;
-                number_distribute_reference++;
-            }
-            public TypeLevel Level { get => _level;}
-            public bool SetLevel(TypeLevel level)
-            {
-                // level can't smaller than, or equal to belong's.
-                if (level >= _belong.Level)
-                    return true;
-                _level = level;
-                return false;
-            }
-            public CLocation Belong { get => _belong; }
-            public bool SetBelong(CLocation this_belong_to_who)
-            {
-                // target's belong can't be this
-                // target's level can't smaller than, or equal to this. (level <= this)
-                // If that, do nothing, return true.
-                if (this_belong_to_who.Belong == this 
-                    || this_belong_to_who.Level <= _level)
-                    return true;
-                _belong = this_belong_to_who;
-                return false;
-            }
             public override bool Equals(object obj)
             {
                 return obj is CLocation location &&
-                       TypeName == location.TypeName &&
-                       number_distribute_reference == location.number_distribute_reference &&
                        Number == location.Number &&
-                       EqualityComparer<CLocation>.Default.Equals(_belong, location._belong) &&
-                       _level == location._level &&
-                       Level == location.Level &&
-                       EqualityComparer<CLocation>.Default.Equals(Belong, location.Belong);
+                       _upper_number == location._upper_number &&
+                       _level == location._level;
             }
-            public override int GetHashCode()
+            public void BeNew(TypeLevel level = TypeLevel.Box, CLocation upper_location = null)
             {
-                return HashCode.Combine(TypeName, number_distribute_reference, Number, _belong, _level, Level, Belong);
+                // If has any illegal, set level to box and upper_number be zero
+                if (SetLevel(level, true))
+                    SetLevel(TypeLevel.Box);
+                if (SetUpperNumber(upper_location))
+                    SetUpperNumber(0);
+                // distribute its number
+                Core.Instance.rules.LocationRule._locations_number_distribute_reference++;
+                _number = Core.Instance.rules.LocationRule._locations_number_distribute_reference;
             }
+            public void BeNew(int upper_one_number = 0, TypeLevel level = TypeLevel.Box)
+            {
+                // If has any illegal, set level to box and upper_number be zero
+                if (SetLevel(level, true))
+                    SetLevel(TypeLevel.Box);
+                if (SetUpperNumber(upper_one_number, true))
+                    SetUpperNumber(0);
+                // distribute its number
+                Core.Instance.rules.LocationRule._locations_number_distribute_reference++;
+                _number = Core.Instance.rules.LocationRule._locations_number_distribute_reference;
+            }
+            public bool SetLevel(TypeLevel level, bool check_is_legal = false)
+            {
+                // box must contains box
+                if (!check_is_legal || level == TypeLevel.Box)
+                {
+                    _level = level;
+                    return false;
+                }
+                else
+                {
+                    // find instance of this upper one, check it
+                    if (Core.Instance.rules.LocationRule.locations.ContainsKey(UpperNumber))
+                        if (Core.Instance.rules.LocationRule.locations[UpperNumber].Level > level)
+                        {
+                            _level = level;
+                            return false;
+                        }
+                }
+                return true;
+            }
+            public bool SetUpperNumber(CLocation upper_one)
+            {
+                // always check is legal
+                // target's upper can't be this
+                // target's level can't smaller than, or equal to this. (level <= this)
+                // If that, do nothing, return true.
+                if (upper_one == null)
+                    return true;
+                if (upper_one.UpperNumber == Number
+                    && (upper_one.Level <= _level || Level == TypeLevel.Box))
+                    return true;
+                _upper_number = upper_one.Number;
+                return false;
+            }
+            public bool SetUpperNumber(int upper_one_number, bool check_is_legal = false)
+            {
+                // always check is legal
+                // target's upper can't be this
+                // target's level can't smaller than, or equal to this. (level <= this)
+                // If that, do nothing, return true.
+                if (!check_is_legal || upper_one_number == 0)
+                {
+                    _upper_number = upper_one_number;
+                    return false;
+                }
+                else
+                {
+                    // find instance of the upper_number
+                    // check upper's upper is this
+                    // check upper's level is bigger than this, or this level is box
+                    if (Core.Instance.rules.LocationRule.locations.ContainsKey(UpperNumber))
+                    {
+                        if (Core.Instance.rules.LocationRule.locations[UpperNumber].UpperNumber != Number
+                             && (Core.Instance.rules.LocationRule.locations[UpperNumber].Level > Level
+                                || Level == TypeLevel.Box)
+                        )
+                        {
+                            _upper_number = upper_one_number;
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+        }
+        private int _locations_number_distribute_reference = -1; // How many location number has been distributed. Used for distribute the location's numbers.
+        public SortedList<int, CLocation> locations { get; } = new SortedList<int, CLocation>();
+        public LocationRule(int locations_number_distribute_reference)
+        {
+            _locations_number_distribute_reference = locations_number_distribute_reference;
+            CLocation root_location = Base.Component.GetSpawner<CLocation>().Spawn();
+            root_location.BeNew(0);
+            root_location.SetUpperNumber(0);
+            root_location.SetLevel(CLocation.TypeLevel.Root);
+            locations.Add(root_location.Number, root_location);
         }
     }
 }
