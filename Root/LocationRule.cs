@@ -16,10 +16,11 @@ namespace GameCore.Root
             private const string type_name = "CLocation";
             public override string TypeName => type_name;
             private int _number = -1; private int _upper_number = 0; private TypeLevel _level = TypeLevel.Box;
+            private List<int> _below_numbers;
             public int Number { get => _number; }
             public int UpperNumber { get => _upper_number; }
             public TypeLevel Level { get => _level; }
-            public List<int> BelowNumbers { get; } = new List<int>(); // most time not be used
+            public List<int> BelowNumbers { get => _below_numbers; } // most time not be used
             public CLocation() {}
             public static bool operator ==(CLocation a, CLocation b)
             {
@@ -46,6 +47,8 @@ namespace GameCore.Root
                 // distribute its number
                 Core.Instance.rules.LocationRule._locations_number_distribute_reference++;
                 _number = Core.Instance.rules.LocationRule._locations_number_distribute_reference;
+                // refresh below numbers
+                _below_numbers = new List<int>();
             }
             public void BeNew(int upper_one_number = 0, TypeLevel level = TypeLevel.Box)
             {
@@ -57,6 +60,8 @@ namespace GameCore.Root
                 // distribute its number
                 Core.Instance.rules.LocationRule._locations_number_distribute_reference++;
                 _number = Core.Instance.rules.LocationRule._locations_number_distribute_reference;
+                // refresh below numbers
+                _below_numbers = new List<int>();
             }
             public bool SetLevel(TypeLevel level, bool check_is_legal = false)
             {
