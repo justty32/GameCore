@@ -26,7 +26,7 @@ Define class to be a rule, add "Rule" at its tail, ex. `LocationRule`, `TimeRule
 
 Reference of the class `Base.Card`, add "_card" at its tail, ex. `land_card`, `tile_card`
 
-Reference of the class who inherit `Base.Component`, add "c_" at its front, ex. `c_location`, `c_land`
+Reference of the class who inherits `Base.Component`, add "c_" at its front, ex. `c_location`, `c_land`
 
 ```c#
 
@@ -47,7 +47,7 @@ For most class, it define three functions for different purpose of initialize, d
 
 Default constructor, for `new` a pure instance, mostly it contains nothing, and being public.
 
-`Init()`, to control the order of initializing for instances, it replace the things put in default constructor originally,
+`Init()`, it replace the things put in default constructor originally, in order to control the order of initializing for instances, 
 ex. allocating memory, setting the intial number...
 
 > For variables xx_number_distribute_reference, which is a reference for distribute numbers of something, using example:
@@ -60,7 +60,7 @@ public void BeNew(){
 ```
 
 `BeNew()`, for Card and its containing components who has a only ID, using this to distribute a only ID automatically, sometimes it 
-do other things.
+do other things in it.
 
 Most of the time, use the default constructor first, Init() secondly, BeNew() finally.
 ```c#
@@ -69,7 +69,7 @@ little_card.Init();    //example, actually not like this
 little_card.BeNew();   //example, it is BeNewCard() actually.
 ```
 
-For all Component and its inheritance, use Base.Component.GetSpawner<T>().Spawn to spawn a instance, T must be a Component inheritance.
+For all Component and its subclass, use Base.Component.GetSpawner<T>().Spawn to spawn a instance, T must be a Component's subclass.
 
 Or use the non-template version: GetSpawner(), put parameter with specific type-number or type-name.
 
@@ -79,7 +79,7 @@ private Component _c_land = GameCore.Base.Component.GetSpawner<GameCore.Root.Lan
 private CLocation _c_location = Component.GetSpawner(c_location_component_type_number).Spawn() as CLocation;
 ```
 
-To visit a component of a card, use `card.GetComponent()`, and put parameter of the component type-number. Also you can use the template version `card.GetComponent<T>()`.
+To visit a component of a `Card`'s instance, use `card.GetComponent()`, and put parameter of the component type-number. Also you can use the template version `card.GetComponent<T>()`.
 
 ```c#
 var c_location = location_card.GetComponent(_c_location_type_number) as CLocation; // need transformation
@@ -100,17 +100,17 @@ _c_location_type_number = c_location.TypeNumber;   // by instance.TypeNumber
 
 ## Develop Habits
 
-For every Rule Class Define, it should (not must) contains two members, `Init()`, default constructor.
+For every `Rule` Class Defining, it should (not must) contains two members, `Init()`, default constructor.
 
-Because while initializing the `Core.Instance`, some rule instances has been made. If there are some rule's default constructor 
+Because while initializing the `Core.Instance`, some rule instances has been new. If there are some rule's default constructor 
 needs to visit the `Core.Instance`, it may cause errors.
 
-So, while initializing the `Core.Instance`, there is only new a rule'sinstance by default constructor. After it, doing rules's Init().
+So, while initializing the `Core.Instance`, there is just new a rule's instance by default constructor. After it, it doing `Rules`'s Init().
 
 ---
 
-Only Has() and Is() function return literally value
+Only `Has()` and `Is()` function return literally value
 
-Other Add(), Remove(), Init(), Sub(), comply with below rules:
+Other `Add()`, `Remove()`, `Init()`, `Sub()`, comply with below rules:
 >return false, if process is good at all
 >return true, if there is any error on process, ex. illegally parameter.
