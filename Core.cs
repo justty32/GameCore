@@ -7,18 +7,31 @@ namespace GameCore
     public class Core
     {
         // Defines
-        public class Rules
+        public class _Rules
         {
-            public Root.TimeRule TimeRule { get; }
-            public Root.LocationRule LocationRule { get; }
-            public Rules(
+            public Root.TimeRule TimeRule { get; private set; }
+            public Root.LocationRule LocationRule { get; private set; }
+            public Root.LandRule LandRule { get; private set; }
+            public Root.TileRule TileRule { get; private set; }
+            public _Rules()
+            {
+                // make instances
+                TimeRule = new Root.TimeRule();
+                LocationRule = new Root.LocationRule();
+                LandRule = new Root.LandRule();
+                TileRule = new Root.TileRule();
+            }
+            public void Init(
                 Root.TimeRule.Time now_time,
                 int LocationRule_location_number_distribute_reference
             )
             {
-                TimeRule = new Root.TimeRule();
+                // do Init
+                TimeRule.Init();
                 TimeRule.SetNowTime(now_time);
-                LocationRule = new Root.LocationRule(LocationRule_location_number_distribute_reference);
+                LocationRule.Init(LocationRule_location_number_distribute_reference);
+                LandRule.Init();
+                TileRule.Init();
             }
         }
 
@@ -39,15 +52,25 @@ namespace GameCore
         // about world's rules, datas....
         // reset while load a new world
         public void DataRemove(){
-            _rules = null;
+            // reverse the order of Init
+            _card_number_distribute_reference = -1;
+            Rules = null;
+            HookManager = null;
         }
-        public void DataInit( // many parameters
+        public void DataInit( // many parameters to Init everythings
+            int card_number_distribute_reference,
             Root.TimeRule.Time now_time,
             int LocationRule_location_number_distribute_reference            
         ){
-            _rules = new Rules(now_time, LocationRule_location_number_distribute_reference);
+            // make instances fo things to visit
+            _card_number_distribute_reference = card_number_distribute_reference;
+            HookManager = new Base.HookManager();
+            Rules = new _Rules();
+            // do Init
+            Rules.Init(now_time, LocationRule_location_number_distribute_reference);
         }
-        private Rules _rules = null;
-        public Rules rules { get => _rules; }
+        internal int _card_number_distribute_reference = -1; // don't change it !!!
+        public Base.HookManager HookManager { get; private set; }
+        public _Rules Rules { get; private set; }
     }
 }

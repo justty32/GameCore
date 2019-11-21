@@ -16,10 +16,12 @@ namespace GameCore.Base
         public int TypeNumber { get; set; } = -1; // Which is auto distributed by GameCore, Don't set it Directly ! 
         public abstract string TypeName { get; }
         public ComponentList Belong { get; set; }
+        public ComponentSet Container { get; set; }
+        public Card Card { get; set; }
         private static SortedList<string, int> _spawnerTypeNameSet = new SortedList<string, int>();
         private static SortedList<int, ISpawner> _spawnerList = new SortedList<int, ISpawner>();
-        public static int TypeCount => _spawnerList.Count; //return how many types of component.
-        public int TypeNumberAutoSet()
+        public static int GetTypesCount() => _spawnerList.Count; //return how many types of component.
+        public int AutoSetTypeNumber()
         {
             /*
              * Set TypeNumber by TypeName, then return TypeNumber.

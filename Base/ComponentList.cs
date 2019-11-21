@@ -26,13 +26,13 @@ namespace GameCore.Base
             if (component_set != null)
             if (type_specific_name == null)
             {
-                foreach (var thing in component_set.Components)
+                foreach (var thing in component_set.GetAllComponents())
                     if (thing != null)
                         Add(thing.TypeName, thing);
             }
             else
             {
-                foreach (var thing in component_set.Components)
+                foreach (var thing in component_set.GetAllComponents())
                 {
                     if (thing != null)
                     if (type_specific_name.ContainsKey(thing.TypeNumber))

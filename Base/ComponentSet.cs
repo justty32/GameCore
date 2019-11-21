@@ -39,7 +39,7 @@ namespace GameCore.Base
         public ComponentSet(Component[] add_existing_components)
         {
             components = new SortedList<int, Component>(add_existing_components.Length);
-            Add(add_existing_components);
+            AddComponent(add_existing_components);
         }
         public ComponentSet(ComponentList component_list, SortedList<int, string> type_choose_name)
         {
@@ -54,13 +54,13 @@ namespace GameCore.Base
                         { // if there is a specific name to type_number
                             if (component_list.Get(type_number).ContainsKey(type_choose_name[type_number]))
                             { // and there is containing the thing with specific name in list
-                                Add(component_list.Get(type_number)[type_choose_name[type_number]]);
+                                AddComponent(component_list.Get(type_number)[type_choose_name[type_number]]);
                             }
                             else
                             { // there is no thing with specific name in list
                                 if (component_list.Get(type_number).Values.Count > 0)
                                 { //add it with index 0's thing
-                                    Add(component_list.Get(type_number).Values[0]);
+                                    AddComponent(component_list.Get(type_number).Values[0]);
                                 }
                             }
                         }
@@ -68,7 +68,7 @@ namespace GameCore.Base
                         { // if type-specific-name list not have specific name
                             if (component_list.Get(type_number).Values.Count > 0)
                             {// if there has thing
-                                Add(component_list.Get(type_number).Values[0]);
+                                AddComponent(component_list.Get(type_number).Values[0]);
                             }
                         }
                     }
@@ -79,19 +79,19 @@ namespace GameCore.Base
                     { // for all types, add its index 0 's thing.
                         if (component_list.Get(type_number).Values.Count > 0)
                         { // if there has thing
-                            Add(component_list.Get(type_number).Values[0]);
+                            AddComponent(component_list.Get(type_number).Values[0]);
                         }
                     }
                 }
             }
         }
-        public int Count => components.Count;
+        public int ComponentsCount => components.Count;
         public IList<int> GetComponentTypeNumbers()
         {
             //return what types of component it have
             return components.Keys;
         }
-        public bool Has(int type_number)
+        public bool HasComponent(int type_number)
         {
             if (components.ContainsKey(type_number))
             {
@@ -99,7 +99,7 @@ namespace GameCore.Base
             }
             return false;
         }
-        public bool Has(int[] type_numbers)
+        public bool HasComponent(int[] type_numbers)
         {
             if (type_numbers == null)
                 return false;
@@ -110,7 +110,7 @@ namespace GameCore.Base
             }
             return true;
         }
-        public bool Has(IList<int> type_numbers)
+        public bool HasComponent(IList<int> type_numbers)
         {
             if (type_numbers == null)
                 return false;
@@ -121,14 +121,14 @@ namespace GameCore.Base
             }
             return true;
         }
-        public bool Has(string type_name){
+        public bool HasComponent(string type_name){
             if (components.ContainsKey(Component.GetTypeNumber(type_name)))
             {
                 return true;
             }
             return false;
         }
-        public bool Has(string[] type_names)
+        public bool HasComponent(string[] type_names)
         {
             if (type_names == null)
                 return false;
@@ -139,7 +139,7 @@ namespace GameCore.Base
             }
             return true;
         }
-        public Component Get(int type_number)
+        public Component GetComponent(int type_number)
         {
             foreach (var node in components)
             {
@@ -148,7 +148,7 @@ namespace GameCore.Base
             }
             return null;
         }
-        public Component Get(string type_name){
+        public Component GetComponent(string type_name){
             foreach (var node in components)
             {
                 if (node.Value.TypeName.Equals(type_name))
@@ -163,13 +163,13 @@ namespace GameCore.Base
              * 
              * set -> Replace() and Add(), judge by Has(i)
              */
-            get => Get(i);
+            get => GetComponent(i);
             set
             {
-                if (Has(i))
-                    Replace(value);
+                if (HasComponent(i))
+                    ReplaceComponent(value);
                 else
-                    Add(value);
+                    AddComponent(value);
             }
         }
         public Component this[string str]
@@ -179,16 +179,16 @@ namespace GameCore.Base
              * 
              * set -> Replace() and Add(), judge by Has(i)
              */
-            get => Get(str);
+            get => GetComponent(str);
             set
             {
-                if (Has(str))
-                    Replace(value);
+                if (HasComponent(str))
+                    ReplaceComponent(value);
                 else
-                    Add(value);
+                    AddComponent(value);
             }
         }
-        public List<Component> Get(int[] type_numbers)
+        public List<Component> GetComponent(int[] type_numbers)
         {
             if (type_numbers == null)
                 return null;
@@ -203,7 +203,7 @@ namespace GameCore.Base
             }
             return cs;
         }
-        public List<Component> Get(IList<int> type_numbers)
+        public List<Component> GetComponent(IList<int> type_numbers)
         {
             if (type_numbers == null)
                 return null;
@@ -218,84 +218,262 @@ namespace GameCore.Base
             }
             return cs;
         }
-        public IList<Component> Components => components.Values;
-        public bool Add(Component thing)
+        public IList<Component> GetAllComponents() => components.Values;
+        public bool AddComponent(Component thing)
         {
             // If there is already have same-type one, Do nothing, return true.
             // If TypeNumber is -1, Do nothing, return true.
+            // If thing is already has a container, Do nothing, return true.
             if (thing == null)
                 return true;
-            if (Has(thing.TypeNumber))
+            if (HasComponent(thing.TypeNumber))
+                return true;
+            if (thing.Container != null)
                 return true;
             else
             {
                 components.Add(thing.TypeNumber, thing);
+                thing.Container = this;
                 return false;
             }
         }
-        public void Add(Component[] things)
+        public void AddComponent(Component[] things)
         {
             // Components of array should be multi type.
             // If there is already have same-type one, Do nothing.
             // If TypeNumber is -1, Do nothing.
+            // If a thing already has a container, Do nothing.
             if (things != null)
             {
                 foreach (Component thing in things)
                 {
-                    if (!Has(thing.TypeNumber))
+                    if (!HasComponent(thing.TypeNumber) && thing.Container != null)
                     {
                         components.Add(thing.TypeNumber, thing);
+                        thing.Container = this;
                     }
                 }
             }
         }
-        public void Remove(int type_number)
+        public void RemoveComponent(int type_number)
         {
-            if (Has(type_number))
+            if (HasComponent(type_number))
             {
+                components[type_number].Container = null;
                 components.Remove(type_number);
             }
         }
-        public void Remove(int[] type_numbers)
+        public void RemoveComponent(int[] type_numbers)
         {
             if(type_numbers != null)
             foreach (int type_number in type_numbers)
             {
-            if (Has(type_number))
+            if (HasComponent(type_number))
                 {
                     components.Remove(type_number);
                 }
             }
         }
-        public void Remove(IList<int> type_numbers)
+        public void RemoveComponent(IList<int> type_numbers)
         {
             if (type_numbers != null)
                 foreach (int type_number in type_numbers)
                 {
-                    if (Has(type_number))
+                    if (HasComponent(type_number))
                     {
                         components.Remove(type_number);
                     }
                 }
         }
-        public void Replace(Component thing)
+        public void ReplaceComponent(Component thing)
         {
             // Same as Add(), but remove the target while there is
             if (thing != null)
             {
-                if (Has(thing.TypeNumber))
+                if (HasComponent(thing.TypeNumber))
                     components.Remove(thing.TypeNumber);
                 components.Add(thing.TypeNumber, thing);
             }
         }
-        public void Replace(Component[] things)
+        public void ReplaceComponent(Component[] things)
         {
             // Same as Add(), but remove the target while there is
             if (things != null)
             for (int i = 0; i< things.Length; i++)
             {
-                Replace(things[i]);
+                ReplaceComponent(things[i]);
             }
+        }
+    }
+    // this partial is just from ComponentSet, change something, remove something.
+    public partial class Card
+    {
+        /*
+         * which is just edit from ComponentSet, but remove something.
+         */
+        private SortedList<int, Component> components;
+        public int ComponentsCount => components.Count;
+        public IList<int> ComponentsTypesCount => components.Keys; //return what types of component it have
+        public bool HasComponent(int type_number) => components.ContainsKey(type_number);
+        public bool HasComponent(int[] type_numbers)
+        {
+            if (type_numbers == null)
+                return false;
+            foreach (int type_number in type_numbers)
+            {
+                if (!components.ContainsKey(type_number))
+                    return false;
+            }
+            return true;
+        }
+        public bool HasComponent(IList<int> type_numbers)
+        {
+            if (type_numbers == null)
+                return false;
+            foreach (int type_number in type_numbers)
+            {
+                if (!components.ContainsKey(type_number))
+                    return false;
+            }
+            return true;
+        }
+        public bool HasComponent(string type_name) => components.ContainsKey(Component.GetTypeNumber(type_name));
+        public bool HasComponent(string[] type_names)
+        {
+            if (type_names == null)
+                return false;
+            foreach (string type_name in type_names)
+            {
+                if (!components.ContainsKey(Component.GetTypeNumber(type_name)))
+                    return false;
+            }
+            return true;
+        }
+        public bool HasComponent<TComponent>() where TComponent : Component, new()
+        {
+            return HasComponent(Component.GetSpawner<TComponent>().Type_Number));
+        }
+        public Component GetComponent(int type_number)
+        {
+            foreach (var node in components)
+            {
+                if (node.Key == type_number)
+                    return node.Value;
+            }
+            return null;
+        }
+        public Component GetComponent(string type_name)
+        {
+            foreach (var node in components)
+            {
+                if (node.Value.TypeName.Equals(type_name))
+                    return node.Value;
+            }
+            return null;
+        }
+        public TComponent GetComponent<TComponent>() where TComponent : Component, new()
+        {
+            // if any error, return null
+            if (!HasComponent<TComponent>())
+                return null;
+            return GetComponent(Component.GetSpawner<TComponent>().Type_Number) as TComponent;
+        }
+        public List<Component> GetComponent(int[] type_numbers)
+        {
+            if (type_numbers == null)
+                return null;
+            List<Component> cs = new List<Component>(type_numbers.Length);
+            for (int i = 0; i < type_numbers.Length; i++)
+            {
+                foreach (var node in components)
+                {
+                    if (node.Key == type_numbers[i])
+                        cs.Add(node.Value);
+                }
+            }
+            return cs;
+        }
+        public List<Component> GetComponent(IList<int> type_numbers)
+        {
+            if (type_numbers == null)
+                return null;
+            List<Component> cs = new List<Component>(type_numbers.Count);
+            for (int i = 0; i < type_numbers.Count; i++)
+            {
+                foreach (var node in components)
+                {
+                    if (node.Key == type_numbers[i])
+                        cs.Add(node.Value);
+                }
+            }
+            return cs;
+        }
+        public IList<Component> Components { get => components.Values; }
+        public bool AddComponent(Component thing)
+        {
+            // If there is already have same-type one, Do nothing, return true.
+            // If TypeNumber is -1, Do nothing, return true.
+            // If thing is already has a container, Do nothing, return true.
+            if (thing == null)
+                return true;
+            if (HasComponent(thing.TypeNumber))
+                return true;
+            if (thing.Container != null)
+                return true;
+            else
+            {
+                components.Add(thing.TypeNumber, thing);
+                thing.Card = this;
+                return false;
+            }
+        }
+        public void AddComponent(Component[] things)
+        {
+            // Components of array should be multi type.
+            // If there is already have same-type one, Do nothing.
+            // If TypeNumber is -1, Do nothing.
+            // If a thing already has a container, Do nothing.
+            if (things != null)
+            {
+                foreach (Component thing in things)
+                {
+                    if (!HasComponent(thing.TypeNumber) && thing.Container != null)
+                    {
+                        components.Add(thing.TypeNumber, thing);
+                        thing.Card = this;
+                    }
+                }
+            }
+        }
+        public void RemoveComponent(int type_number)
+        {
+            if (HasComponent(type_number))
+            {
+                components[type_number].Card = null;
+                components.Remove(type_number);
+            }
+        }
+        public void RemoveComponent(int[] type_numbers)
+        {
+            if (type_numbers != null)
+                foreach (int type_number in type_numbers)
+                {
+                    if (HasComponent(type_number))
+                    {
+                        components.Remove(type_number);
+                    }
+                }
+        }
+        public void RemoveComponent(IList<int> type_numbers)
+        {
+            if (type_numbers != null)
+                foreach (int type_number in type_numbers)
+                {
+                    if (HasComponent(type_number))
+                    {
+                        components.Remove(type_number);
+                    }
+                }
         }
     }
 }

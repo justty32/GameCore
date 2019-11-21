@@ -10,8 +10,7 @@ namespace GameCore.Base
          * Just go create entities unrestricted,
          * cause all of those will visit same list of registered hooks.
          */
-        private static SortedList<string, object> hooks = new SortedList<string, object>();
-        public static HookManager Instance { get; } = new HookManager();
+        private SortedList<string, object> hooks = new SortedList<string, object>();
         public bool RegisterHook<Tinput, Toutput>(Hook<Tinput, Toutput> hook, string hook_name) {
             //If there is already the same name hook, Return True
             if (hooks.ContainsKey(hook_name))
@@ -143,14 +142,14 @@ namespace GameCore.Base
             RegisteredName = name;
             HasRegistered = true;
             StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (HookManager.Instance.RegisterHook<Tinput, Toutput>(this, name))
+            if (Core.Instance.HookManager.RegisterHook<Tinput, Toutput>(this, name))
             {
                 stringBuilder.Append("_1");
                 for (int i = 2; i < 100; i++)
                 {
                     stringBuilder.Remove(stringBuilder.Length - 1, 1);
                     stringBuilder.Append(i);
-                    if (!HookManager.Instance.RegisterHook<Tinput, Toutput>(this, stringBuilder.ToString()))
+                    if (!Core.Instance.HookManager.RegisterHook<Tinput, Toutput>(this, stringBuilder.ToString()))
                         goto end;
                 }
                 stringBuilder = null;
@@ -261,14 +260,14 @@ namespace GameCore.Base
             RegisteredName = name;
             HasRegistered = true;
             StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (HookManager.Instance.RegisterHook<Tinput>(this, name))
+            if (Core.Instance.HookManager.RegisterHook<Tinput>(this, name))
             {
                 stringBuilder.Append("_1");
                 for (int i = 2; i < 100; i++)
                 {
                     stringBuilder.Remove(stringBuilder.Length - 1, 1);
                     stringBuilder.Append(i);
-                    if (!HookManager.Instance.RegisterHook<Tinput>(this, stringBuilder.ToString()))
+                    if (!Core.Instance.HookManager.RegisterHook<Tinput>(this, stringBuilder.ToString()))
                         goto end;
                 }
                 stringBuilder = null;
@@ -336,14 +335,14 @@ namespace GameCore.Base
             RegisteredName = name;
             HasRegistered = true;
             StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (HookManager.Instance.RegisterHook(this, name))
+            if (Core.Instance.HookManager.RegisterHook(this, name))
             {
                 stringBuilder.Append("_1");
                 for (int i = 2; i < 100; i++)
                 {
                     stringBuilder.Remove(stringBuilder.Length - 1, 1);
                     stringBuilder.Append(i);
-                    if (!HookManager.Instance.RegisterHook(this, stringBuilder.ToString()))
+                    if (!Core.Instance.HookManager.RegisterHook(this, stringBuilder.ToString()))
                         goto end;
                 }
                 stringBuilder = null;
