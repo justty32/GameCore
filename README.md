@@ -20,9 +20,9 @@ class Big
     private void _HideFunc(){}
 }
 ```
-Class who inherit `Base.Component`, add "C" at its front, ex. `CLocation`, `CLand`
+Define class with inherit `Base.Component`, add "C" at its front, ex. `CLocation`, `CLand`
 
-Class who is a rule, add "Rule" at its tail, ex. `LocationRule`, `TimeRule`
+Define class to be a rule, add "Rule" at its tail, ex. `LocationRule`, `TimeRule`
 
 Reference of the class `Base.Card`, add "_card" at its tail, ex. `land_card`, `tile_card`
 
@@ -43,6 +43,32 @@ class LandRule{
 
 ## Usage Habits
 
+For most class, it define three functions for different purpose of initialize, default constructor, `Init()`, `BeNew()`.
+
+Default constructor, for `new` a pure instance, mostly it contains nothing, and being public.
+
+`Init()`, to control the order of initializing for instances, it replace the things put in default constructor originally,
+ex. allocating memory, setting the intial number...
+
+> For variables xx_number_distribute_reference, which is a reference for distribute numbers of something, using example:
+```c#
+public void BeNew(){
+    //reference number is from Core.Instance mostly 
+    thing_number = reference_number;  
+    reference_number++;
+}
+```
+
+`BeNew()`, for Card and its containing components who has a only ID, using this to distribute a only ID automatically, sometimes it 
+do other things.
+
+Most of the time, use the default constructor first, Init() secondly, BeNew() finally.
+```c#
+var little_card = new Card();
+little_card.Init();    //example, actually not like this
+little_card.BeNew();   //example, it is BeNewCard() actually.
+```
+
 For all Component and its inheritance, use Base.Component.GetSpawner<T>().Spawn to spawn a instance, T must be a Component inheritance.
 
 Or use the non-template version: GetSpawner(), put parameter with specific type-number or type-name.
@@ -53,20 +79,38 @@ private Component _c_land = GameCore.Base.Component.GetSpawner<GameCore.Root.Lan
 private CLocation _c_location = Component.GetSpawner(c_location_component_type_number).Spawn() as CLocation;
 ```
 
-for xx_number_distribute_reference, which is a reference for distribute numbers
-mostly using example: 
-'''c++
-thing_number = get_reference_number;
-reference_number++;
-'''
+To visit a component of a card, use `card.GetComponent()`, and put parameter of the component type-number. Also you can use the template version `card.GetComponent<T>()`.
 
-for every rule classes, needs to made a default constructor and a Init() function
-that's cause while Core Instance initializing, needs to new instances for these rule classes
-, on this state, Core Instance use default consuctor to new it,
-so, it can visit the Core Instance while rule classes's Init().
+```c#
+var c_location = location_card.GetComponent(_c_location_type_number) as CLocation; // need transformation
+var c_location = location_card.GetComponent<CLocation>();
+```
 
-use BeNew() to be a new Card, CLocation....
-only Has(), Is() function return literally value
-other Add(), Remove(), Init(), Sub(), comply with below rules:
-return false, if process is good at all
-return true, if there is any error on process, ex. illegally parameter.
+Every Component inheritance has a only ID, which is distributed automatically at the first instance of component be 
+spawned from the correct way.
+> The correct way means using `Component.GetSpawner()` to Spawn a Component.
+
+You can get it from static function `GetSpawner()`, or from a instance of component by using `c_instance.TypeNumber`
+
+```c#
+int _c_location_type_number = Component.GetSpawner<CLocation>().TypeNumber; // by GetSpawner
+var c_location = Component.GetSpawner<CLocation>().Spawn();
+_c_location_type_number = c_location.TypeNumber;   // by instance.TypeNumber
+```
+
+## Develop Habits
+
+For every Rule Class Define, it should (not must) contains two members, `Init()`, default constructor.
+
+Because while initializing the `Core.Instance`, some rule instances has been made. If there are some rule's default constructor 
+needs to visit the `Core.Instance`, it may cause errors.
+
+So, while initializing the `Core.Instance`, there is only new a rule'sinstance by default constructor. After it, doing rules's Init().
+
+---
+
+Only Has() and Is() function return literally value
+
+Other Add(), Remove(), Init(), Sub(), comply with below rules:
+>return false, if process is good at all
+>return true, if there is any error on process, ex. illegally parameter.
