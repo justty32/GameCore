@@ -111,6 +111,6 @@ So, while initializing the `Core.Instance`, there is just new a rule's instance 
 
 Only `Has()` and `Is()` function return literally value
 
-Other `Add()`, `Remove()`, `Init()`, `Sub()`, comply with below rules:
+Other `Check`, `Add()`, `Remove()`, `Init()`, `Sub()`. `AutoSet`, `Set`, comply with below rules:
 >return false, if process is good at all
 >return true, if there is any error on process, ex. illegally parameter.
