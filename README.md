@@ -20,13 +20,13 @@ class Big
     private void _HideFunc(){}
 }
 ```
-Define class with inherit `Base.Component`, add "C" at its front, ex. `CLocation`, `CLand`
+Define class with inherit `Base.Component`, add "C" in front of it, ex. `CLocation`, `CLand`
 
 Define class to be a rule, add "Rule" at its tail, ex. `LocationRule`, `TimeRule`
 
 Reference of the class `Base.Card`, add "_card" at its tail, ex. `land_card`, `tile_card`
 
-Reference of the class who inherits `Base.Component`, add "c_" at its front, ex. `c_location`, `c_land`
+Reference of the class who inherits `Base.Component`, add "c_" in front of it, ex. `c_location`, `c_land`
 
 ```c#
 
