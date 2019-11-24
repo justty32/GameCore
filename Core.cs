@@ -21,7 +21,7 @@ namespace GameCore
                 LandRule = new Root.LandRule();
                 TileRule = new Root.TileRule();
             }
-            public void Init(
+            public void Init( // many parameters
                 Root.TimeRule.Time now_time,
                 int LocationRule_location_number_distribute_reference
             )
@@ -52,7 +52,7 @@ namespace GameCore
         // about world's rules, datas....
         // reset while load a new world
         public void DataRemove(){
-            // reverse the order of Init
+            // the order is reversion of Init
             _card_number_distribute_reference = -1;
             Rules = null;
             HookManager = null;
@@ -69,7 +69,7 @@ namespace GameCore
             // do Init
             Rules.Init(now_time, LocationRule_location_number_distribute_reference);
         }
-        internal int _card_number_distribute_reference = -1; // don't change it !!!
+        internal int _card_number_distribute_reference = -1; // don't edit it !!!
         public Base.HookManager HookManager { get; private set; }
         public _Rules Rules { get; private set; }
     }

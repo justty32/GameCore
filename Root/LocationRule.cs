@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GameCore.Root
 {
-    public class LocationRule
+    public class LocationRule : Base.Rule
     {
         // Level: Small can't contains Big. Box can contains Box
         /*
@@ -143,6 +143,7 @@ namespace GameCore.Root
         private int _locations_number_distribute_reference = -1; // How many location number has been distributed. Used for distribute the location's numbers.
         public SortedList<int, CLocation> locations { get; } = new SortedList<int, CLocation>();
         private int _c_location_type_number = 0; // store CLocation's TypeNumber, at Init()
+        public int CLocationTypeNumber { get => _c_location_type_number; }
         public LocationRule(){}
         public void Init(int locations_number_distribute_reference)
         {
@@ -155,13 +156,8 @@ namespace GameCore.Root
             _c_location_type_number = root_location.TypeNumber;
         }
         public bool AddCLocation(Base.Card card)
-        { 
-            // only add the CLocation
-            if (card == null)
-                return true;
-            if (card.AddComponent(Base.Component.GetSpawner<LocationRule.CLocation>().Spawn()))
-                return true;
-            return false;
+        {
+            return AddComponent<CLocation>(card);
         }
         public bool BeNewCLocation(Base.Card card, int upper_number = 0, Level level = Level.Box)
         {

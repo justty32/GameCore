@@ -351,7 +351,7 @@ namespace GameCore.Base
         }
         public bool HasComponent<TComponent>() where TComponent : Component, new()
         {
-            return HasComponent(Component.GetSpawner<TComponent>().Type_Number));
+            return HasComponent(Component.GetSpawner<TComponent>().Type_Number);
         }
         public Component GetComponent(int type_number)
         {

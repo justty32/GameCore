@@ -4,17 +4,17 @@ using System.Text;
 
 namespace GameCore.Root
 {
-    public class LandRule
+    public class LandRule : Base.Rule
     {
         public class CLand : Base.Component
         {
 
-            private string _type_name = "CLand";
+            private const string _type_name = "CLand";
             public override string TypeName => _type_name;
             public List<List<int>> CTileNumberList { get; private set; } //stored CTile component's numbers
             public bool Init(int sizeX, int sizeY)
             {
-                // not be new, just allocate the memory of array
+                // not BeNew(), just allocate the memory of array
                 CTileNumberList = new List<List<int>>(sizeX);
                 if (CTileNumberList == null)
                     return true;
@@ -23,6 +23,8 @@ namespace GameCore.Root
                     CTileNumberList[i] = new List<int>(sizeY);
                     if (CTileNumberList[i] == null)
                         return true;
+                    for (int j = 0; j < CTileNumberList[i].Count; j++)
+                        CTileNumberList[i].Add(-1);
                 }
                 return false;
             }
@@ -30,6 +32,7 @@ namespace GameCore.Root
         private int _c_location_type_number = -1; // prestore
         private int _c_tile_type_number = -1; // prestore
         private int _c_land_type_number = -1; // prestore
+        public int CLandTypeNumber { get => _c_location_type_number; }
         public bool Init()
         {
             // rule's initialize
@@ -40,28 +43,12 @@ namespace GameCore.Root
         }
         public bool AddCLand(Base.Card card)
         {
-            // only do the action - add.
-            if (card == null)
-                return true;
-            if (card.HasComponent(_c_land_type_number))
-                return true;
-            return card.AddComponent(Base.Component.GetSpawner(_c_land_type_number).SpawnBase());
+            return AddComponent<CLand>(card);
         }
-        public bool BeNewCLand(Base.Card land_card, int sizeX, int sizeY, int upper_c_location_number = 0)
+        public bool BeNewCLand(Base.Card land_card, int sizeX, int sizeY)
         {
-            // Also Do BeNewCLocation !!
-            // land card need component CLand and CLocation, both must be legally
-            // process: CLocation.BeNew() -> CLand.Init()
             // sizeXY must bigger than 0
-            // upper CLocation(upper_c_location_number) be RootLocation(0) defaultly, 
             if (land_card == null || sizeX < 1 || sizeY < 1)
-                return true;
-
-            // be new location
-            if (Core.Instance.Rules.LocationRule.BeNewCLocation(land_card, upper_c_location_number, LocationRule.Level.Land))
-                return true;
-            var c_location = land_card.GetComponent(_c_location_type_number) as LocationRule.CLocation;
-            if (c_location.Level != LocationRule.Level.Land)
                 return true;
             // be new land
             if (!land_card.HasComponent(_c_land_type_number))
@@ -75,7 +62,7 @@ namespace GameCore.Root
         {
             // land card need component CLand and CLocation
             // tile card need component CTile and CLocation
-            // Not check if the CLocation is legally
+            // Not check if the CLocation is legally, only check if has these.
             if (land_card == null || tile_card == null || positionX < 0 || positionY < 0)
                 return true;
             if ((!land_card.HasComponent<CLand>()) && (!land_card.HasComponent<LocationRule.CLocation>()))
