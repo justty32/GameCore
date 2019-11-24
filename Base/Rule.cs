@@ -14,5 +14,19 @@ namespace GameCore.Base
                 return true;
             return card.AddComponent(Component.GetSpawner<TComponent>().SpawnBase());
         }
+        public bool HasComponent(Card card, params int[] component_type_numbers)
+        {
+            // also if check card is null
+            // check if the card has all needed components
+            if(card == null)
+                return false;
+            if(component_type_numbers != null){
+                foreach(int i in component_type_numbers){
+                    if(!card.HasComponent(i))
+                        return false;                   
+                }
+            }
+            return true;
+        }
     }
 }

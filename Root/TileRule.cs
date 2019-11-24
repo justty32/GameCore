@@ -10,8 +10,8 @@ namespace GameCore.Root
         {
             private const string _type_name = "CTile";
             public override string TypeName => _type_name;
-            public int PositionX { get; set; } = -1;
-            public int PositionY { get; set; } = -1;
+            public int PositionX { get; internal set; } = -1;
+            public int PositionY { get; internal set; } = -1;
         }
         private int _c_location_type_number = -1;
         private int _c_tile_type_number = -1;

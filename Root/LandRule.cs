@@ -8,24 +8,29 @@ namespace GameCore.Root
     {
         public class CLand : Base.Component
         {
-
             private const string _type_name = "CLand";
             public override string TypeName => _type_name;
-            public List<List<int>> CTileNumberList { get; private set; } //stored CTile component's numbers
+            public List<List<int>> CTileList { get; private set; } // reference to CLocation's Number
+            public int SizeX { get; private set; } = -1;
+            public int SizeY { get; private set; } = -1;
+            public int PositionX { get; internal set; } = -1;
+            public int PositionY { get; internal set; } = -1;
             public bool Init(int sizeX, int sizeY)
             {
                 // not BeNew(), just allocate the memory of array
-                CTileNumberList = new List<List<int>>(sizeX);
-                if (CTileNumberList == null)
+                CTileList = new List<List<int>>(sizeX);
+                if (CTileList == null)
                     return true;
-                for (int i = 0; i < CTileNumberList.Count; i++)
+                for (int i = 0; i < CTileList.Count; i++)
                 {
-                    CTileNumberList[i] = new List<int>(sizeY);
-                    if (CTileNumberList[i] == null)
+                    CTileList[i] = new List<int>(sizeY);
+                    if (CTileList[i] == null)
                         return true;
-                    for (int j = 0; j < CTileNumberList[i].Count; j++)
-                        CTileNumberList[i].Add(-1);
+                    for (int j = 0; j < CTileList[i].Count; j++)
+                        CTileList[i].Add(-1);
                 }
+                SizeX = sizeX;
+                SizeY = sizeY;
                 return false;
             }
         }
@@ -36,16 +41,16 @@ namespace GameCore.Root
         public bool Init()
         {
             // rule's initialize
-            _c_location_type_number = Base.Component.GetSpawner<CLand>().Type_Number;
+            _c_land_type_number = Base.Component.GetSpawner<CLand>().Type_Number;
             _c_tile_type_number = Base.Component.GetSpawner<TileRule.CTile>().Type_Number;
-            _c_land_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
+            _c_location_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
             return false;
         }
         public bool AddCLand(Base.Card card)
         {
             return AddComponent<CLand>(card);
         }
-        public bool BeNewCLand(Base.Card land_card, int sizeX, int sizeY)
+        public bool BeNewCLand(ref Base.Card land_card, int sizeX, int sizeY)
         {
             // sizeXY must bigger than 0
             if (land_card == null || sizeX < 1 || sizeY < 1)
@@ -58,16 +63,13 @@ namespace GameCore.Root
                 return true;
             return c_land.Init(sizeX, sizeY);
         }
-        public bool SetTile(Base.Card land_card, int positionX, int positionY, Base.Card tile_card)
+        public bool SetTile(ref Base.Card land_card, int positionX, int positionY, ref Base.Card tile_card)
         {
-            // land card need component CLand and CLocation
-            // tile card need component CTile and CLocation
-            // Not check if the CLocation is legally, only check if has these.
-            if (land_card == null || tile_card == null || positionX < 0 || positionY < 0)
+            // land card need both component CLand and CLocation
+            // tile card need both  component CTile and CLocation
+            if(!HasComponent(land_card, _c_land_type_number, _c_location_type_number))
                 return true;
-            if ((!land_card.HasComponent<CLand>()) && (!land_card.HasComponent<LocationRule.CLocation>()))
-                return true;
-            if ((!tile_card.HasComponent<TileRule.CTile>()) && (!tile_card.HasComponent<LocationRule.CLocation>()))
+            if(!HasComponent(tile_card, _c_tile_type_number, _c_location_type_number))
                 return true;
             // set land's tile_list[x][y] to tile's CLocation number
             var c_land = land_card.GetComponent(_c_land_type_number) as CLand;
@@ -76,7 +78,7 @@ namespace GameCore.Root
             var c_location_tile = tile_card.GetComponent(_c_location_type_number) as LocationRule.CLocation;
             if (c_land == null || c_tile == null || c_location_land == null || c_location_tile == null)
                 return true;
-            c_land.CTileNumberList[positionX][positionY] = c_location_tile.Number;
+            c_land.CTileList[positionX][positionY] = c_location_tile.Number;
             c_tile.PositionX = positionX;
             c_tile.PositionY = positionY;
             // set tile's CLocation's UpperNumber
