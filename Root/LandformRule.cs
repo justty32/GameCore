@@ -29,15 +29,17 @@ namespace GameCore.Root
         }
         private int _c_location_type_number = -1;
         private int _c_landform_type_number = -1;
+        private int _c_landform_template_type_number = -1;
         private int _c_terrain_type_number = -1;
-        private int _landform_template_number_distribute_reference = -1;
-        public List<int> LandformTemplateCardList = null; 
-        public bool Init(int landform_template_number_distribute_reference)
+        private int _c_terrain_template_type_number = -1;
+        public List<int> LandformTemplateCardList { get; private set; } = null; 
+        public bool Init()
         {
             _c_location_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
             _c_landform_type_number = Base.Component.GetSpawner<CLandform>().Type_Number;
+            _c_landform_template_type_number = Base.Component.GetSpawner<CLandformTemplate>().Type_Number;
             _c_terrain_type_number = Base.Component.GetSpawner<TerrainRule.CTerrain>().Type_Number;
-            _landform_template_number_distribute_reference = landform_template_number_distribute_reference;
+            _c_terrain_template_type_number = Base.Component.GetSpawner<TerrainRule.CTerrainTemplate>().Type_Number;
             LandformTemplateCardList = new List<int>(); 
             return false;
         }

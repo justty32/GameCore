@@ -31,8 +31,7 @@ namespace GameCore
             }
             public void Init( // many parameters
                 Root.TimeRule.Time now_time,
-                int LocationRule_location_number_distribute_reference,
-                int LandformRule_landform_template_number_distribute_reference
+                int LocationRule_location_number_distribute_reference
             )
             {
                 // do Init
@@ -41,7 +40,10 @@ namespace GameCore
                 LocationRule.Init(LocationRule_location_number_distribute_reference);
                 LandRule.Init();
                 TileRule.Init();
-                LandformRule.Init(LandformRule_landform_template_number_distribute_reference);
+                WorldRule.Init();
+                PlanetRule.Init();
+                LandformRule.Init();
+                TerrainRule.Init();
             }
         }
 
@@ -78,8 +80,7 @@ namespace GameCore
             HookManager = new Base.HookManager();
             Rules = new _Rules();
             // do Init
-            Rules.Init(now_time, LocationRule_location_number_distribute_reference
-                ,LandformRule_landform_template_number_distribute_reference);
+            Rules.Init(now_time, LocationRule_location_number_distribute_reference);
         }
         internal int _card_number_distribute_reference = -1; // don't edit it !!!
         public Base.HookManager HookManager { get; private set; }

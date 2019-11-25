@@ -1,5 +1,22 @@
 # GameCore
 
+## Control Conventions
+
+```c#
+Card card = new Card();
+card.Init();
+SomeRule.AddCSome(card);
+```
+```c#
+Card card = new Card();
+card.Init();
+card.BeNew();
+card.AddComponent(Base.Component.GetSpawner<SomeRule.CSome>().SpawnBase());
+card.GetComponent<SomeRule.CSome>().Init();
+card.GetComponent<SomeRule.CSome>().BeNew();
+```
+
+
 ## Naming Conventions
 
 Most Conventions are reserved from C#'s.
