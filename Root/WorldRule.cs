@@ -7,7 +7,7 @@ using System.Text;
 
 namespace GameCore.Root
 {
-    class WorldRule : Base.Rule
+    public class WorldRule : Base.Rule
     {
         public class CWorld : Base.Component
         {
