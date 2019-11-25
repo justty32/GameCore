@@ -30,14 +30,13 @@ namespace GameCore
                 LandformRule = new Root.LandformRule();
             }
             public void Init( // many parameters
-                Root.TimeRule.Time now_time,
-                int LocationRule_location_number_distribute_reference
+                Root.TimeRule.Time now_time
             )
             {
                 // do Init
                 TimeRule.Init();
                 TimeRule.SetNowTime(now_time);
-                LocationRule.Init(LocationRule_location_number_distribute_reference);
+                LocationRule.Init();
                 LandRule.Init();
                 TileRule.Init();
                 WorldRule.Init();
@@ -71,16 +70,14 @@ namespace GameCore
         }
         public void DataInit( // many parameters to Init everythings
             int card_number_distribute_reference,
-            Root.TimeRule.Time now_time,
-            int LocationRule_location_number_distribute_reference,
-            int LandformRule_landform_template_number_distribute_reference            
+            Root.TimeRule.Time now_time
         ){
             // make instances fo things to visit
             _card_number_distribute_reference = card_number_distribute_reference;
             HookManager = new Base.HookManager();
             Rules = new _Rules();
             // do Init
-            Rules.Init(now_time, LocationRule_location_number_distribute_reference);
+            Rules.Init(now_time);
         }
         internal int _card_number_distribute_reference = -1; // don't edit it !!!
         public Base.HookManager HookManager { get; private set; }

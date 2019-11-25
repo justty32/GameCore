@@ -16,13 +16,15 @@ namespace GameCore.Root
             public int SizeX { get; set; } = -1;
             public int SizeY { get; set; } = -1;
             public int PostionZ { get; set; } = -1;
-            public List<int> CLandList { get; private set; } // reference to CLocation's Number
+            public List<int> LandCards { get; private set; } // reference to CLocation's Number
             public int FillingTypeNumber { get; private set; } // things filling between lands
             public CWorld(){
-                CLandList = new List<int>();
+                LandCards = new List<int>();
             }
             public bool Init(int sizeX, int sizeY)
             {
+                if(sizeX < 1 || sizeY < 1)
+                    return true;
                 SizeX = sizeX;
                 SizeY = sizeY;
                 return false;
@@ -47,15 +49,14 @@ namespace GameCore.Root
             _c_location_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
             return false;
         }
-        public bool AddCWorld(Base.Card card)
+        public bool AddCWorld(Base.Card card, int sizeX, int sizeY)
         {
-            return AddComponent<CWorld>(card);
-        }
-        public bool BeNewCWorld(Base.Card card)
-        {
-            if(!HasComponent(card, _c_location_type_number, _c_world_type_number))
+            if(AddComponent<CWorld>(card))
                 return true;
-            return false;
+            var c_world = card.GetComponent<CWorld>() as CWorld;
+            if(c_world == null)
+                return true;
+            return c_world.Init(sizeX, sizeY);
         }
         public bool AddLand(Base.Card world_card, int positionX, int positionY, Base.Card land_card)
         {
@@ -68,11 +69,9 @@ namespace GameCore.Root
             if(positionX < 0 || positionY < 0)
                 return true;
             var c_location_land = land_card.GetComponent(_c_location_type_number) as LocationRule.CLocation;
-            var c_location_world = world_card.GetComponent(_c_world_type_number) as LocationRule.CLocation;
             var c_land = land_card.GetComponent(_c_land_type_number) as LandRule.CLand;
             var c_world = world_card.GetComponent(_c_world_type_number) as CWorld;
-            if(c_location_land == null || c_location_world == null
-                || c_world == null || c_land == null)
+            if(c_location_land == null || c_world == null || c_land == null)
                 return true;
             if(positionX + c_land.SizeX > c_world.SizeX
                 || positionY + c_land.SizeY > c_world.SizeY)
@@ -80,8 +79,9 @@ namespace GameCore.Root
             // adding
             c_land.PositionX = positionX;
             c_land.PositionY = positionY;
-            c_world.CLandList.Add(c_location_land.Number);
-            return c_location_land.SetUpperNumber(c_location_world);
+            c_world.LandCards.Add(land_card.Number);
+            c_location_land.SetUpperCard(world_card.Number);
+            return false;
         }
         public bool RemoveLand(Base.Card world_card, Base.Card land_card)
         {
@@ -98,8 +98,9 @@ namespace GameCore.Root
             // remove
             c_land.PositionX = -1;
             c_land.PositionY = -1;
-            c_world.CLandList.Remove(c_location_land.Number);
-            return c_location_land.SetUpperNumber(0);
+            c_world.LandCards.Remove(land_card.Number);
+            c_location_land.SetUpperCard();
+            return false;
         }
         public bool MoveLandTo(Base.Card world_card, int dstX, int dstY, Base.Card land_card)
         {
@@ -109,19 +110,14 @@ namespace GameCore.Root
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_land = land_card.GetComponent(_c_location_type_number) as LocationRule.CLocation;
-            var c_location_world = world_card.GetComponent(_c_world_type_number) as LocationRule.CLocation;
             var c_land = land_card.GetComponent(_c_land_type_number) as LandRule.CLand;
             var c_world = world_card.GetComponent(_c_world_type_number) as CWorld;
-            if(c_location_land == null || c_location_world == null
-                || c_world == null || c_land == null)
+            if(c_world == null || c_land == null)
                 return true;
             if(dstX + c_land.SizeX > c_world.SizeX
                 || dstY + c_land.SizeY > c_world.SizeY
                 || dstX + c_land.SizeX < 0
                 || dstY + c_land.SizeY < 0)
-                return true;
-            if(!c_world.CLandList.Contains(c_location_land.Number))
                 return true;
             // change postion
             c_land.PositionX = dstX;
