@@ -83,7 +83,7 @@ Most of the time, use the default constructor first, Init() secondly, BeNew() fi
 ```c#
 var little_card = new Card();
 little_card.Init();    //example, actually not like this
-little_card.BeNew();   //example, it is BeNewCard() actually.
+little_card.BeNew();   //example.
 ```
 
 For all Component and its subclass, use Base.Component.GetSpawner<T>().Spawn to spawn a instance, T must be a Component's subclass.
@@ -130,4 +130,5 @@ Only `Has()` and `Is()` function return literally value
 
 Other `Check`, `Add()`, `Remove()`, `Init()`, `Sub()`. `AutoSet`, `Set`, comply with below rules:
 >return false, if process is good at all
+
 >return true, if there is any error on process, ex. illegally parameter.
