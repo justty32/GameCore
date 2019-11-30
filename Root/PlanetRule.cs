@@ -12,9 +12,9 @@ namespace GameCore.Root
         {
             private const string _type_name = "CPlanet";
             public override string TypeName => _type_name;
-            public SortedList<int, int> CWorldList { get; private set; } // index is positionX, reference to CLocation's Number
+            public Dictionary<int, int> CWorldList { get; private set; } // index is positionX, reference to CLocation's Number
             public bool Init(){
-                CWorldList = new SortedList<int, int>();
+                CWorldList = new Dictionary<int, int>();
                 return false;
             }
         }

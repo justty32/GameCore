@@ -7,10 +7,11 @@ namespace GameCore.Root
     public class TimeRule
     {
         // A world need a Time Engine.
-        // After create entity, you got a NowTime(not static)
+        // After create instance, you got a NowTime(not static)
         // Use GoOneDay() to drive the time
         // SetNowTime() is jumping into that time point, without triggering hooks.
-        // A day has 24 hours, so HourMax is 24, use SetTimeMax() to change it.
+        // A day has 24 hours, so HourMax is 23, use SetTimeMax() to change it.
+        // A month has 30 days, from 1 to 30, so DayMax is 30, and MonthMax is 12
         public class Time
         {
             // Purely store time data 
@@ -28,12 +29,12 @@ namespace GameCore.Root
                 Hour = hour;
                 Carry();
             }
-            public Time(Time time_ref)
+            public Time(Time time)
             {
-                Year = time_ref.Year;
-                Month = time_ref.Month;
-                Day = time_ref.Day;
-                Hour = time_ref.Hour;
+                Year = time.Year;
+                Month = time.Month;
+                Day = time.Day;
+                Hour = time.Hour;
                 Carry();
             }
             public void Add(int year, int month, int day, int hour)
@@ -44,12 +45,12 @@ namespace GameCore.Root
                 Hour += hour;
                 Carry();
             }
-            public void Add(Time time_ref)
+            public void Add(Time time)
             {
-                Year += time_ref.Year;
-                Month += time_ref.Month;
-                Day += time_ref.Day;
-                Hour += time_ref.Hour;
+                Year += time.Year;
+                Month += time.Month;
+                Day += time.Day;
+                Hour += time.Hour;
                 Carry();
             }
             public void Sub(int year, int month, int day, int hour)
@@ -60,12 +61,12 @@ namespace GameCore.Root
                 Hour -= hour;
                 Carry();
             }
-            public void Sub(Time time_ref)
+            public void Sub(Time time)
             {
-                Year -= time_ref.Year;
-                Month -= time_ref.Month;
-                Day -= time_ref.Day;
-                Hour -= time_ref.Hour;
+                Year -= time.Year;
+                Month -= time.Month;
+                Day -= time.Day;
+                Hour -= time.Hour;
                 Carry();
             }
             public static bool operator ==(Time a, Time b)

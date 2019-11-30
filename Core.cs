@@ -75,9 +75,12 @@ namespace GameCore
         // reset while load a new world
         public void DataRemove(){
             // the order is reversion of Init
-            _card_number_distribute_reference = -1;
             Rules = null;
             HookManager = null;
+            foreach(var card in Cards.cards)
+                card.Value.Clear();
+            Cards = null;
+            _card_number_distribute_reference = -1;
         }
         public void DataInit( // many parameters to Init everythings
             int card_number_distribute_reference,
@@ -85,12 +88,14 @@ namespace GameCore
         ){
             // make instances fo things to visit
             _card_number_distribute_reference = card_number_distribute_reference;
+            Cards = new Base.CardList();
             HookManager = new Base.HookManager();
             Rules = new _Rules();
             // do Init
             Rules.Init(now_time);
         }
         internal int _card_number_distribute_reference = -1; // don't edit it !!!
+        public Base.CardList Cards{ get; private set;}
         public Base.HookManager HookManager { get; private set; }
         public _Rules Rules { get; private set; }
     }

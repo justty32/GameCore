@@ -10,7 +10,7 @@ namespace GameCore.Base
          * Just go create entities unrestricted,
          * cause all of those will visit same list of registered hooks.
          */
-        private SortedList<string, object> hooks = new SortedList<string, object>();
+        private Dictionary<string, object> hooks = new Dictionary<string, object>();
         public bool RegisterHook<Tinput, Toutput>(Hook<Tinput, Toutput> hook, string hook_name) {
             //If there is already the same name hook, Return True
             if (hooks.ContainsKey(hook_name))

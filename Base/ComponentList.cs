@@ -4,17 +4,18 @@ using System.Text;
 
 namespace GameCore.Base
 {
+   /* 
     public class ComponentList
     {
-        /*
-         * Different type components can be same name
-         * Allow same type entities, but need to name it.
-         * 
-         * While doing base controlling (Has, Get, Add, Remove), should care about parameters.
-         * if only put type_number, that means to do it for all things of the type.
-         * 
-         * Replace is same as Add(), but do remove while there's already one.
-         */
+        //
+        // Different type components can be same name
+        // Allow same type entities, but need to name it.
+        // 
+        // While doing base controlling (Has, Get, Add, Remove), should care about parameters.
+        // if only put type_number, that means to do it for all things of the type.
+        // 
+        // Replace is same as Add(), but do remove while there's already one.
+        //
         private SortedList<int, SortedList<string, Component>> components;
         public ComponentList()
         {
@@ -185,4 +186,5 @@ namespace GameCore.Base
             return null;
         }
     }
+    */
 }
