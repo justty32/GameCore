@@ -7,6 +7,16 @@ namespace GameCore
     public class Core
     {
         // Defines
+        public class State
+        {
+            // ActionResult means the result after doing something
+            // Function can change AR, to descript the state of its processing
+            public enum ActionResult
+            {
+                Good, ProcessBad, ParameterNull, ParameterIllegal, NotHasComponent
+            }
+            public ActionResult AR { get; internal set; } = ActionResult.Good;
+        }
         public class _Rules
         {
             public Root.TimeRule TimeRule { get; private set; }
@@ -50,6 +60,7 @@ namespace GameCore
         // about GetSet, Script, Module, SaveLoad... 
         // only reset while start the program
         private static Core p_instance = null;
+        public State Status { get; private set; } = new State();
         public static Core Instance {
             get{
                 if(p_instance == null)
