@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
+// TODO: load data, basic datapreload mechanism, object pool for card
 namespace GameCore
 {
     public class Core
@@ -83,10 +84,14 @@ namespace GameCore
             _card_number_distribute_reference = -1;
         }
         public void DataInit( // many parameters to Init everythings
+            int init_seed,
+            int now_seed,
             int card_number_distribute_reference,
             Root.TimeRule.Time now_time
         ){
             // make instances fo things to visit
+            _init_seed = init_seed;
+            _now_seed = now_seed;
             _card_number_distribute_reference = card_number_distribute_reference;
             Cards = new Base.CardList();
             HookManager = new Base.HookManager();
@@ -94,6 +99,8 @@ namespace GameCore
             // do Init
             Rules.Init(now_time);
         }
+        private int _init_seed = -1;
+        private int _now_seed = -1; 
         internal int _card_number_distribute_reference = -1; // don't edit it !!!
         public Base.CardList Cards{ get; private set;}
         public Base.HookManager HookManager { get; private set; }

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-// TODO : make Template type of component, which is used to inherited from
-
 namespace GameCore.Root
 {
     public class LandformRule : Base.Rule
