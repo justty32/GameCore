@@ -1,0 +1,4 @@
+AnotherModule, 1
+BetaModule, 0
+// Another is first loaded
+// 1 means open, allow to loaded
