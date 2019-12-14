@@ -14,6 +14,15 @@ namespace GameCore.Base
                 return true;
             return card.AddComponent(Component.GetSpawner<TComponent>().SpawnBase());
         }
+        public bool RemoveComponent<TComponent>(Card card) where TComponent : Component, new()
+        {
+            if (card == null)
+                return true;
+            if (!card.HasComponent<TComponent>())
+                return true;
+            card.RemoveComponent<TComponent>();
+            return false;
+        }
         public bool HasComponent(Card card, params int[] component_type_numbers)
         {
             // also if check card is null
