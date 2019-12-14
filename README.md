@@ -29,7 +29,10 @@ class Big
     public Component Component{ get; set;}
     private int _number;
     protected Component _c_component;
-    public int GetNumber() => _number;
+	private int _ctn_component; //component's type number
+	private int _cdn_card; //card's number
+	private Card _cd_card; //card
+	public int GetNumber() => _number;
     public void AddNumber(int number)
     {
         _number += number;

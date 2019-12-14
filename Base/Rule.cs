@@ -37,5 +37,13 @@ namespace GameCore.Base
             }
             return true;
         }
+        public TComponent GetComponent<TComponent>(Card card) where TComponent : Component, new()
+        {
+            if (card == null)
+                return null;
+            if (card.HasComponent<TComponent>())
+                return null;
+            return card.GetComponent<TComponent>();
+        }
     }
 }

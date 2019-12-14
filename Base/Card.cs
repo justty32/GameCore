@@ -18,7 +18,7 @@ namespace GameCore.Base
             // load a card
             // set number and name, add this to global card list
             Clear();
-            if(number < 0 || Core.Instance.Cards.ContainsKey(number)
+            if(number < 0 || Core.Instance.Cards.Contains(number)
                 || number > Core.Instance._card_number_distribute_reference)
                 return true;
             Number = number;
@@ -43,7 +43,8 @@ namespace GameCore.Base
                 components.Clear();
             components = null;
             Name = null;
-            Core.Instance.Cards.Remove(Number);
+            if(Core.Instance.Cards.Contains(Number))
+                Core.Instance.Cards.Remove(Number);
             Number = -1;
         }
     }
@@ -66,7 +67,6 @@ namespace GameCore.Base
             cards.Remove(number);
             return false;
         }
-        public bool ContainsKey(int number) => cards.ContainsKey(number);
         public bool Contains(int number) => cards.ContainsKey(number);
         public Card this[int number]{
             get
