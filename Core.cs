@@ -22,23 +22,23 @@ namespace GameCore
         {
             public Root.TimeRule TimeRule { get; private set; }
             public Root.LocationRule LocationRule { get; private set; }
-            public Root.LandRule LandRule { get; private set; }
-            public Root.TileRule TileRule { get; private set; }
-            public Root.WorldRule WorldRule { get; private set;}
-            public Root.PlanetRule PlanetRule { get; private set;}
-            public Root.TerrainRule TerrainRule { get; private set;}
-            public Root.LandformRule LandformRule { get; private set;}
+            public Map.LandRule LandRule { get; private set; }
+            public Map.TileRule TileRule { get; private set; }
+            public Map.WorldRule WorldRule { get; private set;}
+            public Map.PlanetRule PlanetRule { get; private set;}
+            public Map.TerrainRule TerrainRule { get; private set;}
+            public Map.LandformRule LandformRule { get; private set;}
             public _Rules()
             {
                 // make instances
                 TimeRule = new Root.TimeRule();
                 LocationRule = new Root.LocationRule();
-                LandRule = new Root.LandRule();
-                TileRule = new Root.TileRule();
-                WorldRule = new Root.WorldRule();
-                PlanetRule = new Root.PlanetRule();
-                TerrainRule = new Root.TerrainRule();
-                LandformRule = new Root.LandformRule();
+                LandRule = new Map.LandRule();
+                TileRule = new Map.TileRule();
+                WorldRule = new Map.WorldRule();
+                PlanetRule = new Map.PlanetRule();
+                TerrainRule = new Map.TerrainRule();
+                LandformRule = new Map.LandformRule();
             }
             public void Init( // many parameters
                 Root.TimeRule.Time now_time
@@ -82,6 +82,9 @@ namespace GameCore
                 card.Value.Clear();
             Cards = null;
             _card_number_distribute_reference = -1;
+            Random = null;
+            _now_seed = -1;
+            _init_seed = -1;
         }
         public void DataInit( // many parameters to Init everythings
             int init_seed,
@@ -92,6 +95,7 @@ namespace GameCore
             // make instances fo things to visit
             _init_seed = init_seed;
             _now_seed = now_seed;
+            Random = new Random(_now_seed);
             _card_number_distribute_reference = card_number_distribute_reference;
             Cards = new Base.CardList();
             HookManager = new Base.HookManager();
@@ -101,6 +105,7 @@ namespace GameCore
         }
         private int _init_seed = -1;
         private int _now_seed = -1; 
+        internal Random Random { get; private set; } = null;
         internal int _card_number_distribute_reference = -1; // don't edit it !!!
         public Base.CardList Cards{ get; private set;}
         public Base.HookManager HookManager { get; private set; }

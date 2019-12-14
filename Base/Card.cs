@@ -28,9 +28,9 @@ namespace GameCore.Base
             components = new Dictionary<int, Component>();
             return false;
         }
-        public void BeNewCard(string name = null)
+        public void InitBeNew(string name = null)
         {
-            // be a new card, with new distributed number and new name
+            // be a new card, with new distributed number and specific name
             Clear();
             Core.Instance._card_number_distribute_reference++;
             Init(Core.Instance._card_number_distribute_reference, name);
@@ -50,7 +50,7 @@ namespace GameCore.Base
     public class CardList
     {
         // wrap the card list
-        // TODO: a function: if the card are not in list, load that card from I/O 
+        // TODO : a function: if the card are not in list, load that card from I/O 
         internal Dictionary<int, Card> cards{ get; private set;} = new Dictionary<int, Card>();
         public bool Add(Card card)
         {

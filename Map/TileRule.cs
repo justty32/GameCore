@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GameCore.Root
+namespace GameCore.Map
 {
     public class TileRule : Base.Rule
     {
@@ -18,7 +18,7 @@ namespace GameCore.Root
         public int CTileTypeNumber { get => _c_tile_type_number; }
         public bool Init()
         {
-            _c_location_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
+            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             _c_tile_type_number = Base.Component.GetSpawner<CTile>().Type_Number;
             return false;
         }

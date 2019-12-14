@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GameCore.Root
+namespace GameCore.Map
 {
     public class TerrainRule : Base.Rule
     {
@@ -14,7 +14,7 @@ namespace GameCore.Root
         private int _c_terrain_type_number = -1;
         public bool Init()
         {
-            _c_location_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
+            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             _c_landform_type_number = Base.Component.GetSpawner<LandformRule.CLandform>().Type_Number;
             _c_terrain_type_number = Base.Component.GetSpawner<CTerrain>().Type_Number;
             return false;

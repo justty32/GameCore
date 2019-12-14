@@ -5,7 +5,7 @@ using System.Text;
 
 // TODO:declare a hook: LandMoved(land, new_posX, new_posY), hook_name:"LandMoved"
 
-namespace GameCore.Root
+namespace GameCore.Map
 {
     public class WorldRule : Base.Rule
     {
@@ -46,7 +46,7 @@ namespace GameCore.Root
              // rule's initialize
             _c_world_type_number = Base.Component.GetSpawner<CWorld>().Type_Number;
             _c_land_type_number = Base.Component.GetSpawner<LandRule.CLand>().Type_Number;
-            _c_location_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
+            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             return false;
         }
         public bool AddCWorld(Base.Card card, int sizeX, int sizeY)
@@ -68,7 +68,7 @@ namespace GameCore.Root
                 return true;
             if(positionX < 0 || positionY < 0)
                 return true;
-            var c_location_land = land_card.GetComponent(_c_location_type_number) as LocationRule.CLocation;
+            var c_location_land = land_card.GetComponent(_c_location_type_number) as Root.LocationRule.CLocation;
             var c_land = land_card.GetComponent(_c_land_type_number) as LandRule.CLand;
             var c_world = world_card.GetComponent(_c_world_type_number) as CWorld;
             if(c_location_land == null || c_world == null || c_land == null)
@@ -90,7 +90,7 @@ namespace GameCore.Root
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_land = land_card.GetComponent(_c_location_type_number) as LocationRule.CLocation;
+            var c_location_land = land_card.GetComponent(_c_location_type_number) as Root.LocationRule.CLocation;
             var c_land = land_card.GetComponent(_c_land_type_number) as LandRule.CLand;
             var c_world = world_card.GetComponent(_c_world_type_number) as CWorld;
             if(c_location_land == null || c_world == null || c_land == null)

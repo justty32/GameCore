@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GameCore.Root
+namespace GameCore.Map
 {
     public class LandRule : Base.Rule
     {
@@ -43,7 +43,7 @@ namespace GameCore.Root
             // rule's initialize
             _c_land_type_number = Base.Component.GetSpawner<CLand>().Type_Number;
             _c_tile_type_number = Base.Component.GetSpawner<TileRule.CTile>().Type_Number;
-            _c_location_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
+            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             return false;
         }
         public bool AddCLand(Base.Card card, int sizeX, int sizeY)
@@ -66,7 +66,7 @@ namespace GameCore.Root
             // set land's tile_list[x][y] to tile's CLocation number
             var c_land = land_card.GetComponent(_c_land_type_number) as CLand;
             var c_tile = tile_card.GetComponent(_c_tile_type_number) as TileRule.CTile;
-            var c_location_tile = tile_card.GetComponent(_c_location_type_number) as LocationRule.CLocation;
+            var c_location_tile = tile_card.GetComponent(_c_location_type_number) as Root.LocationRule.CLocation;
             if (c_land == null || c_tile == null || c_location_tile == null)
                 return true;
             if (positionX < 0 || positionY < 0)

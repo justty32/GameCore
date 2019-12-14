@@ -4,7 +4,7 @@ using System.Text;
 
 // TODO:declare a hook: WorldMoved(land, new_posZ), hook_name:"WorldMoved"
 
-namespace GameCore.Root
+namespace GameCore.Map
 {
     public class PlanetRule : Base.Rule
     {
@@ -27,7 +27,7 @@ namespace GameCore.Root
              // rule's initialize
             _c_world_type_number = Base.Component.GetSpawner<WorldRule.CWorld>().Type_Number;
             _c_planet_type_number = Base.Component.GetSpawner<CPlanet>().Type_Number;
-            _c_location_type_number = Base.Component.GetSpawner<LocationRule.CLocation>().Type_Number;
+            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             return false;
         }
         public bool AddCPlanet(Base.Card card)
@@ -47,7 +47,7 @@ namespace GameCore.Root
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_world = world_card.GetComponent(_c_world_type_number) as LocationRule.CLocation;
+            var c_location_world = world_card.GetComponent(_c_world_type_number) as Root.LocationRule.CLocation;
             var c_planet = planet_card.GetComponent(_c_planet_type_number) as CPlanet;
             var c_world = world_card.GetComponent(_c_world_type_number) as WorldRule.CWorld;
             if(c_location_world == null || c_world == null || c_planet == null)
@@ -67,7 +67,7 @@ namespace GameCore.Root
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_world = world_card.GetComponent(_c_world_type_number) as LocationRule.CLocation;
+            var c_location_world = world_card.GetComponent(_c_world_type_number) as Root.LocationRule.CLocation;
             var c_planet = planet_card.GetComponent(_c_planet_type_number) as CPlanet;
             var c_world = world_card.GetComponent(_c_world_type_number) as WorldRule.CWorld;
             if(c_location_world == null || c_world == null || c_planet == null)
@@ -86,7 +86,7 @@ namespace GameCore.Root
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_world = world_card.GetComponent(_c_world_type_number) as LocationRule.CLocation;
+            var c_location_world = world_card.GetComponent(_c_world_type_number) as Root.LocationRule.CLocation;
             var c_planet = planet_card.GetComponent(_c_planet_type_number) as CPlanet;
             var c_world = world_card.GetComponent(_c_world_type_number) as WorldRule.CWorld;
             if(c_location_world == null || c_world == null || c_planet == null)
