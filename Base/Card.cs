@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GameCore.Base
 {
-    public partial class Card
+    public partial class Card : Util.INode
     {
         // Need Init() after new(), Clear() while not using then.
         // Name be null, and Number be -1 initially
@@ -13,6 +13,12 @@ namespace GameCore.Base
         // Init() to load a card, BeNewCard() to create a new card
         public int Number { get; private set;} = -1;
         public string Name { get; set; } = null;
+        public bool IsUsable()
+        {
+            if (Number >= 0)
+                return true;
+            return false;
+        }
         public bool Init(int number, string name = null)
         {
             // load a card
@@ -47,6 +53,7 @@ namespace GameCore.Base
                 Core.Instance.Cards.Remove(Number);
             Number = -1;
         }
+        
     }
     public class CardList
     {

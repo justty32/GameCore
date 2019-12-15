@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GameCore.Root
 {
-    public class TimeRule
+    public class TimeRule : Base.Rule
     {
         // A world need a Time Engine.
         // After create instance, you got a NowTime(not static)
@@ -260,6 +260,18 @@ namespace GameCore.Root
             NowTime.Day = 1;
             NowTime.Month = 1;
             NowTime.Year = 1;
+        }
+        public override bool IsUsable()
+        {
+            if(NowTime != null)
+            {
+                if (NowTime.Hour >= 0
+                    && NowTime.Day > 0
+                    && NowTime.Month > 0
+                    && NowTime.Year > 0)
+                    return true;
+            }
+            return false;
         }
     }
 }

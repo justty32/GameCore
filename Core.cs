@@ -81,6 +81,8 @@ namespace GameCore
             foreach(var card in Cards.cards)
                 card.Value.Clear();
             Cards = null;
+            _component_spawner_list = null;
+            _component_spawner_type_name_set = null;
             _card_number_distribute_reference = -1;
             Random = null;
             _now_seed = -1;
@@ -96,6 +98,8 @@ namespace GameCore
             _init_seed = init_seed;
             _now_seed = now_seed;
             Random = new Random(_now_seed);
+            _component_spawner_type_name_set = new Dictionary<string, int>();
+            _component_spawner_list = new Dictionary<int, Base.Component.ISpawner>();
             _card_number_distribute_reference = card_number_distribute_reference;
             Cards = new Base.CardList();
             HookManager = new Base.HookManager();
@@ -106,6 +110,8 @@ namespace GameCore
         private int _init_seed = -1;
         private int _now_seed = -1; 
         internal Random Random { get; private set; } = null;
+        internal Dictionary<string, int> _component_spawner_type_name_set { get; private set; }// don't edit it !!!
+        internal Dictionary<int, Base.Component.ISpawner> _component_spawner_list { get; private set; }// don't edit it !!!
         internal int _card_number_distribute_reference = -1; // don't edit it !!!
         public Base.CardList Cards{ get; private set;}
         public Base.HookManager HookManager { get; private set; }

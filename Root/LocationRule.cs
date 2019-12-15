@@ -63,5 +63,12 @@ namespace GameCore.Root
             LocationCards.Remove(card.Number);
             return false;
         }
+        public override bool IsUsable()
+        {
+            if (_c_location_type_number >= 0
+                && LocationCards != null)
+                return true;
+            return false;
+        }
     }
 }

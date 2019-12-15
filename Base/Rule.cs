@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GameCore.Base
 {
-    public abstract class Rule
+    public abstract class Rule : Util.INode
     {
         public bool AddComponent<TComponent>(Card card) where TComponent : Component, new()
         {
@@ -45,5 +45,6 @@ namespace GameCore.Base
                 return null;
             return card.GetComponent<TComponent>();
         }
+        public abstract bool IsUsable();
     }
 }

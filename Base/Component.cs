@@ -4,20 +4,20 @@ using System.Text;
 
 namespace GameCore.Base
 {
-    public abstract class Component
+    public abstract class Component : Util.INode
     {
         /*
          * Every Derives should implement TypeName{get;}, Which is the basis to distinguish type of it
          * TypeNumber is also auto-distributed by TypeName, one associated to one.
          * 
-         * To create an entity, use GetSpawner<>().Spawn() first, instead of GetSpawner().Spawn() or default constructor.
+         * To create an entity, use GetSpawner<>().Spawn() first, instead of default constructor.
          * Only if after it, the TypeNumber of the component-type is effective.
          */
         public int TypeNumber { get; set; } = -1; // Which is auto distributed by GameCore, Don't set it Directly ! 
         public abstract string TypeName { get; }
         public Card Card { get; set; }
-        private static Dictionary<string, int> _spawnerTypeNameSet = new Dictionary<string, int>();
-        private static Dictionary<int, ISpawner> _spawnerList = new Dictionary<int, ISpawner>();
+        private static Dictionary<string, int> _spawnerTypeNameSet { get => Core.Instance._component_spawner_type_name_set; }
+        private static Dictionary<int, ISpawner> _spawnerList { get => Core.Instance._component_spawner_list; }
         public static int GetTypesCount() => _spawnerList.Count; //return how many types of component.
         public int AutoSetTypeNumber()
         {
@@ -86,6 +86,10 @@ namespace GameCore.Base
                     return null;
                 if (t.TypeName == null)
                     return null;
+                if (_spawnerTypeNameSet == null)
+                    return null;
+                if (_spawnerList == null)
+                    return null;
                 // if there already have one, return that
                 // which is only judged by TypeName
                 if (_spawnerTypeNameSet.ContainsKey(t.TypeName))
@@ -148,6 +152,12 @@ namespace GameCore.Base
             if (!_spawnerTypeNameSet.ContainsKey(type_name))
                 return null;
             return _spawnerList[_spawnerTypeNameSet[type_name]];
+        }
+        public bool IsUsable()
+        {
+            if (TypeNumber >= 0)
+                return true;
+            return false;
         }
     }
 }
