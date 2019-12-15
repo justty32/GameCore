@@ -13,13 +13,12 @@ namespace GameCore.Map
             public int PositionX { get; internal set; } = -1;
             public int PositionY { get; internal set; } = -1;
         }
-        private int _c_location_type_number = -1;
-        private int _c_tile_type_number = -1;
-        public int CTileTypeNumber { get => _c_tile_type_number; }
+        private int _ctn_location = -1;
+        private int _ctn_tile = -1;
         public bool Init()
         {
-            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
-            _c_tile_type_number = Base.Component.GetSpawner<CTile>().Type_Number;
+            _ctn_location = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _ctn_tile = Base.Component.GetSpawner<CTile>().Type_Number;
             return false;
         }
         public bool AddCTile(Base.Card card)

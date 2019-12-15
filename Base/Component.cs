@@ -153,7 +153,7 @@ namespace GameCore.Base
                 return null;
             return _spawnerList[_spawnerTypeNameSet[type_name]];
         }
-        public bool IsUsable()
+        public virtual bool IsUsable()
         {
             if (TypeNumber >= 0)
                 return true;

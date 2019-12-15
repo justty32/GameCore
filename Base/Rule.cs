@@ -45,6 +45,6 @@ namespace GameCore.Base
                 return null;
             return card.GetComponent<TComponent>();
         }
-        public abstract bool IsUsable();
+        public virtual bool IsUsable() => true;
     }
 }
