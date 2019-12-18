@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json.Linq;
+
+// TODO : Now we have a card's json object, which has their own number and name
+//        to make a standard, like how many card json object in a file
+//        a file is a big json file, {card_amount : 55, cards : [{c1}. {c2}, ...{c55}]}
 
 namespace GameCore.Base
 {
@@ -53,7 +58,48 @@ namespace GameCore.Base
                 Core.Instance.Cards.Remove(Number);
             Number = -1;
         }
-        
+        public JObject ToJsonObject()
+        {
+            // spawn a json object
+            // number : number
+            // name : name
+            // components : [{c1's json object},{c2},{c3}]
+            JObject ojs;
+                try{
+                ojs = new JObject();
+                ojs.Add(new JProperty("Number", Number));
+                ojs.Add(new JProperty("Name", Name));
+                JArray cs = new JArray();
+                foreach(Component c in Components)
+                {
+                    cs.Add(c.ToJsonObject());
+                }
+                ojs.Add(new JProperty("Components", cs));
+            }catch(Exception){
+                return null;
+            }
+            return ojs;
+        }
+        public bool FromJsonObject(JObject ojs)
+        { 
+            // use Init() to initialize number and name
+            // then took out component's json object and call component's FromJsonObject()
+            if(ojs == null)
+                return true;
+            try{
+                Init((int)ojs["Number"], (string)ojs["Name"]);
+                JArray cs = (JArray)ojs["Components"];
+                for(int i = 0; i < cs.Count ; i++)
+                {
+                    var c = Component.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
+                    if(!c.FromJsonObject((JObject)cs[i]))
+                        AddComponent(c);
+                }
+            }catch(Exception){
+                return true;
+            }
+            return false;
+        }
     }
     public class CardList
     {

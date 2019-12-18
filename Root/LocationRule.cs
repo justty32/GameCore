@@ -1,5 +1,8 @@
+using System.Linq;
+using System.Security.AccessControl;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace GameCore.Root
 {
@@ -14,15 +17,13 @@ namespace GameCore.Root
             public bool Init(int upper_card, params int[] below_cards)
             {
                 if(upper_card < 0)
-                    UpperCard = Core.Instance.Rules.LocationRule.LocationCards[0];
+                    UpperCard = -1;
                 else
                     UpperCard = upper_card;
-                
                 if(below_cards != null)
                     BelowCards = new List<int>(below_cards);
                 else
                     BelowCards = new List<int>();
-
                 if(Core.Instance.Rules.LocationRule.LocationCards.Contains(Card.Number))
                     return true;
                 Core.Instance.Rules.LocationRule.LocationCards.Add(Card.Number);
@@ -34,6 +35,41 @@ namespace GameCore.Root
                     return false;
                 return true;
             }
+            public override bool FromJsonObject(JObject ojs)
+            {
+                if(ojs == null)
+                    return true;
+                try{
+                    // check if the object's typename meets this
+                    if(!((string)ojs[TypeName]).Equals(TypeName))
+                        return true;
+                    // take out data
+                    UpperCard = (int)ojs["UpperCard"];
+                    BelowCards = ((JArray)ojs["BelowCards"]).Select(c => (int)c).ToList();
+                }catch(Exception){
+                    return true;
+                }
+                return false;
+            }
+            public override JObject ToJsonObject()
+            {
+                // first type, example
+                JObject e = JObject.FromObject(
+                    new {
+                        TypeName = TypeName,
+                        UpperCard = UpperCard,
+                        BelowCards = BelowCards
+                    }
+                );
+                // second type, good but complex
+                JObject js = new JObject(
+                    //put typename, and data
+                    new JProperty("TypeName", TypeName)
+                    ,new JProperty("UpperCard", UpperCard)
+                    ,new JProperty("BelowCards", new JArray(BelowCards))
+                    );
+                return js;
+            }
         }
         private int _ctn_location = -1;
         public List<int> LocationCards {get; private set;} = null;
@@ -41,33 +77,23 @@ namespace GameCore.Root
         {
             _ctn_location = Base.Component.GetSpawner<CLocation>().Type_Number;
             LocationCards = new List<int>(2000);
-            Base.Card cd_root_location = new Base.Card();
-            cd_root_location.InitBeNew("Root Location Card");
-            LocationCards.Add(cd_root_location.Number);
             return false; 
         }
         public bool AddCLocation(Base.Card card, int upper_card, params int[] below_cards)
         {
-            if(AddComponent<CLocation>(card))
-                return true;
-            var c_location = card.GetComponent<CLocation>();
-            if(c_location == null)
-                return true;
-            return c_location.Init(upper_card, below_cards);
+            return AddComponent<CLocation>(card).Init(upper_card, below_cards);
         }
         public bool RemoveCLocation(Base.Card card)
         {
-            if(!HasComponent(card, _ctn_location))
+            if(RemoveComponent<CLocation>(card))
                 return true;
-            card.RemoveComponent(_ctn_location);
             LocationCards.Remove(card.Number);
             return false;
         }
         public override bool IsUsable()
         {
             if (_ctn_location >= 0 && LocationCards != null)
-                if(LocationCards.Count > 0)
-                    return true;
+                return true;
             return false;
         }
     }

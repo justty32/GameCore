@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace GameCore.Base
 {
@@ -15,6 +16,28 @@ namespace GameCore.Base
          */
         public int TypeNumber { get; set; } = -1; // Which is auto distributed by GameCore, Don't set it Directly ! 
         public abstract string TypeName { get; }
+        public virtual JObject ToJsonObject()
+        {
+            JObject js = null;
+            try{
+                js = new JObject(new JProperty("TypeName", TypeName));
+            }catch(Exception){
+                return null;
+            }
+            return js;
+        }
+        public virtual bool FromJsonObject(JObject js)
+        {
+            if(js == null)
+                return true;
+            try{
+                if(!((string)js[TypeName]).Equals(TypeName))
+                    return true;
+            }catch(Exception){
+                return true;
+            }
+            return false; 
+        }
         public Card Card { get; set; }
         private static Dictionary<string, int> _spawnerTypeNameSet { get => Core.Instance._component_spawner_type_name_set; }
         private static Dictionary<int, ISpawner> _spawnerList { get => Core.Instance._component_spawner_list; }
