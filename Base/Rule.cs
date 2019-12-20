@@ -16,19 +16,19 @@ namespace GameCore.Base
         {
             if (card == null)
                 return null;
-            if (card.HasComponent<TComponent>())
+            if (card.Has<TComponent>())
                 return null;
-            if (card.AddComponent(Component.GetSpawner<TComponent>().SpawnBase()))
+            if (card.Add(Component.GetSpawner<TComponent>().SpawnBase()))
                 return null;
-            return card.GetComponent<TComponent>();
+            return card.Get<TComponent>();
         }
         public static bool RemoveComponent<TComponent>(Card card) where TComponent : Component, new()
         {
             if (card == null)
                 return true;
-            if (!card.HasComponent<TComponent>())
+            if (!card.Has<TComponent>())
                 return true;
-            card.RemoveComponent<TComponent>();
+            card.Remove<TComponent>();
             return false;
         }
         public static bool HasAnyComponent(Card card, params int[] component_type_numbers)
@@ -39,7 +39,7 @@ namespace GameCore.Base
                 return false;
             if(component_type_numbers != null){
                 foreach(int i in component_type_numbers){
-                    if(card.HasComponent(i))
+                    if(card.Has(i))
                         return true;                   
                 }
             }
@@ -55,7 +55,7 @@ namespace GameCore.Base
                 return false;
             if(component_type_numbers != null){
                 foreach(int i in component_type_numbers){
-                    if(!card.HasComponent(i))
+                    if(!card.Has(i))
                         return false;                   
                 }
             }
@@ -71,7 +71,7 @@ namespace GameCore.Base
                 return false;
             if(component_type_numbers != null){
                 foreach(int i in component_type_numbers){
-                    if(card.HasComponent(i))
+                    if(card.Has(i))
                         return false;                   
                 }
             }
@@ -83,9 +83,9 @@ namespace GameCore.Base
         {
             if (card == null)
                 return null;
-            if (card.HasComponent<TComponent>())
+            if (card.Has<TComponent>())
                 return null;
-            return card.GetComponent<TComponent>();
+            return card.Get<TComponent>();
         }
         public virtual bool IsUsable() => true;
         public enum Flag{

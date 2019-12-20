@@ -53,7 +53,7 @@ namespace GameCore.Map
         {
             if(AddComponent<CWorld>(card))
                 return true;
-            var c_world = card.GetComponent<CWorld>() as CWorld;
+            var c_world = card.Get<CWorld>() as CWorld;
             if(c_world == null)
                 return true;
             return c_world.Init(sizeX, sizeY);
@@ -68,9 +68,9 @@ namespace GameCore.Map
                 return true;
             if(positionX < 0 || positionY < 0)
                 return true;
-            var c_location_land = land_card.GetComponent(_c_location_type_number) as Root.LocationRule.CLocation;
-            var c_land = land_card.GetComponent(_c_land_type_number) as LandRule.CLand;
-            var c_world = world_card.GetComponent(_c_world_type_number) as CWorld;
+            var c_location_land = land_card.Get(_c_location_type_number) as Root.LocationRule.CLocation;
+            var c_land = land_card.Get(_c_land_type_number) as LandRule.CLand;
+            var c_world = world_card.Get(_c_world_type_number) as CWorld;
             if(c_location_land == null || c_world == null || c_land == null)
                 return true;
             if(positionX + c_land.SizeX > c_world.SizeX
@@ -90,9 +90,9 @@ namespace GameCore.Map
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_land = land_card.GetComponent(_c_location_type_number) as Root.LocationRule.CLocation;
-            var c_land = land_card.GetComponent(_c_land_type_number) as LandRule.CLand;
-            var c_world = world_card.GetComponent(_c_world_type_number) as CWorld;
+            var c_location_land = land_card.Get(_c_location_type_number) as Root.LocationRule.CLocation;
+            var c_land = land_card.Get(_c_land_type_number) as LandRule.CLand;
+            var c_world = world_card.Get(_c_world_type_number) as CWorld;
             if(c_location_land == null || c_world == null || c_land == null)
                 return true;
             // remove
@@ -110,8 +110,8 @@ namespace GameCore.Map
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_land = land_card.GetComponent(_c_land_type_number) as LandRule.CLand;
-            var c_world = world_card.GetComponent(_c_world_type_number) as CWorld;
+            var c_land = land_card.Get(_c_land_type_number) as LandRule.CLand;
+            var c_world = world_card.Get(_c_world_type_number) as CWorld;
             if(c_world == null || c_land == null)
                 return true;
             if(dstX + c_land.SizeX > c_world.SizeX

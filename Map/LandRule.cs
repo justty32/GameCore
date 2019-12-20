@@ -50,7 +50,7 @@ namespace GameCore.Map
         {
             if(AddComponent<CLand>(card))
                 return true;
-            var c_land = card.GetComponent<CLand>() as CLand;
+            var c_land = card.Get<CLand>() as CLand;
             if(c_land == null)
                 return true;
             return c_land.Init(sizeX, sizeY);
@@ -64,9 +64,9 @@ namespace GameCore.Map
             if(!HasComponent(tile_card, _c_tile_type_number, _c_location_type_number))
                 return true;
             // set land's tile_list[x][y] to tile's CLocation number
-            var c_land = land_card.GetComponent(_c_land_type_number) as CLand;
-            var c_tile = tile_card.GetComponent(_c_tile_type_number) as TileRule.CTile;
-            var c_location_tile = tile_card.GetComponent(_c_location_type_number) as Root.LocationRule.CLocation;
+            var c_land = land_card.Get(_c_land_type_number) as CLand;
+            var c_tile = tile_card.Get(_c_tile_type_number) as TileRule.CTile;
+            var c_location_tile = tile_card.Get(_c_location_type_number) as Root.LocationRule.CLocation;
             if (c_land == null || c_tile == null || c_location_tile == null)
                 return true;
             if (positionX < 0 || positionY < 0)

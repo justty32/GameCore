@@ -108,7 +108,7 @@ namespace GameCore.Base
                 {
                     var c = Component.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
                     if(!c.FromJsonObject((JObject)cs[i]))
-                        AddComponent(c);
+                        Add(c);
                 }
             }catch(Exception){
                 return true;

@@ -34,7 +34,7 @@ namespace GameCore.Map
         {
             if(AddComponent<CPlanet>(card))
                 return true;
-            var c_planet = card.GetComponent<CPlanet>();
+            var c_planet = card.Get<CPlanet>();
             if(c_planet == null)
                 return true;
             return c_planet.Init();
@@ -47,9 +47,9 @@ namespace GameCore.Map
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_world = world_card.GetComponent(_c_world_type_number) as Root.LocationRule.CLocation;
-            var c_planet = planet_card.GetComponent(_c_planet_type_number) as CPlanet;
-            var c_world = world_card.GetComponent(_c_world_type_number) as WorldRule.CWorld;
+            var c_location_world = world_card.Get(_c_world_type_number) as Root.LocationRule.CLocation;
+            var c_planet = planet_card.Get(_c_planet_type_number) as CPlanet;
+            var c_world = world_card.Get(_c_world_type_number) as WorldRule.CWorld;
             if(c_location_world == null || c_world == null || c_planet == null)
                 return true;
             if(c_planet.CWorldList.ContainsKey(positionZ))
@@ -67,9 +67,9 @@ namespace GameCore.Map
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_world = world_card.GetComponent(_c_world_type_number) as Root.LocationRule.CLocation;
-            var c_planet = planet_card.GetComponent(_c_planet_type_number) as CPlanet;
-            var c_world = world_card.GetComponent(_c_world_type_number) as WorldRule.CWorld;
+            var c_location_world = world_card.Get(_c_world_type_number) as Root.LocationRule.CLocation;
+            var c_planet = planet_card.Get(_c_planet_type_number) as CPlanet;
+            var c_world = world_card.Get(_c_world_type_number) as WorldRule.CWorld;
             if(c_location_world == null || c_world == null || c_planet == null)
                 return true;
             // remove
@@ -86,9 +86,9 @@ namespace GameCore.Map
                 return true;
             if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            var c_location_world = world_card.GetComponent(_c_world_type_number) as Root.LocationRule.CLocation;
-            var c_planet = planet_card.GetComponent(_c_planet_type_number) as CPlanet;
-            var c_world = world_card.GetComponent(_c_world_type_number) as WorldRule.CWorld;
+            var c_location_world = world_card.Get(_c_world_type_number) as Root.LocationRule.CLocation;
+            var c_planet = planet_card.Get(_c_planet_type_number) as CPlanet;
+            var c_world = world_card.Get(_c_world_type_number) as WorldRule.CWorld;
             if(c_location_world == null || c_world == null || c_planet == null)
                 return true;
             if(c_planet.CWorldList.ContainsKey(dstZ))

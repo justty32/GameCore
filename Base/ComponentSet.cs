@@ -10,8 +10,8 @@ namespace GameCore.Base
         private Dictionary<int, Component> components;
         public int ComponentsCount => components.Count;
         public IList<int> ComponentsTypesCount => new List<int>(components.Keys); //return what types of component it have
-        public bool HasComponent(int type_number) => components.ContainsKey(type_number);
-        public bool HasComponent(params int[] type_numbers)
+        public bool Has(int type_number) => components.ContainsKey(type_number);
+        public bool Has(params int[] type_numbers)
         {
             if (type_numbers == null)
                 return false;
@@ -22,7 +22,7 @@ namespace GameCore.Base
             }
             return true;
         }
-        public bool HasComponent(IList<int> type_numbers)
+        public bool Has(IList<int> type_numbers)
         {
             if (type_numbers == null)
                 return false;
@@ -33,8 +33,8 @@ namespace GameCore.Base
             }
             return true;
         }
-        public bool HasComponent(string type_name) => components.ContainsKey(Component.GetTypeNumber(type_name));
-        public bool HasComponent(params string[] type_names)
+        public bool Has(string type_name) => components.ContainsKey(Component.GetTypeNumber(type_name));
+        public bool Has(params string[] type_names)
         {
             if (type_names == null)
                 return false;
@@ -45,11 +45,11 @@ namespace GameCore.Base
             }
             return true;
         }
-        public bool HasComponent<TComponent>() where TComponent : Component, new()
+        public bool Has<TComponent>() where TComponent : Component, new()
         {
-            return HasComponent(Component.GetSpawner<TComponent>().Type_Number);
+            return Has(Component.GetSpawner<TComponent>().Type_Number);
         }
-        public Component GetComponent(int type_number)
+        public Component Get(int type_number)
         {
             foreach (var node in components)
             {
@@ -58,7 +58,7 @@ namespace GameCore.Base
             }
             return null;
         }
-        public Component GetComponent(string type_name)
+        public Component Get(string type_name)
         {
             foreach (var node in components)
             {
@@ -67,14 +67,14 @@ namespace GameCore.Base
             }
             return null;
         }
-        public TComponent GetComponent<TComponent>() where TComponent : Component, new()
+        public TComponent Get<TComponent>() where TComponent : Component, new()
         {
             // if any error, return null
-            if (!HasComponent<TComponent>())
+            if (!Has<TComponent>())
                 return null;
-            return GetComponent(Component.GetSpawner<TComponent>().Type_Number) as TComponent;
+            return Get(Component.GetSpawner<TComponent>().Type_Number) as TComponent;
         }
-        public List<Component> GetComponent(params int[] type_numbers)
+        public List<Component> Get(params int[] type_numbers)
         {
             if (type_numbers == null)
                 return null;
@@ -89,7 +89,7 @@ namespace GameCore.Base
             }
             return cs;
         }
-        public List<Component> GetComponent(IList<int> type_numbers)
+        public List<Component> Get(IList<int> type_numbers)
         {
             if (type_numbers == null)
                 return null;
@@ -105,14 +105,14 @@ namespace GameCore.Base
             return cs;
         }
         public IList<Component> Components { get => new List<Component>(components.Values); }
-        public bool AddComponent(Component thing)
+        public bool Add(Component thing)
         {
             // If there is already have same-type one, Do nothing, return true.
             // If TypeNumber is -1, Do nothing, return true.
             // If thing is already has a Card, Do nothing, return true.
             if (thing == null)
                 return true;
-            if (HasComponent(thing.TypeNumber))
+            if (Has(thing.TypeNumber))
                 return true;
             if (thing.Card != null)
                 return true;
@@ -123,7 +123,7 @@ namespace GameCore.Base
                 return false;
             }
         }
-        public void AddComponent(Component[] things)
+        public void Add(Component[] things)
         {
             // Components of array should be multi type.
             // If there is already have same-type one, Do nothing.
@@ -133,37 +133,37 @@ namespace GameCore.Base
             {
                 for(int i = 0; i < things.Length; i++)
                 {
-                    AddComponent(things[i]);
+                    Add(things[i]);
                 }
             }
         }
-        public void RemoveComponent(int type_number)
+        public void Remove(int type_number)
         {
-            if (HasComponent(type_number))
+            if (Has(type_number))
             {
                 components[type_number].Card = null;
                 components.Remove(type_number);
             }
         }
-        public void RemoveComponent(params int[] type_numbers)
+        public void Remove(params int[] type_numbers)
         {
             if (type_numbers != null)
                 for(int i = 0; i < type_numbers.Length; i++)
                 {
-                    RemoveComponent(type_numbers[i]);
+                    Remove(type_numbers[i]);
                 }
         }
-        public void RemoveComponent(IList<int> type_numbers)
+        public void Remove(IList<int> type_numbers)
         {
             if (type_numbers != null)
                 for(int i = 0; i < type_numbers.Count; i++)
                 {
-                    RemoveComponent(type_numbers[i]);
+                    Remove(type_numbers[i]);
                 }
         }
-        public void RemoveComponent<TComponent>() where TComponent : Component, new()
+        public void Remove<TComponent>() where TComponent : Component, new()
         {
-            RemoveComponent(Component.GetSpawner<TComponent>().Type_Number);
+            Remove(Component.GetSpawner<TComponent>().Type_Number);
         }
         }
 /*
