@@ -10,7 +10,7 @@ namespace GameCore.Map
     {
         public class CTile : Base.Component
         {
-            private const string _type_name = "CTile";
+            private readonly string _type_name = "CTile";
             public override string TypeName => _type_name;
             public int PositionX { get; internal set; } = -1;
             public int PositionY { get; internal set; } = -1;

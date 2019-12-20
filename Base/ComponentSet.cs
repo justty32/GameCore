@@ -165,7 +165,7 @@ namespace GameCore.Base
         {
             RemoveComponent(Component.GetSpawner<TComponent>().Type_Number);
         }
-    }
+        }
 /*
     public class ComponentSet
     {

@@ -12,7 +12,7 @@ namespace GameCore.Base
 {
     public abstract class Rule : Util.INode
     {
-        public TComponent AddComponent<TComponent>(Card card) where TComponent : Component, new()
+        public static TComponent AddComponent<TComponent>(Card card) where TComponent : Component, new()
         {
             if (card == null)
                 return null;
@@ -22,7 +22,7 @@ namespace GameCore.Base
                 return null;
             return card.GetComponent<TComponent>();
         }
-        public bool RemoveComponent<TComponent>(Card card) where TComponent : Component, new()
+        public static bool RemoveComponent<TComponent>(Card card) where TComponent : Component, new()
         {
             if (card == null)
                 return true;
@@ -31,7 +31,23 @@ namespace GameCore.Base
             card.RemoveComponent<TComponent>();
             return false;
         }
-        public bool HasComponent(Card card, params int[] component_type_numbers)
+        public static bool HasAnyComponent(Card card, params int[] component_type_numbers)
+        {
+            // also if check card is null
+            // if the card has at least one of needed components, return true
+            if(card == null)
+                return false;
+            if(component_type_numbers != null){
+                foreach(int i in component_type_numbers){
+                    if(card.HasComponent(i))
+                        return true;                   
+                }
+            }
+            else
+                return false;
+            return false;
+        }
+        public static bool HasComponent(Card card, params int[] component_type_numbers)
         {
             // also if check card is null
             // check if the card has all needed components
@@ -43,9 +59,11 @@ namespace GameCore.Base
                         return false;                   
                 }
             }
+            else
+                return false;
             return true;
         }
-        public bool UnHasComponent(Card card, params int[] component_type_numbers)
+        public static bool UnHasComponent(Card card, params int[] component_type_numbers)
         {
             // also if check card is null
             // check if the card don't has all specific components
@@ -57,9 +75,11 @@ namespace GameCore.Base
                         return false;                   
                 }
             }
+            else
+                return true;
             return true;
         }
-        public TComponent GetComponent<TComponent>(Card card) where TComponent : Component, new()
+        public static TComponent GetComponent<TComponent>(Card card) where TComponent : Component, new()
         {
             if (card == null)
                 return null;

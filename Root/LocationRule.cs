@@ -10,7 +10,7 @@ namespace GameCore.Root
     {
         public class CLocation : Base.Component
         {
-            private string _type_name = "CLocation";
+            private readonly string _type_name = "CLocation";
             public override string TypeName => _type_name;
             public int UpperCard { get; private set; } = -1;
             public List<int> BelowCards { get; private set; }

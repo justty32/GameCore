@@ -253,13 +253,14 @@ namespace GameCore.Root
             _time_changed[3] = true;
             _CallTimeChange();
         }
-        public void Init()
+        public bool Init()
         {
             NowTime = new Time();
             NowTime.Hour = 0;
             NowTime.Day = 1;
             NowTime.Month = 1;
             NowTime.Year = 1;
+            return false;
         }
         public override bool IsUsable()
         {

@@ -17,12 +17,21 @@ namespace GameCore.Base
         //
         // Init() to load a card, BeNewCard() to create a new card
         public int Number { get; private set;} = -1;
-        public string Name { get; set; } = null;
+        public string Name { get; set; } = "";
         public bool IsUsable()
         {
-            if (Number >= 0)
-                return true;
-            return false;
+            if(Number < 0)
+                return false;
+            if(Components == null)
+                return false;
+            foreach(var c in Components)
+            {
+                if(c == null)
+                    return false;
+                if(!c.IsUsable())
+                    return false;
+            }
+            return true;
         }
         public bool Init(int number, string name = null)
         {
@@ -53,7 +62,7 @@ namespace GameCore.Base
             if(components != null)
                 components.Clear();
             components = null;
-            Name = null;
+            Name = "";
             if(Core.Instance.Cards.Contains(Number))
                 Core.Instance.Cards.Remove(Number);
             Number = -1;
@@ -69,12 +78,18 @@ namespace GameCore.Base
                 ojs = new JObject();
                 ojs.Add(new JProperty("Number", Number));
                 ojs.Add(new JProperty("Name", Name));
-                JArray cs = new JArray();
+                JArray component_numbers = new JArray();
+                JArray component_names = new JArray();
+                JArray components = new JArray();
                 foreach(Component c in Components)
                 {
-                    cs.Add(c.ToJsonObject());
+                    component_numbers.Add(c.TypeNumber);
+                    component_names.Add(c.TypeName);
+                    components.Add(c.ToJsonObject());
                 }
-                ojs.Add(new JProperty("Components", cs));
+                ojs.Add(new JProperty("Component_numbers", component_numbers));
+                ojs.Add(new JProperty("Components_names", component_names));
+                ojs.Add(new JProperty("Components", components));
             }catch(Exception){
                 return null;
             }

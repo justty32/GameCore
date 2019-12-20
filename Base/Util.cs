@@ -18,10 +18,37 @@ namespace GameCore.Base
                     return true;
             return false;
         }
+        public static bool HasAnyNull(params object[] obs)
+        {
+            foreach(var ob in obs)
+            {
+                if(ob == null)
+                    return true;
+            }
+            return false;
+        }
+        public static bool HasAnyTrue(params bool[] bs)
+        {
+            foreach(bool b in bs)
+            {
+                if(b == true)
+                    return true;
+            }
+            return false;
+        }
+        public static bool HasAnyFalse(params bool[] bs)
+        {
+            foreach(bool b in bs)
+            {
+                if(b == false)
+                    return true;
+            }
+            return false;
+        }
     }
     public class CCom : Base.Component
     {
-        public const string _type_name = "ChangeThis"; 
+        public readonly string _type_name = "ChangeThis"; 
         public override string TypeName => _type_name ;
         public bool Init()
         {
@@ -56,6 +83,7 @@ namespace GameCore.Base
         private int _ctn_ = -1;
         public bool Init()
         {
+            _ctn_ = Base.Component.GetSpawner<CCom>().Type_Number;
             return false;
         }
         public CCom AddCTile(Base.Card card)
