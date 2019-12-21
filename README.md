@@ -24,10 +24,12 @@ Most Conventions are reserved from C#'s.
 ```c#
 class Big
 {
-    public int Number{ get; set;}
+	public int Number{ get; set;}
     public float FloatNumber{ get; set;}
     public Component Component{ get; set;}
     private int _number;
+	internal int numbers;  //no specific
+	internal int _numbers; //no specific
     protected Component _c_component;
 	private int _ctn_component; //component's type number
 	private int _cdn_card; //card's number
@@ -40,11 +42,11 @@ class Big
     private void _HideFunc(){}
 }
 ```
-Define class with inherit `Base.Component`, add "C" in front of it, ex. `CLocation`, `CLand`
+Define class with inherit `Base.Component`, add "C" in front of it, ex. `CLocation`, `CLand`.
 
-Define class to be a rule, add "Rule" at its tail, ex. `LocationRule`, `TimeRule`
+Define class to be a rule, add "Rule" at its tail, ex. `LocationRule`, `TimeRule`.
 
-Reference of the class `Base.Card`, add "_card" at its tail, ex. `land_card`, `tile_card`
+Reference of the class `Base.Card`, add "cd_" in front of it, ex. `cd_land`, `cd_tile`.
 
 Reference of the class who inherits `Base.Component`, add "c_" in front of it, ex. `c_location`, `c_land`
 

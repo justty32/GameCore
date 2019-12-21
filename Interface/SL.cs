@@ -4,13 +4,24 @@ using System.Text;
 
 namespace GameCore.Interface
 {
-    class SL
+    public class Load
     {
-        public bool LoadCard(int card_number)
+        public bool Card()
         {
             return false;
         }
-        public bool SaveCard(int card_number)
+        public bool Rules()
+        {
+            return false;
+        }
+    }
+    public class Save
+    {
+        public bool Card()
+        {
+            return false;
+        }
+        public bool Rules()
         {
             return false;
         }

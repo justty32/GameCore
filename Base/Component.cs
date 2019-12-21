@@ -39,8 +39,8 @@ namespace GameCore.Base
             return false; 
         }
         public Card Card { get; set; }
-        private static Dictionary<string, int> _spawnerTypeNameSet { get => Core.Instance._component_spawner_type_name_set; }
-        private static Dictionary<int, ISpawner> _spawnerList { get => Core.Instance._component_spawner_list; }
+        private static Dictionary<string, int> _spawnerTypeNameSet { get => Core.Instance.component_spawner_type_name_set; }
+        private static Dictionary<int, ISpawner> _spawnerList { get => Core.Instance.component_spawner_list; }
         public static int GetTypesCount() => _spawnerList.Count; //return how many types of component.
         public int AutoSetTypeNumber()
         {

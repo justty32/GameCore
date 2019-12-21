@@ -20,30 +20,75 @@ namespace GameCore.Base
         }
         public static bool HasAnyNull(params object[] obs)
         {
-            foreach(var ob in obs)
+            foreach (var ob in obs)
             {
-                if(ob == null)
+                if (ob == null)
                     return true;
             }
             return false;
         }
         public static bool HasAnyTrue(params bool[] bs)
         {
-            foreach(bool b in bs)
+            foreach (bool b in bs)
             {
-                if(b == true)
+                if (b == true)
                     return true;
             }
             return false;
         }
         public static bool HasAnyFalse(params bool[] bs)
         {
-            foreach(bool b in bs)
+            foreach (bool b in bs)
             {
-                if(b == false)
+                if (b == false)
                     return true;
             }
             return false;
+        }
+        public static bool HasAnyNegative(params int[] vs)
+        {
+            foreach (int i in vs)
+            {
+                if (i < 0)
+                    return true;
+            }
+            return false;
+        }
+        public static bool HasAnyZero(params int[] vs)
+        {
+            foreach (int i in vs)
+            {
+                if (i == 0)
+                    return true;
+            }
+            return false;
+        }
+        public static bool HasAnyPositive(params int[] vs)
+        {
+            foreach (int i in vs)
+            {
+                if (i > 0)
+                    return true;
+            }
+            return false;
+        }
+        public static bool HasAllZero(params int[] vs)
+        {
+            foreach (int i in vs)
+            {
+                if (i != 0)
+                    return false;
+            }
+            return true;
+        }
+        public static bool HasAllPositive(params int[] vs)
+        {
+            foreach (int i in vs)
+            {
+                if (i <= 0)
+                    return false;
+            }
+            return true;
         }
     }
     public class CCom : Base.Component

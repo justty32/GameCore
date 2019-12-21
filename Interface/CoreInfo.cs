@@ -4,8 +4,8 @@ using System.Text;
 
 namespace GameCore.Interface
 {
-    internal class GS
+    public class CoreInfo
     {
-        public GS Get() => this;
+        public int Version { get; private set; } = 0;
     }
 }

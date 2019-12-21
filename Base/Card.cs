@@ -39,7 +39,7 @@ namespace GameCore.Base
             // set number and name, add this to global card list
             Clear();
             if(number < 0 || Core.Instance.Cards.Contains(number)
-                || number > Core.Instance._card_number_distribute_reference)
+                || number > Core.Instance.card_number_distribute_reference)
                 return true;
             Number = number;
             if(Core.Instance.Cards.Add(this))
@@ -52,8 +52,8 @@ namespace GameCore.Base
         {
             // be a new card, with new distributed number and specific name
             Clear();
-            Core.Instance._card_number_distribute_reference++;
-            Init(Core.Instance._card_number_distribute_reference, name);
+            Core.Instance.card_number_distribute_reference++;
+            Init(Core.Instance.card_number_distribute_reference, name);
         }
         public void Clear()
         {
@@ -114,35 +114,6 @@ namespace GameCore.Base
                 return true;
             }
             return false;
-        }
-    }
-    public class CardList
-    {
-        // wrap the card list
-        // TODO : a function: if the card are not in list, load that card from I/O 
-        internal Dictionary<int, Card> cards{ get; private set;} = new Dictionary<int, Card>();
-        public bool Add(Card card)
-        {
-            if(cards.ContainsKey(card.Number))
-                return true;
-            cards.Add(card.Number, card);
-            return false;
-        }
-        public bool Remove(int number)
-        {
-            if(!cards.ContainsKey(number))
-                return true;
-            cards.Remove(number);
-            return false;
-        }
-        public bool Contains(int number) => cards.ContainsKey(number);
-        public Card this[int number]{
-            get
-            {
-                if(!cards.ContainsKey(number)) 
-                    return null;
-                return cards[number];
-            }
         }
     }
 }
