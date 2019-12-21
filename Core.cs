@@ -13,18 +13,34 @@ namespace GameCore
         // about GetSet, Script, Module, SaveLoad... 
         // only reset while start the program
         private static Core p_instance = null;
+        public INeed INeed {get; private set;} = null;
         public State State { get; private set; } = null;
         public CoreInfo CoreInfo { get; private set; } = null; 
         public Config Config { get; private set; } = null;
         public Load Load { get; private set; } = null;
         public Save Save { get; private set; } = null;
-        public Core()
+        public Get Get {get; private set;} = null;
+        public Set Set {get; private set;} = null;
+        private Core(){}
+        public bool Init(INeed needed_interface, Config config = null)
         {
+            if(needed_interface == null)
+                return true;
             State = new State();
             CoreInfo = new CoreInfo();
             Config = new Config();
+            if(config != null)
+                if(Config.Set(config))
+                    return true;
+            else
+                if(Config.FromJsonString(INeed.ImportConfig()))
+                    return true;
+            Get = new Get();
+            Set = new Set();
             Load = new Load();
             Save = new Save();
+            INeed = needed_interface;
+            return false;
         }
         public static Core Instance {
             get{
@@ -35,6 +51,7 @@ namespace GameCore
         }
         public static void InstanceRemove(bool are_you_sure = false){ if(are_you_sure){ p_instance = null; }}
         
+
         // World data
         // about world's rules, datas....
         // reset while load a new world
@@ -51,14 +68,17 @@ namespace GameCore
             Random = null;
             _now_seed = -1;
             _init_seed = -1;
+            World_name = null;
         }
         public void DataInit( // many parameters to Init everythings
+            string world_name,
             int init_seed,
             int now_seed,
             int card_number_distribute_reference,
             Root.TimeRule.Time now_time
         ){
             // make instances fo things to visit
+            World_name = world_name;
             _init_seed = init_seed;
             _now_seed = now_seed;
             Random = new Random(_now_seed);
@@ -71,6 +91,7 @@ namespace GameCore
             // do Init
             Rules.Init(now_time);
         }
+        public string World_name = null;
         private int _init_seed = -1;
         private int _now_seed = -1; 
         internal Random Random { get; private set; } = null;

@@ -102,7 +102,8 @@ namespace GameCore.Base
             if(ojs == null)
                 return true;
             try{
-                Init((int)ojs["Number"], (string)ojs["Name"]);
+                if(Init((int)ojs["Number"], (string)ojs["Name"]))
+                    return true;
                 JArray cs = (JArray)ojs["Components"];
                 for(int i = 0; i < cs.Count ; i++)
                 {
