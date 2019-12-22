@@ -9,7 +9,6 @@ namespace GameCore.Interface
     public class CardList
     {
         // wrap the card list
-        // TODO : a function: if the card are not in list, load that card from I/O 
         internal Dictionary<int, Card> cards { get; private set; } = new Dictionary<int, Card>();
         public bool Add(Card card)
         {
@@ -31,8 +30,16 @@ namespace GameCore.Interface
             get
             {
                 if (!cards.ContainsKey(number))
-                    return null;
-                return cards[number];
+                    if(Core.Instance.Config.is_Load_Card_While_Not_In_gList){
+                        Core.Instance.Load.Card(false, number);
+                            if(!cards.ContainsKey(number))
+                                return null;
+                            else
+                                return cards[number];
+                    }else
+                        return null;
+                else
+                    return cards[number];
             }
         }
     }

@@ -10,14 +10,6 @@ namespace GameCore.Interface
     // are separate by version, same version offer same member and same value.
     public class CoreInfo
     {
-        private static CoreInfo p_instance = null;
-        public static CoreInfo Instance{
-            get{
-                if(p_instance == null)
-                    p_instance = new CoreInfo();
-                return p_instance;
-            }
-        }
         public int Version { get; private set; } = 10;
         public int Card_amount_per_file { get; private set; } = 2000;
     }

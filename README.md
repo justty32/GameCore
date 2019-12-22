@@ -4,10 +4,11 @@
 
 Seperate to Core and Data. Core, as Interface, Script, Module. Data, as Hook, Rule, Card.
 Core.Instance()-Core.Init(INeed)-Core.Config.Set() or Core.Load.Config()
+> simple : -Core.Control.Load(save_name) or Core.Control.Save(save_name)
 
 ### load exist save
 
--Core.Load.WorldInfo(target world)-Core.Load.RuleData()-Core.Rule.TimeRule.Go()
+-Core.Load.WorldInfo(target save)-Core.Load.RuleData()-Core.Rule.TimeRule.Go()
 
 ### create new one
 

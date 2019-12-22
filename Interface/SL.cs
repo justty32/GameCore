@@ -22,18 +22,17 @@ namespace GameCore.Interface
                 return true;
             return Core.Instance.Config.FromJsonString(json);
         }
-        public WorldInfo WorldInfo(string name)
+        public WorldInfo WorldInfo()
         {
-            // load save_name/info.json
-            if(name == null)
+            // load Core.Instance.Save_Name/info.json
+            if(Core.Instance.Save_Name == null)
                 return null;
-            string json = Core.Instance.INeed.ImportSaveInfo(name);
+            string json = Core.Instance.INeed.ImportSaveInfo(Core.Instance.Save_Name);
             if(json == null)
                 return null;
-            WorldInfo wi = new WorldInfo();
+            WorldInfo wi = null; 
             try{
-                JObject oj = JObject.Parse(json);
-                // get data
+                wi =Newtonsoft.Json.JsonConvert.DeserializeObject<WorldInfo>(json);
             }catch(Exception){
                 return null;
             }
@@ -44,7 +43,7 @@ namespace GameCore.Interface
             // load all cards in a json file, but no cover
             // if there is already the number of card, the card won't be loaded
             // if specific isn't null, will only load specific cards.
-            string json = Core.Instance.INeed.ImportSaveCards(Core.Instance.World_name, index);
+            string json = Core.Instance.INeed.ImportSaveCards(Core.Instance.Save_Name, index);
             if(json == null)
                 return true;
             if(json.Equals(""))
@@ -69,7 +68,7 @@ namespace GameCore.Interface
             // won't cover the card which is alreay in Core.Cards
             for(int index = 0; index < Core.Instance.Card_max_number / Core.Instance.CoreInfo.Card_amount_per_file; index++)
             {
-                string json = Core.Instance.INeed.ImportSaveCards(Core.Instance.World_name, index);
+                string json = Core.Instance.INeed.ImportSaveCards(Core.Instance.Save_Name, index);
                 if(json == null)
                     return true;
                 if(json.Equals(""))
@@ -108,7 +107,7 @@ namespace GameCore.Interface
                 try{
                     // oj == null means not yet load JArray
                     if(oj == null){
-                        string json = Core.Instance.INeed.ImportSaveCards(Core.Instance.World_name, index);
+                        string json = Core.Instance.INeed.ImportSaveCards(Core.Instance.Save_Name, index);
                         if(json == null)
                             return true;
                         if(json.Equals(""))
@@ -130,7 +129,7 @@ namespace GameCore.Interface
         }
         public bool Rules()
         {
-            JObject js = JObject.Parse(Core.Instance.INeed.ImportSaveRule(Core.Instance.World_name));
+            JObject js = JObject.Parse(Core.Instance.INeed.ImportSaveRule(Core.Instance.Save_Name));
             try{
                 foreach(var rule in js)
                 {
@@ -156,12 +155,13 @@ namespace GameCore.Interface
         }
         public bool WorldInfo()
         {
-            if(Core.Instance.World_name == null)
+            if(Core.Instance.Save_Name == null)
                 return true;
             try{
-                JObject json = new JObject();
-                // put data
-                if(Core.Instance.INeed.ExportSaveInfo(Core.Instance.World_name, json.ToString()))
+                string json = Core.Instance.WorldInfo.ToJsonString(); 
+                if(json == null)
+                    return true;
+                if(Core.Instance.INeed.ExportSaveInfo(Core.Instance.Save_Name, json))
                     return true;
             }catch(Exception){
                 return true;
@@ -212,7 +212,7 @@ namespace GameCore.Interface
                         ja.Add(Core.Instance.Cards[i].ToJsonObject());
                     }
                     // save it
-                    if(Core.Instance.INeed.ExportSaveCards(Core.Instance.World_name, index, ja.ToString()))
+                    if(Core.Instance.INeed.ExportSaveCards(Core.Instance.Save_Name, index, ja.ToString()))
                         return true;
                 }catch(Exception){
                     return true;
@@ -233,7 +233,7 @@ namespace GameCore.Interface
                 {
                     js.Add(rule.Key, rule.Value.ToJsonObject());
                 }
-                Core.Instance.INeed.ExportSaveRule(Core.Instance.World_name, js.ToString());
+                Core.Instance.INeed.ExportSaveRule(Core.Instance.Save_Name, js.ToString());
             }catch(Exception){
                 return true;
             }

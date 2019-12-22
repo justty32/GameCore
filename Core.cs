@@ -15,16 +15,18 @@ namespace GameCore
         private static Core p_instance = null;
         public INeed INeed {get; private set;} = null;
         public State State { get; private set; } = null;
-        public CoreInfo CoreInfo {get; private set;} = CoreInfo.Instance; 
+        public CoreInfo CoreInfo {get; private set;} = null ; 
         public Config Config { get; private set; } = null;
         public Load Load { get; private set; } = null;
         public Save Save { get; private set; } = null;
+        public Control Control { get; private set; } = null;
         private Core(){}
         public bool Init(INeed needed_interface, Config config = null)
         {
             if(needed_interface == null)
                 return true;
             State = new State();
+            CoreInfo = new CoreInfo();
             Config = new Config();
             if(config != null)
                 if(Config.Set(config))
@@ -44,12 +46,12 @@ namespace GameCore
                 return p_instance;
             }
         }
-        public static void InstanceRemove(bool are_you_sure = false){ if(are_you_sure){ p_instance = null; }}
+        public static void Clear(bool are_you_sure = false){ if(are_you_sure){ p_instance = null; }}
         
         // World data
         // about world's rules, datas....
         // reset while load a new world
-        public void DataRemove(){
+        internal void DataRemove(){
             // the order is reversion of Init
             Rules = null;
             HookManager = null;
@@ -61,7 +63,7 @@ namespace GameCore
             Random = null;
             WorldInfo = new WorldInfo();
         }
-        public bool DataInit( // many parameters to Init everythings
+        internal bool DataInit( 
             WorldInfo world_info
         ){
             if(world_info == null)
@@ -78,10 +80,8 @@ namespace GameCore
             Rules.Init();
             return false;
         }
+        public string Save_Name {get; internal set;} = null; //be careful
         public WorldInfo WorldInfo {get; private set;} = new WorldInfo();
-        public string World_name {get => WorldInfo.World_name; set => WorldInfo.World_name = value;}
-        private int _init_seed {get => WorldInfo.Init_seed; set => WorldInfo.Init_seed = value;}
-        private int _now_seed {get => WorldInfo.Now_seed; set => WorldInfo.Now_seed = value;}
         internal Random Random { get; private set; } = null;
         internal Dictionary<string, int> component_spawner_type_name_set { get; private set; }// don't edit it !!!
         internal Dictionary<int, Component.ISpawner> component_spawner_list { get; private set; }// don't edit it !!!

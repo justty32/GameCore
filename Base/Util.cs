@@ -91,6 +91,7 @@ namespace GameCore.Base
             return true;
         }
     }
+    /*
     public class CCom : Base.Component
     {
         public readonly string _type_name = "ChangeThis"; 
@@ -123,6 +124,8 @@ namespace GameCore.Base
             return js;
         }
     }
+    */
+    /*
     public class RRule : Base.Rule
     {
         private int _ctn_ = -1;
@@ -173,4 +176,5 @@ namespace GameCore.Base
             return js;
         }
     }
+    */
 }

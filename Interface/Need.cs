@@ -19,5 +19,8 @@ namespace GameCore.Interface
         bool ExportSaveCards(string save_name, int index, string data);
         //bool ExportScript(string script_name);
         //bool ExportModList();
+        bool IsSaveExist(string save_name);
+        bool NewSaveDir(string save_name);
+        bool IsSaveDirLegal(string save_name);
     }
 }
