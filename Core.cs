@@ -15,19 +15,16 @@ namespace GameCore
         private static Core p_instance = null;
         public INeed INeed {get; private set;} = null;
         public State State { get; private set; } = null;
-        public CoreInfo CoreInfo { get; private set; } = null; 
+        public CoreInfo CoreInfo {get; private set;} = CoreInfo.Instance; 
         public Config Config { get; private set; } = null;
         public Load Load { get; private set; } = null;
         public Save Save { get; private set; } = null;
-        public Get Get {get; private set;} = null;
-        public Set Set {get; private set;} = null;
         private Core(){}
         public bool Init(INeed needed_interface, Config config = null)
         {
             if(needed_interface == null)
                 return true;
             State = new State();
-            CoreInfo = new CoreInfo();
             Config = new Config();
             if(config != null)
                 if(Config.Set(config))
@@ -35,8 +32,6 @@ namespace GameCore
             else
                 if(Config.FromJsonString(INeed.ImportConfig()))
                     return true;
-            Get = new Get();
-            Set = new Set();
             Load = new Load();
             Save = new Save();
             INeed = needed_interface;
@@ -51,7 +46,6 @@ namespace GameCore
         }
         public static void InstanceRemove(bool are_you_sure = false){ if(are_you_sure){ p_instance = null; }}
         
-
         // World data
         // about world's rules, datas....
         // reset while load a new world
@@ -64,40 +58,34 @@ namespace GameCore
             Cards = null;
             component_spawner_list = null;
             component_spawner_type_name_set = null;
-            card_number_distribute_reference = -1;
             Random = null;
-            _now_seed = -1;
-            _init_seed = -1;
-            World_name = null;
+            WorldInfo = new WorldInfo();
         }
-        public void DataInit( // many parameters to Init everythings
-            string world_name,
-            int init_seed,
-            int now_seed,
-            int card_number_distribute_reference,
-            Root.TimeRule.Time now_time
+        public bool DataInit( // many parameters to Init everythings
+            WorldInfo world_info
         ){
+            if(world_info == null)
+                return true;
             // make instances fo things to visit
-            World_name = world_name;
-            _init_seed = init_seed;
-            _now_seed = now_seed;
-            Random = new Random(_now_seed);
+            WorldInfo = world_info;
+            Random = new Random(WorldInfo.Now_seed);
             component_spawner_type_name_set = new Dictionary<string, int>();
             component_spawner_list = new Dictionary<int, Base.Component.ISpawner>();
-            this.card_number_distribute_reference = card_number_distribute_reference;
             Cards = new CardList();
             HookManager = new Base.HookManager();
             Rules = new Rules();
             // do Init
-            Rules.Init(now_time);
+            Rules.Init();
+            return false;
         }
-        public string World_name = null;
-        private int _init_seed = -1;
-        private int _now_seed = -1; 
+        public WorldInfo WorldInfo {get; private set;} = new WorldInfo();
+        public string World_name {get => WorldInfo.World_name; set => WorldInfo.World_name = value;}
+        private int _init_seed {get => WorldInfo.Init_seed; set => WorldInfo.Init_seed = value;}
+        private int _now_seed {get => WorldInfo.Now_seed; set => WorldInfo.Now_seed = value;}
         internal Random Random { get; private set; } = null;
         internal Dictionary<string, int> component_spawner_type_name_set { get; private set; }// don't edit it !!!
         internal Dictionary<int, Component.ISpawner> component_spawner_list { get; private set; }// don't edit it !!!
-        internal int card_number_distribute_reference = -1; // don't touch it !!!
+        internal int Card_max_number {get => WorldInfo.Card_max_number; set => WorldInfo.Card_max_number = value;}
         public CardList Cards{ get; private set;}
         public HookManager HookManager { get; private set; }
         public Rules Rules { get; private set; }

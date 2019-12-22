@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.Linq.Expressions;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using GameCore.Base;
 
 // these are using Core.Instance.INeed and Cards so much, be careful about they
 // gamecore.instance-> init -> data_init -
@@ -19,6 +21,23 @@ namespace GameCore.Interface
             if(json.Equals(""))
                 return true;
             return Core.Instance.Config.FromJsonString(json);
+        }
+        public WorldInfo WorldInfo(string name)
+        {
+            // load save_name/info.json
+            if(name == null)
+                return null;
+            string json = Core.Instance.INeed.ImportSaveInfo(name);
+            if(json == null)
+                return null;
+            WorldInfo wi = new WorldInfo();
+            try{
+                JObject oj = JObject.Parse(json);
+                // get data
+            }catch(Exception){
+                return null;
+            }
+            return wi;
         }
         public bool CardFragment(int index, bool is_cover = false)
         {
@@ -48,7 +67,7 @@ namespace GameCore.Interface
         public bool CardAll(bool is_cover = false)
         {
             // won't cover the card which is alreay in Core.Cards
-            for(int index = 0; index < Core.Instance.card_number_distribute_reference / Core.Instance.CoreInfo.Card_amount_per_file; index++)
+            for(int index = 0; index < Core.Instance.Card_max_number / Core.Instance.CoreInfo.Card_amount_per_file; index++)
             {
                 string json = Core.Instance.INeed.ImportSaveCards(Core.Instance.World_name, index);
                 if(json == null)
@@ -111,6 +130,16 @@ namespace GameCore.Interface
         }
         public bool Rules()
         {
+            JObject js = JObject.Parse(Core.Instance.INeed.ImportSaveRule(Core.Instance.World_name));
+            try{
+                foreach(var rule in js)
+                {
+                    if(Core.Instance.Rules.RuleDic[rule.Key].FromJsonObject((JObject)rule.Value))
+                        return true;
+                }
+            }catch(Exception){
+                return true;
+            }
             return false;
         }
     }
@@ -124,6 +153,20 @@ namespace GameCore.Interface
             if(json.Equals(""))
                 return true;
             return Core.Instance.INeed.ExportConfig(json);
+        }
+        public bool WorldInfo()
+        {
+            if(Core.Instance.World_name == null)
+                return true;
+            try{
+                JObject json = new JObject();
+                // put data
+                if(Core.Instance.INeed.ExportSaveInfo(Core.Instance.World_name, json.ToString()))
+                    return true;
+            }catch(Exception){
+                return true;
+            }
+            return false;
         }
         public bool Card(params int[] numbers)
         {
@@ -184,6 +227,16 @@ namespace GameCore.Interface
         }
         public bool Rules()
         {
+            try{
+                JObject js = new JObject();
+                foreach(var rule in Core.Instance.Rules.RuleDic)
+                {
+                    js.Add(rule.Key, rule.Value.ToJsonObject());
+                }
+                Core.Instance.INeed.ExportSaveRule(Core.Instance.World_name, js.ToString());
+            }catch(Exception){
+                return true;
+            }
             return false;
         }
     }

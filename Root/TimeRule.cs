@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace GameCore.Root
 {
@@ -273,6 +274,35 @@ namespace GameCore.Root
                     return true;
             }
             return false;
+        }
+        public override bool FromJsonObject(Newtonsoft.Json.Linq.JObject js)
+        {
+            if(base.FromJsonObject(js))
+                return true;
+            try{
+                SetNowTime((int)js["NowTime"][0],
+                    (int)js["NowTime"][1],
+                    (int)js["NowTime"][2],
+                    (int)js["NowTime"][3]);
+            }catch(Exception){
+                return true;
+            }
+            return false;
+        }
+        public override JObject ToJsonObject()
+        {
+            var js = base.ToJsonObject();
+            try{
+                JArray t = new JArray();
+                t.Add(new JValue(NowTime.Year));
+                t.Add(new JValue(NowTime.Month));
+                t.Add(new JValue(NowTime.Day));
+                t.Add(new JValue(NowTime.Hour));
+                js.Add("NowTime", t);
+            }catch(Exception){
+                return null;
+            }
+            return js;
         }
     }
 }

@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json.Linq;
+
+// every rule, should register in Interface.Rules, using _NewAndRegist()
+// if there are some data need to save to ruledata.json file, implement FromJson and ToJson
+// there are template in Base.Util.RRule, copy that by ctrl-c and ctrl-v
 
 // Rule.Flag, can used to define a function's copy Foo(Flag f)
 // by diff of parameter, can return needed result
@@ -86,6 +91,16 @@ namespace GameCore.Base
             if (card.Has<TComponent>())
                 return null;
             return card.Get<TComponent>();
+        }
+        public virtual JObject ToJsonObject()
+        {
+            return new JObject();
+        }
+        public virtual bool FromJsonObject(JObject js)
+        {
+            if(js == null) 
+                return true;
+            return false;
         }
         public virtual bool IsUsable() => true;
         public enum Flag{

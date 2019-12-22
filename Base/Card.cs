@@ -39,7 +39,7 @@ namespace GameCore.Base
             // set number and name, add this to global card list
             Clear();
             if(number < 0 || Core.Instance.Cards.Contains(number)
-                || number > Core.Instance.card_number_distribute_reference)
+                || number > Core.Instance.Card_max_number)
                 return true;
             Number = number;
             if(Core.Instance.Cards.Add(this))
@@ -52,8 +52,8 @@ namespace GameCore.Base
         {
             // be a new card, with new distributed number and specific name
             Clear();
-            Core.Instance.card_number_distribute_reference++;
-            Init(Core.Instance.card_number_distribute_reference, name);
+            Core.Instance.Card_max_number++;
+            Init(Core.Instance.Card_max_number, name);
         }
         public void Clear()
         {

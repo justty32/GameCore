@@ -149,5 +149,28 @@ namespace GameCore.Base
         {
             return true;
         }
+        public override bool FromJsonObject(JObject js)
+        {
+            if(base.FromJsonObject(js))
+                return true;
+            try{
+                //get data
+            }catch(Exception){
+                return true;
+            }
+            return false;
+        }
+        public override JObject ToJsonObject()
+        {
+            JObject js = base.ToJsonObject();
+            if(js == null)
+                return null;
+            try{
+                // put data
+            }catch(Exception){
+                return null;
+            }
+            return js;
+        }
     }
 }

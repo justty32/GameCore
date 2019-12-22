@@ -1,45 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GameCore.Base;
 
 namespace GameCore.Interface
 {
     public class Rules
     {
-        public Root.TimeRule TimeRule { get; private set; }
-        public Root.LocationRule LocationRule { get; private set; }
-        public Map.LandRule LandRule { get; private set; }
-        public Map.TileRule TileRule { get; private set; }
-        public Map.WorldRule WorldRule { get; private set; }
-        public Map.PlanetRule PlanetRule { get; private set; }
-        public Map.TerrainRule TerrainRule { get; private set; }
-        public Map.LandformRule LandformRule { get; private set; }
+        public Dictionary<string, Rule> RuleDic {get; private set;}
+        public Root.TimeRule TimeRule {get; private set;}
+        public Root.LocationRule LocationRule {get; private set;}
+        private void _NewAndRegist<TRule>(Rule rule) where TRule : Rule, new()
+        {
+            rule = new TRule();
+            RuleDic.Add(rule.GetType().ToString(), rule);
+        }
         public Rules()
         {
             // make instances
-            TimeRule = new Root.TimeRule();
-            LocationRule = new Root.LocationRule();
-            LandRule = new Map.LandRule();
-            TileRule = new Map.TileRule();
-            WorldRule = new Map.WorldRule();
-            PlanetRule = new Map.PlanetRule();
-            TerrainRule = new Map.TerrainRule();
-            LandformRule = new Map.LandformRule();
+            _NewAndRegist<Root.TimeRule>(TimeRule);
+            _NewAndRegist<Root.LocationRule>(LocationRule);
         }
-        public void Init( // many parameters
-            Root.TimeRule.Time now_time
+        public bool Init( // many parameters
         )
         {
             // do Init
-            TimeRule.Init();
-            TimeRule.SetNowTime(now_time);
-            LocationRule.Init();
-            LandRule.Init();
-            TileRule.Init();
-            WorldRule.Init();
-            PlanetRule.Init();
-            LandformRule.Init();
-            TerrainRule.Init();
+            if(Base.Util.HasAnyFalse(
+                TimeRule.Init(),
+                LocationRule.Init()
+            ))
+                return true;
+            return false;
         }
     }
 }

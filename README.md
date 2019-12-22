@@ -1,5 +1,19 @@
 # GameCore
 
+## Game Flow
+
+Seperate to Core and Data. Core, as Interface, Script, Module. Data, as Hook, Rule, Card.
+Core.Instance()-Core.Init(INeed)-Core.Config.Set() or Core.Load.Config()
+
+### load exist save
+
+-Core.Load.WorldInfo(target world)-Core.Load.RuleData()-Core.Rule.TimeRule.Go()
+
+### create new one
+
+-make WorldInfo instance-Core.DataInit(world info instance)
+-init data prepare-Core.Rule.TimeRule.Go()
+
 ## Control Conventions
 
 ```c#
@@ -7,6 +21,7 @@ Card card = new Card();
 card.Init();
 SomeRule.AddCSome(card);
 ```
+
 ```c#
 Card card = new Card();
 card.Init();
