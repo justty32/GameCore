@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using GameCore.Base;
 
 // these are using Core.Instance.INeed and Cards so much, be careful about they
@@ -13,14 +14,18 @@ namespace GameCore.Interface
 {
     public class Load
     {
-        public bool Config()
+        public Config Config()
         {
             string json = Core.Instance.INeed.ImportConfig();
             if(json == null)
-                return true;
-            if(json.Equals(""))
-                return true;
-            return Core.Instance.Config.FromJsonString(json);
+                return null;
+            Config config = null;
+            try{
+                config = JsonConvert.DeserializeObject<Config>(json);
+            }catch(Exception){
+                return null;
+            }
+            return config;
         }
         public WorldInfo WorldInfo()
         {
@@ -146,19 +151,23 @@ namespace GameCore.Interface
     {
         public bool Config()
         {
-            string json = Core.Instance.Config.ToJsonString();
-            if(json == null)
+            try{
+                string str = JsonConvert.SerializeObject(Core.Instance.Config);
+                if(str == null)
+                    return true;
+                if(Core.Instance.INeed.ExportConfig(str))
+                    return true;
+            }catch(Exception){
                 return true;
-            if(json.Equals(""))
-                return true;
-            return Core.Instance.INeed.ExportConfig(json);
+            }
+            return false;
         }
         public bool WorldInfo()
         {
             if(Core.Instance.Save_Name == null)
                 return true;
             try{
-                string json = Core.Instance.WorldInfo.ToJsonString(); 
+                string json = JsonConvert.SerializeObject(Core.Instance.WorldInfo);
                 if(json == null)
                     return true;
                 if(Core.Instance.INeed.ExportSaveInfo(Core.Instance.Save_Name, json))

@@ -27,16 +27,16 @@ namespace GameCore
                 return true;
             State = new State();
             CoreInfo = new CoreInfo();
-            Config = new Config();
-            if(config != null)
-                if(Config.Set(config))
-                    return true;
-            else
-                if(Config.FromJsonString(INeed.ImportConfig()))
-                    return true;
+            INeed = needed_interface;
             Load = new Load();
             Save = new Save();
-            INeed = needed_interface;
+            if(config != null)
+                Config = config;
+            else{
+                Config = Load.Config();
+                if(Config == null)
+                    return true;
+            }
             return false;
         }
         public static Core Instance {
