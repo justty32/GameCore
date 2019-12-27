@@ -80,7 +80,7 @@ namespace GameCore
             Rules.Init();
             return false;
         }
-        public string Save_Name {get; internal set;} = null; //be careful
+        public string Save_Name {get; internal set;} = null; //be careful, don't touch it
         public WorldInfo WorldInfo {get; private set;} = new WorldInfo();
         internal Random Random { get; private set; } = null;
         internal Dictionary<string, int> component_spawner_type_name_set { get; private set; }// don't edit it !!!
