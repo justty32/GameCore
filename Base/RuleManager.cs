@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using GameCore.Base;
 
-namespace GameCore.Interface
+namespace GameCore.Base
 {
-    public class Rules
+    public class RuleManager
     {
         public Dictionary<string, Rule> RuleDic {get; private set;}
         public Root.TimeRule TimeRule {get; private set;}
@@ -15,7 +15,7 @@ namespace GameCore.Interface
             rule = new TRule();
             RuleDic.Add(rule.GetType().ToString(), rule);
         }
-        public Rules()
+        public RuleManager()
         {
             // make instances
             _NewAndRegist<Root.TimeRule>(TimeRule);

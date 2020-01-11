@@ -44,19 +44,19 @@ namespace GameCore.Interface
         public object N(Ar action_result)
         {
             // set action result, and return null
-            Core.Instance.State.AR = action_result;
+            Core.State.AR = action_result;
             return null;
         }
         public bool T(Ar action_result) 
         {
             // set action result, and return true
-            Core.Instance.State.AR = action_result;
+            Core.State.AR = action_result;
             return true;
         }
         public bool F(Ar action_result = Ar.G)
         {
             // set action result, and return false;
-            Core.Instance.State.AR = action_result;
+            Core.State.AR = action_result;
             return false;
         }
     }

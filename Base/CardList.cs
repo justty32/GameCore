@@ -4,12 +4,13 @@ using System.Text;
 using GameCore.Base;
 using Newtonsoft.Json.Linq;
 
-namespace GameCore.Interface
+namespace GameCore.Base
 {
     public class CardList
     {
         // wrap the card list
-        internal Dictionary<int, Card> cards { get; private set; } = new Dictionary<int, Card>();
+        public int MaxNumber {get; set;}
+        public Dictionary<int, Card> cards { get; private set; } = new Dictionary<int, Card>();
         public bool Add(Card card)
         {
             if (cards.ContainsKey(card.Number))
@@ -30,14 +31,7 @@ namespace GameCore.Interface
             get
             {
                 if (!cards.ContainsKey(number))
-                    if(Core.Instance.Config.is_Load_Card_While_Not_In_gList){
-                        Core.Instance.Load.Card(false, number);
-                            if(!cards.ContainsKey(number))
-                                return null;
-                            else
-                                return cards[number];
-                    }else
-                        return null;
+                    return null;
                 else
                     return cards[number];
             }

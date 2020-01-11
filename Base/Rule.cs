@@ -23,7 +23,7 @@ namespace GameCore.Base
                 return null;
             if (card.Has<TComponent>())
                 return null;
-            if (card.Add(Component.GetSpawner<TComponent>().SpawnBase()))
+            if (card.Add(ComponentManager.GetSpawner<TComponent>().SpawnBase()))
                 return null;
             return card.Get<TComponent>();
         }
@@ -103,8 +103,5 @@ namespace GameCore.Base
             return false;
         }
         public virtual bool IsUsable() => true;
-        public enum Flag{
-            IsLegal, NeedComponents, UnNeedComponents
-        }
     }
 }

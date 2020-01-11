@@ -5,12 +5,14 @@ using System.Text;
 namespace GameCore.Interface
 {
     // static data
-    // Don't be changed by outside
+    // Can't be changed by outside
     // Difference with Config.cs, is these things shouldn't be change
-    // are separate by version, same version offer same member and same value.
+    // Be separated by version, same version offer same member and same value.
     public class CoreInfo
     {
-        public int Version {get; private set;} = 10;
-        public int Card_amount_per_file {get; private set;} = 2000;
+        public static readonly string Version = "0.01";
+
+        // not be used now
+        public static readonly int Card_amount_per_file = 2000;
     }
 }

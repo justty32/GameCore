@@ -4,90 +4,94 @@ using System.Text;
 using GameCore.Base;
 using GameCore.Interface;
 
-// TODO: load data, basic datapreload mechanism, object pool for card
+// TODO: object pool for card
+//       create new game, exit game
+//       load/save game
+
 namespace GameCore
 {
     public class Core
     {
-        // Gamecore
-        // about GetSet, Script, Module, SaveLoad... 
-        // only reset while start the program
         private static Core p_instance = null;
-        public INeed INeed {get; private set;} = null;
-        public State State { get; private set; } = null;
-        public CoreInfo CoreInfo {get; private set;} = null ; 
-        public Config Config { get; private set; } = null;
-        public Load Load { get; private set; } = null;
-        public Save Save { get; private set; } = null;
-        public Control Control { get; private set; } = null;
+        public static INeed INeed {get => p_instance._i_need;}
+        public static State State { get => p_instance._state;}
+        public static Config Config { get => p_instance._config;}
+        public static Load Load { get => p_instance._load;}
+        public static Save Save { get => p_instance._save;}
+        private INeed _i_need = null;
+        private State _state = null;
+        private Config _config = null;
+        private Load _load = null;
+        private Save _save = null;
         private Core(){}
-        public bool Init(INeed needed_interface, Config config = null)
+        public static bool Init(INeed needed_interface, Config config = null)
         {
             if(needed_interface == null)
                 return true;
-            State = new State();
-            CoreInfo = new CoreInfo();
-            INeed = needed_interface;
-            Load = new Load();
-            Save = new Save();
+            p_instance = new Core();
+            p_instance._state = new State();
+            p_instance._i_need = needed_interface;
+            p_instance._load = new Load();
+            p_instance._save = new Save();
             if(config != null)
-                Config = config;
-            else{
-                Config = Load.Config();
-                if(Config == null)
+                p_instance._config = config;
+            else
+                return true;
+            return false;
+        }
+        public static void Clear(bool are_you_sure = false){ 
+            if(are_you_sure)
+                p_instance = null;
+        }
+        
+        public static string DirName {get => p_instance._dir_name;} //target save dir
+        public static Random Random { get => p_instance._random;}
+        public static ComponentManager ComponentManager {get => p_instance._component_mananager;}
+        public static CardList Cards{ get => p_instance._cards;}
+        public static HookManager HookManager { get => p_instance._hook_manager;}
+        public static RuleManager RuleManager { get => p_instance._rule_manager;}
+        private string _dir_name = null;
+        private Random _random = null;
+        private ComponentManager _component_mananager = null;
+        private CardList _cards = null;
+        private HookManager _hook_manager = null;
+        private RuleManager _rule_manager = null;
+        public static bool LoadGame(string save_name)
+        {
+            if(save_name == null)
+                return true;
+            // check save dir exist
+            if(!Core.INeed.IsSaveDirExist(save_name) || !Core.INeed.IsSaveDirLegal(save_name))
+                return true;
+            // set save name
+            p_instance._dir_name = save_name;
+            Load.Cards();
+            return false;
+        }
+        public static bool SaveGame(string save_name = null)
+        {
+            // must specific the save dir name
+            if(save_name == null)
+                return true;
+            // change target
+            p_instance._dir_name = save_name;
+            // if not cover, create new dir
+            if(!Core.INeed.IsSaveDirExist(save_name)){
+                if(Core.INeed.NewSaveDir(save_name))
+                    return true;
+                if(Core.INeed.IsSaveDirLegal(save_name))
                     return true;
             }
+            Save.Cards();
             return false;
         }
-        public static Core Instance {
-            get{
-                if(p_instance == null)
-                    p_instance = new Core();
-                return p_instance;
-            }
-        }
-        public static void Clear(bool are_you_sure = false){ if(are_you_sure){ p_instance = null; }}
-        
-        // World data
-        // about world's rules, datas....
-        // reset while load a new world
-        internal void DataRemove(){
-            // the order is reversion of Init
-            Rules = null;
-            HookManager = null;
-            foreach(var card in Cards.cards)
-                card.Value.Clear();
-            Cards = null;
-            component_spawner_list = null;
-            component_spawner_type_name_set = null;
-            Random = null;
-            WorldInfo = new WorldInfo();
-        }
-        internal bool DataInit( 
-            WorldInfo world_info
-        ){
-            if(world_info == null)
-                return true;
-            // make instances fo things to visit
-            WorldInfo = world_info;
-            Random = new Random(WorldInfo.Now_seed);
-            component_spawner_type_name_set = new Dictionary<string, int>();
-            component_spawner_list = new Dictionary<int, Base.Component.ISpawner>();
-            Cards = new CardList();
-            HookManager = new Base.HookManager();
-            Rules = new Rules();
-            // do Init
-            Rules.Init();
+        public static bool CreateNewGame()
+        {
             return false;
         }
-        public string Save_Name {get; internal set;} = null; //be careful, don't touch it
-        public WorldInfo WorldInfo {get; private set;} = new WorldInfo();
-        internal Random Random { get; private set; } = null;
-        internal Dictionary<string, int> component_spawner_type_name_set { get; private set; }// don't edit it !!!
-        internal Dictionary<int, Component.ISpawner> component_spawner_list { get; private set; }// don't edit it !!!
-        internal int Card_max_number {get => WorldInfo.Card_max_number; set => WorldInfo.Card_max_number = value;}
-        public CardList Cards{ get; private set;}
-        public HookManager HookManager { get; private set; }
-        public Rules Rules { get; private set; }
+        public static bool ExitGame()
+        {
+            return false;
+        }
     }
 }

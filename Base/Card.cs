@@ -38,11 +38,11 @@ namespace GameCore.Base
             // load a card
             // set number and name, add this to global card list
             Clear();
-            if(number < 0 || Core.Instance.Cards.Contains(number)
-                || number > Core.Instance.Card_max_number)
+            if(number < 0 || Core.Cards.Contains(number)
+                || number > Core.Cards.MaxNumber)
                 return true;
             Number = number;
-            if(Core.Instance.Cards.Add(this))
+            if(Core.Cards.Add(this))
                 return true;
             Name = name;
             components = new Dictionary<int, Component>();
@@ -52,8 +52,8 @@ namespace GameCore.Base
         {
             // be a new card, with new distributed number and specific name
             Clear();
-            Core.Instance.Card_max_number++;
-            Init(Core.Instance.Card_max_number, name);
+            Core.Cards.MaxNumber++;
+            Init(Core.Cards.MaxNumber, name);
         }
         public void Clear()
         {
@@ -63,8 +63,8 @@ namespace GameCore.Base
                 components.Clear();
             components = null;
             Name = "";
-            if(Core.Instance.Cards.Contains(Number))
-                Core.Instance.Cards.Remove(Number);
+            if(Core.Cards.Contains(Number))
+                Core.Cards.Remove(Number);
             Number = -1;
         }
         public JObject ToJsonObject()
@@ -88,7 +88,7 @@ namespace GameCore.Base
                     components.Add(c.ToJsonObject());
                 }
                 ojs.Add(new JProperty("Component_numbers", component_numbers));
-                ojs.Add(new JProperty("Components_names", component_names));
+                ojs.Add(new JProperty("Component_names", component_names));
                 ojs.Add(new JProperty("Components", components));
             }catch(Exception){
                 return null;
@@ -107,7 +107,7 @@ namespace GameCore.Base
                 JArray cs = (JArray)ojs["Components"];
                 for(int i = 0; i < cs.Count ; i++)
                 {
-                    var c = Component.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
+                    var c = ComponentManager.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
                     if(!c.FromJsonObject((JObject)cs[i]))
                         Add(c);
                 }

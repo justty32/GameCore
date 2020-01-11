@@ -7,12 +7,13 @@ using Newtonsoft.Json;
 
 namespace GameCore.Interface
 {
+    // this is using json.serialize to make json string output
+    // so variables in it should be careful
     public class Config
     {
         // used in Core, not Data
-        // Difference with CoreInfo, is these configurations are changeable every time
-        // need to offer a instance, while Core.Init()
+        // Difference with CoreInfo, these configurations are changeable every time
+        // need to be offered a instance in Core, while Core.Init()
 
-        public bool is_Load_Card_While_Not_In_gList = true;
     }
 }

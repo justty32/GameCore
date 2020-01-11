@@ -142,14 +142,14 @@ namespace GameCore.Base
             RegisteredName = name;
             HasRegistered = true;
             StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (Core.Instance.HookManager.RegisterHook<Tinput, Toutput>(this, name))
+            if (Core.HookManager.RegisterHook<Tinput, Toutput>(this, name))
             {
                 stringBuilder.Append("_1");
                 for (int i = 2; i < 100; i++)
                 {
                     stringBuilder.Remove(stringBuilder.Length - 1, 1);
                     stringBuilder.Append(i);
-                    if (!Core.Instance.HookManager.RegisterHook<Tinput, Toutput>(this, stringBuilder.ToString()))
+                    if (!Core.HookManager.RegisterHook<Tinput, Toutput>(this, stringBuilder.ToString()))
                         goto end;
                 }
                 stringBuilder = null;
@@ -260,14 +260,14 @@ namespace GameCore.Base
             RegisteredName = name;
             HasRegistered = true;
             StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (Core.Instance.HookManager.RegisterHook<Tinput>(this, name))
+            if (Core.HookManager.RegisterHook<Tinput>(this, name))
             {
                 stringBuilder.Append("_1");
                 for (int i = 2; i < 100; i++)
                 {
                     stringBuilder.Remove(stringBuilder.Length - 1, 1);
                     stringBuilder.Append(i);
-                    if (!Core.Instance.HookManager.RegisterHook<Tinput>(this, stringBuilder.ToString()))
+                    if (!Core.HookManager.RegisterHook<Tinput>(this, stringBuilder.ToString()))
                         goto end;
                 }
                 stringBuilder = null;
@@ -335,14 +335,14 @@ namespace GameCore.Base
             RegisteredName = name;
             HasRegistered = true;
             StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (Core.Instance.HookManager.RegisterHook(this, name))
+            if (Core.HookManager.RegisterHook(this, name))
             {
                 stringBuilder.Append("_1");
                 for (int i = 2; i < 100; i++)
                 {
                     stringBuilder.Remove(stringBuilder.Length - 1, 1);
                     stringBuilder.Append(i);
-                    if (!Core.Instance.HookManager.RegisterHook(this, stringBuilder.ToString()))
+                    if (!Core.HookManager.RegisterHook(this, stringBuilder.ToString()))
                         goto end;
                 }
                 stringBuilder = null;
