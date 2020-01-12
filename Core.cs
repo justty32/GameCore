@@ -65,7 +65,6 @@ namespace GameCore
                 return true;
             // set save name
             p_instance._dir_name = save_name;
-            Load.Cards();
             return false;
         }
         public static bool SaveGame(string save_name = null)
@@ -82,7 +81,6 @@ namespace GameCore
                 if(Core.INeed.IsSaveDirLegal(save_name))
                     return true;
             }
-            Save.Cards();
             return false;
         }
         public static bool CreateNewGame()
