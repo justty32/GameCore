@@ -14,6 +14,13 @@ namespace GameCore.Root
             public override string TypeName => _type_name;
             public int UpperCard { get; private set; } = -1;
             public List<int> BelowCards { get; private set; }
+            public bool SetUpperCard(int cdn = -1)
+            {
+                UpperCard = cdn;
+                if (cdn < 0 || cdn > Core.Cards.MaxNumber)
+                    UpperCard = 0;
+                return false;
+            }
             public bool Init(int upper_card, params int[] below_cards)
             {
                 if(upper_card < 0)
@@ -24,9 +31,9 @@ namespace GameCore.Root
                     BelowCards = new List<int>(below_cards);
                 else
                     BelowCards = new List<int>();
-                if(Core.Instance.Rules.LocationRule.LocationCards.Contains(Card.Number))
+                if(Core.RuleManager.LocationRule.LocationCards.Contains(Card.Number))
                     return true;
-                Core.Instance.Rules.LocationRule.LocationCards.Add(Card.Number);
+                Core.RuleManager.LocationRule.LocationCards.Add(Card.Number);
                 return false;
             }
             public override bool IsUsable()
@@ -75,7 +82,7 @@ namespace GameCore.Root
         public List<int> LocationCards {get; private set;} = null;
         public bool Init()
         {
-            _ctn_location = Base.Component.GetSpawner<CLocation>().Type_Number;
+            _ctn_location = Base.ComponentManager.GetSpawner<CLocation>().Type_Number;
             LocationCards = new List<int>(2000);
             return false; 
         }

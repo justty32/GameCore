@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using GameCore.Base;
 
 // TODO:declare a hook: WorldMoved(land, new_posZ), hook_name:"WorldMoved"
 
@@ -25,14 +26,14 @@ namespace GameCore.Map
         public bool Init()
         {
              // rule's initialize
-            _c_world_type_number = Base.Component.GetSpawner<WorldRule.CWorld>().Type_Number;
-            _c_planet_type_number = Base.Component.GetSpawner<CPlanet>().Type_Number;
-            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _c_world_type_number = ComponentSpawner<WorldRule.CWorld>.GetSpawner().Type_Number;
+            _c_planet_type_number = ComponentSpawner<CPlanet>.GetSpawner().Type_Number;
+            _c_location_type_number = ComponentSpawner<Root.LocationRule.CLocation>.GetSpawner().Type_Number;
             return false;
         }
         public bool AddCPlanet(Base.Card card)
         {
-            if(AddComponent<CPlanet>(card))
+            if(AddComponent<CPlanet>(card) == null)
                 return true;
             var c_planet = card.Get<CPlanet>();
             if(c_planet == null)

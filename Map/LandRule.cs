@@ -41,14 +41,14 @@ namespace GameCore.Map
         public bool Init()
         {
             // rule's initialize
-            _c_land_type_number = Base.Component.GetSpawner<CLand>().Type_Number;
-            _c_tile_type_number = Base.Component.GetSpawner<TileRule.CTile>().Type_Number;
-            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _c_land_type_number = Base.ComponentManager.GetSpawner<CLand>().Type_Number;
+            _c_tile_type_number = Base.ComponentManager.GetSpawner<TileRule.CTile>().Type_Number;
+            _c_location_type_number = Base.ComponentManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             return false;
         }
         public bool AddCLand(Base.Card card, int sizeX, int sizeY)
         {
-            if(AddComponent<CLand>(card))
+            if(AddComponent<CLand>(card) == null)
                 return true;
             var c_land = card.Get<CLand>() as CLand;
             if(c_land == null)

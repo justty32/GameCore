@@ -7,15 +7,5 @@ namespace GameCore.AI
 {
     public class IntelligenceRule : Base.Rule
     {
-        public class CIntelligence : Base.Component
-        {
-            private string _type_name = "CIntelligence";
-            public override string TypeName => _type_name;
-        }
-        public class CCogitation : Base.Component
-        {
-            private string _type_name = "CCogitation";
-            public override string TypeName => _type_name;
-        }
     }
 }

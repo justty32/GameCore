@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using GameCore.Base;
 
 namespace GameCore.Map
 {
@@ -50,8 +51,8 @@ namespace GameCore.Map
         private int _ctn_tile = -1;
         public bool Init()
         {
-            _ctn_location = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
-            _ctn_tile = Base.Component.GetSpawner<CTile>().Type_Number;
+            _ctn_location = ComponentManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _ctn_tile = ComponentManager.GetSpawner<CTile>().Type_Number;
             return false;
         }
         public CTile AddCTile(Base.Card card)

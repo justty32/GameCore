@@ -58,7 +58,7 @@ namespace GameCore.Base
                 TypeNumber = Core.ComponentManager.SpawnerTypeNameSet[TypeName];
             return TypeNumber;
         }
-        private Component() {
+        public Component() {
             /*
              * default create, not recommend. please use Component.GetSpawner().Spawn().
              * Should use TypeNumberAutoSet() After, to set the TypeNumber, or still be -1.

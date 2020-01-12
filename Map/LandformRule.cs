@@ -23,9 +23,9 @@ namespace GameCore.Map
         private int _c_terrain_type_number = -1;
         public bool Init()
         {
-            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
-            _c_landform_type_number = Base.Component.GetSpawner<CLandform>().Type_Number;
-            _c_terrain_type_number = Base.Component.GetSpawner<TerrainRule.CTerrain>().Type_Number;
+            _c_location_type_number = Base.ComponentManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _c_landform_type_number = Base.ComponentManager.GetSpawner<CLandform>().Type_Number;
+            _c_terrain_type_number = Base.ComponentManager.GetSpawner<TerrainRule.CTerrain>().Type_Number;
             return false;
         }
     }

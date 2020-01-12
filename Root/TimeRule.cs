@@ -86,55 +86,55 @@ namespace GameCore.Root
             }
             public void Carry()
             {
-                if (Hour > Core.Instance.Rules.TimeRule.HourMax)
+                if (Hour > Core.RuleManager.TimeRule.HourMax)
                 {
-                    Day += Hour / (Core.Instance.Rules.TimeRule.HourMax + 1);
-                    Hour = Hour % (Core.Instance.Rules.TimeRule.HourMax + 1);
+                    Day += Hour / (Core.RuleManager.TimeRule.HourMax + 1);
+                    Hour = Hour % (Core.RuleManager.TimeRule.HourMax + 1);
                 }
                 if (Hour < 0) 
                 {
-                    Day -= ((-Hour) / (Core.Instance.Rules.TimeRule.HourMax + 1)) + 1;
-                    Hour = (-Hour) % (Core.Instance.Rules.TimeRule.HourMax + 1);
+                    Day -= ((-Hour) / (Core.RuleManager.TimeRule.HourMax + 1)) + 1;
+                    Hour = (-Hour) % (Core.RuleManager.TimeRule.HourMax + 1);
                     if (Hour == 0)
                     {
                         Day++;
                     }
                     else
                     {
-                        Hour = (Core.Instance.Rules.TimeRule.HourMax + 1) - Hour;
+                        Hour = (Core.RuleManager.TimeRule.HourMax + 1) - Hour;
                     }
                 }
-                if (Day > Core.Instance.Rules.TimeRule.DayMax)
+                if (Day > Core.RuleManager.TimeRule.DayMax)
                 {
-                    Month += Day / Core.Instance.Rules.TimeRule.DayMax;
-                    Day = Day % Core.Instance.Rules.TimeRule.DayMax;
+                    Month += Day / Core.RuleManager.TimeRule.DayMax;
+                    Day = Day % Core.RuleManager.TimeRule.DayMax;
                     if (Day == 0)
                     {
-                        Day = Core.Instance.Rules.TimeRule.DayMax;
+                        Day = Core.RuleManager.TimeRule.DayMax;
                         Month--;
                     }
                 }
                 if (Day < 1) 
                 {
-                    Month -= (-Day) / Core.Instance.Rules.TimeRule.DayMax + 1;
-                    Day = (-Day) % Core.Instance.Rules.TimeRule.DayMax;
-                    Day = Core.Instance.Rules.TimeRule.DayMax - Day;
+                    Month -= (-Day) / Core.RuleManager.TimeRule.DayMax + 1;
+                    Day = (-Day) % Core.RuleManager.TimeRule.DayMax;
+                    Day = Core.RuleManager.TimeRule.DayMax - Day;
                 }
-                if (Month > Core.Instance.Rules.TimeRule.MonthMax)
+                if (Month > Core.RuleManager.TimeRule.MonthMax)
                 {
-                    Year += Month / Core.Instance.Rules.TimeRule.MonthMax;
-                    Month = (Month % Core.Instance.Rules.TimeRule.MonthMax) + 1;
+                    Year += Month / Core.RuleManager.TimeRule.MonthMax;
+                    Month = (Month % Core.RuleManager.TimeRule.MonthMax) + 1;
                     if (Month == 0)
                     {
-                        Month = Core.Instance.Rules.TimeRule.MonthMax;
+                        Month = Core.RuleManager.TimeRule.MonthMax;
                         Year--;
                     }
                 }
                 if (Month < 1)
                 {
-                    Year -= (-Month) / Core.Instance.Rules.TimeRule.MonthMax + 1;
-                    Month = (-Month) % Core.Instance.Rules.TimeRule.MonthMax;
-                    Month = Core.Instance.Rules.TimeRule.MonthMax - Month;
+                    Year -= (-Month) / Core.RuleManager.TimeRule.MonthMax + 1;
+                    Month = (-Month) % Core.RuleManager.TimeRule.MonthMax;
+                    Month = Core.RuleManager.TimeRule.MonthMax - Month;
                 }
                 if (Year < 1)
                 {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using GameCore.Base;
 
 // TODO:declare a hook: LandMoved(land, new_posX, new_posY), hook_name:"LandMoved"
 
@@ -44,14 +45,14 @@ namespace GameCore.Map
         public bool Init()
         {
              // rule's initialize
-            _c_world_type_number = Base.Component.GetSpawner<CWorld>().Type_Number;
-            _c_land_type_number = Base.Component.GetSpawner<LandRule.CLand>().Type_Number;
-            _c_location_type_number = Base.Component.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _c_world_type_number = ComponentManager.GetSpawner<CWorld>().Type_Number;
+            _c_land_type_number = ComponentManager.GetSpawner<LandRule.CLand>().Type_Number;
+            _c_location_type_number = ComponentManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             return false;
         }
         public bool AddCWorld(Base.Card card, int sizeX, int sizeY)
         {
-            if(AddComponent<CWorld>(card))
+            if(AddComponent<CWorld>(card) == null)
                 return true;
             var c_world = card.Get<CWorld>() as CWorld;
             if(c_world == null)
