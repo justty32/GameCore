@@ -5,7 +5,7 @@ using System.Text;
 /*
     public class LocationRule : Base.Rule
     {
-        public class CLocation : Base.Component
+        public class CLocation : Base.Concept
         {
             private string _type_name = "CLocation";
             public override string TypeName => _type_name;
@@ -42,24 +42,24 @@ using System.Text;
         public List<int> LocationCards {get; private set;} = null;
         public bool Init()
         {
-            _ctn_location = Base.Component.GetSpawner<CLocation>().Type_Number;
+            _ctn_location = Base.Concept.GetSpawner<CLocation>().Type_Number;
             LocationCards = new List<int>();
             return false; 
         }
         public bool AddCLocation(Base.Card card, int upper_card, Level level)
         {
-            if(AddComponent<CLocation>(card))
+            if(AddConcept<CLocation>(card))
                 return true;
-            var c_location = card.GetComponent<CLocation>();
+            var c_location = card.GetConcept<CLocation>();
             if(c_location == null)
                 return true;
             return c_location.Init(upper_card, level);
         }
         public bool RemoveCLocation(Base.Card card)
         {
-            if(!HasComponent(card, _ctn_location))
+            if(!HasConcept(card, _ctn_location))
                 return true;
-            card.RemoveComponent(_ctn_location);
+            card.RemoveConcept(_ctn_location);
             LocationCards.Remove(card.Number);
             return false;
         }
@@ -81,7 +81,7 @@ namespace GameCore.Root
         //
         // The default constructor do nothing, 
         //
-        public class CLocation : Base.Component
+        public class CLocation : Base.Concept
         {
             //
             // BelowNumbers generaly not be used, that isn't be set on these functions,
@@ -216,7 +216,7 @@ namespace GameCore.Root
         public void Init(int locations_number_distribute_reference)
         {
             _locations_number_distribute_reference = locations_number_distribute_reference;
-            CLocation root_location = Base.Component.GetSpawner<CLocation>().Spawn();
+            CLocation root_location = Base.Concept.GetSpawner<CLocation>().Spawn();
             root_location.BeNew(0);
             root_location.SetUpperNumber(0);
             root_location.SetLevel(Level.Root);
@@ -225,19 +225,19 @@ namespace GameCore.Root
         }
         public bool AddCLocation(Base.Card card)
         {
-            return AddComponent<CLocation>(card);
+            return AddConcept<CLocation>(card);
         }
         public bool BeNewCLocation(Base.Card card, int upper_number = 0, Level level = Level.Box)
         {
             if (card == null)
                 return true;
-            if (!card.HasComponent(_c_location_type_number))
+            if (!card.HasConcept(_c_location_type_number))
                 return true;
-            CLocation component_location = card.Components[_c_location_type_number] as CLocation;
-            if (component_location == null)
+            CLocation concept_location = card.Concepts[_c_location_type_number] as CLocation;
+            if (concept_location == null)
                 return true;
-            component_location.BeNew(upper_number, level);
-            if (component_location.UpperNumber != upper_number)
+            concept_location.BeNew(upper_number, level);
+            if (concept_location.UpperNumber != upper_number)
                 return true;
             return false;
         }

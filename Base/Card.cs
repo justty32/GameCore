@@ -22,9 +22,9 @@ namespace GameCore.Base
         {
             if(Number < 0)
                 return false;
-            if(Components == null)
+            if(Concepts == null)
                 return false;
-            foreach(var c in Components)
+            foreach(var c in Concepts)
             {
                 if(c == null)
                     return false;
@@ -45,7 +45,7 @@ namespace GameCore.Base
             if(Core.Cards.Add(this))
                 return true;
             Name = name;
-            components = new Dictionary<int, Component>();
+            concepts = new Dictionary<int, Concept>();
             return false;
         }
         public void InitBeNew(string name = null)
@@ -59,9 +59,9 @@ namespace GameCore.Base
         {
             // set number to -1, and things to null 
             // remove this from global card list
-            if(components != null)
-                components.Clear();
-            components = null;
+            if(concepts != null)
+                concepts.Clear();
+            concepts = null;
             Name = "";
             if(Core.Cards.Contains(Number))
                 Core.Cards.Remove(Number);
@@ -72,24 +72,24 @@ namespace GameCore.Base
             // spawn a json object
             // number : number
             // name : name
-            // components : [{c1's json object},{c2},{c3}]
+            // concepts : [{c1's json object},{c2},{c3}]
             JObject ojs;
                 try{
                 ojs = new JObject();
                 ojs.Add(new JProperty("Number", Number));
                 ojs.Add(new JProperty("Name", Name));
-                JArray component_numbers = new JArray();
-                JArray component_names = new JArray();
-                JArray components = new JArray();
-                foreach(Component c in Components)
+                JArray concept_numbers = new JArray();
+                JArray concept_names = new JArray();
+                JArray concepts = new JArray();
+                foreach(Concept c in Concepts)
                 {
-                    component_numbers.Add(c.TypeNumber);
-                    component_names.Add(c.TypeName);
-                    components.Add(c.ToJsonObject());
+                    concept_numbers.Add(c.TypeNumber);
+                    concept_names.Add(c.TypeName);
+                    concepts.Add(c.ToJsonObject());
                 }
-                ojs.Add(new JProperty("Component_numbers", component_numbers));
-                ojs.Add(new JProperty("Component_names", component_names));
-                ojs.Add(new JProperty("Components", components));
+                ojs.Add(new JProperty("Concept_numbers", concept_numbers));
+                ojs.Add(new JProperty("Concept_names", concept_names));
+                ojs.Add(new JProperty("Concepts", concepts));
             }catch(Exception){
                 return null;
             }
@@ -98,16 +98,16 @@ namespace GameCore.Base
         public bool FromJsonObject(JObject ojs)
         { 
             // use Init() to initialize number and name
-            // then took out component's json object and call component's FromJsonObject()
+            // then took out concept's json object and call concept's FromJsonObject()
             if(ojs == null)
                 return true;
             try{
                 if(Init((int)ojs["Number"], (string)ojs["Name"]))
                     return true;
-                JArray cs = (JArray)ojs["Components"];
+                JArray cs = (JArray)ojs["Concepts"];
                 for(int i = 0; i < cs.Count ; i++)
                 {
-                    var c = ComponentManager.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
+                    var c = ConceptManager.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
                     if(!c.FromJsonObject((JObject)cs[i]))
                         Add(c);
                 }

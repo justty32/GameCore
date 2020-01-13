@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -9,7 +8,7 @@ namespace GameCore.Map
 {
     public class TileRule : Base.Rule
     {
-        public class CTile : Base.Component
+        public class CTile : Base.Concept
         {
             private readonly string _type_name = "CTile";
             public override string TypeName => _type_name;
@@ -51,17 +50,17 @@ namespace GameCore.Map
         private int _ctn_tile = -1;
         public bool Init()
         {
-            _ctn_location = ComponentManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
-            _ctn_tile = ComponentManager.GetSpawner<CTile>().Type_Number;
+            _ctn_location = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _ctn_tile = ConceptManager.GetSpawner<CTile>().Type_Number;
             return false;
         }
         public CTile AddCTile(Base.Card card)
         {
-            return AddComponent<CTile>(card);
+            return AddConcept<CTile>(card);
         }
         public bool AddCTile(Base.Card card, int position_x, int position_y)
         {
-            return AddComponent<CTile>(card).Init(position_x, position_y);
+            return AddConcept<CTile>(card).Init(position_x, position_y);
         }
         public override bool IsUsable()
         {

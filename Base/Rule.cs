@@ -10,40 +10,44 @@ using Newtonsoft.Json.Linq;
 // Rule.Flag, can used to define a function's copy Foo(Flag f)
 // by diff of parameter, can return needed result
 // example : a function LandRule.MoveLand(Card cd), we make a copy MoveLand(Flag f, Card cd)
-// if call the copy, and parameter f is Flag.NeedComponents, 
-// it will return if the card has the needed components of MoveLand(Card cd)
+// if call the copy, and parameter f is Flag.NeedConcepts, 
+// it will return if the card has the needed concepts of MoveLand(Card cd)
 
 namespace GameCore.Base
 {
     public abstract class Rule : Util.INode
     {
-        public static TComponent AddComponent<TComponent>(Card card) where TComponent : Component, new()
+        public Rule()
         {
-            if (card == null)
-                return null;
-            if (card.Has<TComponent>())
-                return null;
-            if (card.Add(ComponentManager.GetSpawner<TComponent>().SpawnBase()))
-                return null;
-            return card.Get<TComponent>();
+            Core.Rules.RuleDic.Add(this.ToString(), this);
         }
-        public static bool RemoveComponent<TComponent>(Card card) where TComponent : Component, new()
+        public static TConcept AddConcept<TConcept>(Card card) where TConcept : Concept, new()
+        {
+            if (card == null)
+                return null;
+            if (card.Has<TConcept>())
+                return null;
+            if (card.Add(ConceptManager.GetSpawner<TConcept>().SpawnBase()))
+                return null;
+            return card.Get<TConcept>();
+        }
+        public static bool RemoveConcept<TConcept>(Card card) where TConcept : Concept, new()
         {
             if (card == null)
                 return true;
-            if (!card.Has<TComponent>())
+            if (!card.Has<TConcept>())
                 return true;
-            card.Remove<TComponent>();
+            card.Remove<TConcept>();
             return false;
         }
-        public static bool HasAnyComponent(Card card, params int[] component_type_numbers)
+        public static bool HasAnyConcept(Card card, params int[] concept_type_numbers)
         {
             // also if check card is null
-            // if the card has at least one of needed components, return true
+            // if the card has at least one of needed concepts, return true
             if(card == null)
                 return false;
-            if(component_type_numbers != null){
-                foreach(int i in component_type_numbers){
+            if(concept_type_numbers != null){
+                foreach(int i in concept_type_numbers){
                     if(card.Has(i))
                         return true;                   
                 }
@@ -52,14 +56,14 @@ namespace GameCore.Base
                 return false;
             return false;
         }
-        public static bool HasComponent(Card card, params int[] component_type_numbers)
+        public static bool HasConcept(Card card, params int[] concept_type_numbers)
         {
             // also if check card is null
-            // check if the card has all needed components
+            // check if the card has all needed concepts
             if(card == null)
                 return false;
-            if(component_type_numbers != null){
-                foreach(int i in component_type_numbers){
+            if(concept_type_numbers != null){
+                foreach(int i in concept_type_numbers){
                     if(!card.Has(i))
                         return false;                   
                 }
@@ -68,14 +72,14 @@ namespace GameCore.Base
                 return false;
             return true;
         }
-        public static bool UnHasComponent(Card card, params int[] component_type_numbers)
+        public static bool UnHasConcept(Card card, params int[] concept_type_numbers)
         {
             // also if check card is null
-            // check if the card don't has all specific components
+            // check if the card don't has all specific concepts
             if(card == null)
                 return false;
-            if(component_type_numbers != null){
-                foreach(int i in component_type_numbers){
+            if(concept_type_numbers != null){
+                foreach(int i in concept_type_numbers){
                     if(card.Has(i))
                         return false;                   
                 }
@@ -84,13 +88,13 @@ namespace GameCore.Base
                 return true;
             return true;
         }
-        public static TComponent GetComponent<TComponent>(Card card) where TComponent : Component, new()
+        public static TConcept GetConcept<TConcept>(Card card) where TConcept : Concept, new()
         {
             if (card == null)
                 return null;
-            if (card.Has<TComponent>())
+            if (card.Has<TConcept>())
                 return null;
-            return card.Get<TComponent>();
+            return card.Get<TConcept>();
         }
         public virtual JObject ToJsonObject()
         {

@@ -6,18 +6,19 @@ namespace GameCore.Base
 {
     public partial class Card
     {
-        // which is just edit from ComponentSet, but remove something.
-        private Dictionary<int, Component> components;
-        public int ComponentsCount => components.Count;
-        public IList<int> ComponentsTypesCount => new List<int>(components.Keys); //return what types of component it have
-        public bool Has(int type_number) => components.ContainsKey(type_number);
+        // which is just edit from ConceptSet, but remove something.
+        private Dictionary<int, Concept> concepts;
+        public IList<Concept> Concepts { get => new List<Concept>(concepts.Values); }
+        public int ConceptsCount => concepts.Count;
+        public IList<int> ConceptsTypesCount => new List<int>(concepts.Keys); //return what types of concept it have
+        public bool Has(int type_number) => concepts.ContainsKey(type_number);
         public bool Has(params int[] type_numbers)
         {
             if (type_numbers == null)
                 return false;
             foreach (int type_number in type_numbers)
             {
-                if (!components.ContainsKey(type_number))
+                if (!concepts.ContainsKey(type_number))
                     return false;
             }
             return true;
@@ -28,60 +29,60 @@ namespace GameCore.Base
                 return false;
             foreach (int type_number in type_numbers)
             {
-                if (!components.ContainsKey(type_number))
+                if (!concepts.ContainsKey(type_number))
                     return false;
             }
             return true;
         }
-        public bool Has(string type_name) => components.ContainsKey(ComponentManager.GetTypeNumber(type_name));
+        public bool Has(string type_name) => concepts.ContainsKey(ConceptManager.GetTypeNumber(type_name));
         public bool Has(params string[] type_names)
         {
             if (type_names == null)
                 return false;
             foreach (string type_name in type_names)
             {
-                if (!components.ContainsKey(ComponentManager.GetTypeNumber(type_name)))
+                if (!concepts.ContainsKey(ConceptManager.GetTypeNumber(type_name)))
                     return false;
             }
             return true;
         }
-        public bool Has<TComponent>() where TComponent : Component, new()
+        public bool Has<TConcept>() where TConcept : Concept, new()
         {
-            return Has(ComponentManager.GetSpawner<TComponent>().Type_Number);
+            return Has(ConceptManager.GetSpawner<TConcept>().Type_Number);
         }
-        public Component Get(int type_number)
+        public Concept Get(int type_number)
         {
-            foreach (var node in components)
+            foreach (var node in concepts)
             {
                 if (node.Key == type_number)
                     return node.Value;
             }
             return null;
         }
-        public Component Get(string type_name)
+        public Concept Get(string type_name)
         {
-            foreach (var node in components)
+            foreach (var node in concepts)
             {
                 if (node.Value.TypeName.Equals(type_name))
                     return node.Value;
             }
             return null;
         }
-        public TComponent Get<TComponent>() where TComponent : Component, new()
+        public TConcept Get<TConcept>() where TConcept : Concept, new()
         {
             // if any error, return null
-            if (!Has<TComponent>())
+            if (!Has<TConcept>())
                 return null;
-            return Get(ComponentManager.GetSpawner<TComponent>().Type_Number) as TComponent;
+            return Get(ConceptManager.GetSpawner<TConcept>().Type_Number) as TConcept;
         }
-        public List<Component> Get(params int[] type_numbers)
+        public List<Concept> Get(params int[] type_numbers)
         {
             if (type_numbers == null)
                 return null;
-            List<Component> cs = new List<Component>(type_numbers.Length);
+            List<Concept> cs = new List<Concept>(type_numbers.Length);
             for (int i = 0; i < type_numbers.Length; i++)
             {
-                foreach (var node in components)
+                foreach (var node in concepts)
                 {
                     if (node.Key == type_numbers[i])
                         cs.Add(node.Value);
@@ -89,14 +90,14 @@ namespace GameCore.Base
             }
             return cs;
         }
-        public List<Component> Get(IList<int> type_numbers)
+        public List<Concept> Get(IList<int> type_numbers)
         {
             if (type_numbers == null)
                 return null;
-            List<Component> cs = new List<Component>(type_numbers.Count);
+            List<Concept> cs = new List<Concept>(type_numbers.Count);
             for (int i = 0; i < type_numbers.Count; i++)
             {
-                foreach (var node in components)
+                foreach (var node in concepts)
                 {
                     if (node.Key == type_numbers[i])
                         cs.Add(node.Value);
@@ -104,8 +105,7 @@ namespace GameCore.Base
             }
             return cs;
         }
-        public IList<Component> Components { get => new List<Component>(components.Values); }
-        public bool Add(Component thing)
+        public bool Add(Concept thing)
         {
             // If there is already have same-type one, Do nothing, return true.
             // If TypeNumber is -1, Do nothing, return true.
@@ -118,14 +118,14 @@ namespace GameCore.Base
                 return true;
             else
             {
-                components.Add(thing.TypeNumber, thing);
+                concepts.Add(thing.TypeNumber, thing);
                 thing.Card = this;
                 return false;
             }
         }
-        public void Add(Component[] things)
+        public void Add(Concept[] things)
         {
-            // Components of array should be multi type.
+            // Concepts of array should be multi type.
             // If there is already have same-type one, Do nothing.
             // If TypeNumber is -1, Do nothing.
             // If a thing already has a Card, Do nothing.
@@ -141,8 +141,8 @@ namespace GameCore.Base
         {
             if (Has(type_number))
             {
-                components[type_number].Card = null;
-                components.Remove(type_number);
+                concepts[type_number].Card = null;
+                concepts.Remove(type_number);
             }
         }
         public void Remove(params int[] type_numbers)
@@ -161,9 +161,9 @@ namespace GameCore.Base
                     Remove(type_numbers[i]);
                 }
         }
-        public void Remove<TComponent>() where TComponent : Component, new()
+        public void Remove<TConcept>() where TConcept : Concept, new()
         {
-            Remove(ComponentManager.GetSpawner<TComponent>().Type_Number);
+            Remove(ConceptManager.GetSpawner<TConcept>().Type_Number);
         }
     }
 }

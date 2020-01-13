@@ -46,13 +46,13 @@ namespace GameCore
         
         public static string DirName {get => p_instance._dir_name;} //target save dir
         public static Random Random { get => p_instance._random;}
-        public static ComponentManager ComponentManager {get => p_instance._component_mananager;}
+        public static ConceptManager ConceptManager {get => p_instance._concept_mananager;}
         public static CardList Cards{ get => p_instance._cards;}
         public static HookManager HookManager { get => p_instance._hook_manager;}
-        public static RuleManager RuleManager { get => p_instance._rule_manager;}
+        public static RuleManager Rules { get => p_instance._rule_manager;}
         private string _dir_name = null;
         private Random _random = null;
-        private ComponentManager _component_mananager = null;
+        private ConceptManager _concept_mananager = null;
         private CardList _cards = null;
         private HookManager _hook_manager = null;
         private RuleManager _rule_manager = null;

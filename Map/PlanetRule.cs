@@ -9,7 +9,7 @@ namespace GameCore.Map
 {
     public class PlanetRule : Base.Rule
     {
-        class CPlanet : Base.Component
+        class CPlanet : Base.Concept
         {
             private const string _type_name = "CPlanet";
             public override string TypeName => _type_name;
@@ -26,14 +26,14 @@ namespace GameCore.Map
         public bool Init()
         {
              // rule's initialize
-            _c_world_type_number = ComponentSpawner<WorldRule.CWorld>.GetSpawner().Type_Number;
-            _c_planet_type_number = ComponentSpawner<CPlanet>.GetSpawner().Type_Number;
-            _c_location_type_number = ComponentSpawner<Root.LocationRule.CLocation>.GetSpawner().Type_Number;
+            _c_world_type_number = ConceptSpawner<WorldRule.CWorld>.GetSpawner().Type_Number;
+            _c_planet_type_number = ConceptSpawner<CPlanet>.GetSpawner().Type_Number;
+            _c_location_type_number = ConceptSpawner<Root.LocationRule.CLocation>.GetSpawner().Type_Number;
             return false;
         }
         public bool AddCPlanet(Base.Card card)
         {
-            if(AddComponent<CPlanet>(card) == null)
+            if(AddConcept<CPlanet>(card) == null)
                 return true;
             var c_planet = card.Get<CPlanet>();
             if(c_planet == null)
@@ -44,9 +44,9 @@ namespace GameCore.Map
         {
             // if at dstZ already has a world, do nothing, return true
             // the card need both CLand and CLocation
-            if(!HasComponent(planet_card, _c_planet_type_number, _c_location_type_number))
+            if(!HasConcept(planet_card, _c_planet_type_number, _c_location_type_number))
                 return true;
-            if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
+            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
             var c_location_world = world_card.Get(_c_world_type_number) as Root.LocationRule.CLocation;
             var c_planet = planet_card.Get(_c_planet_type_number) as CPlanet;
@@ -64,9 +64,9 @@ namespace GameCore.Map
         public bool RemoveWorld(Base.Card planet_card, Base.Card world_card)
         {
             // the card need both CLand and CLocation
-            if(!HasComponent(planet_card, _c_planet_type_number, _c_location_type_number))
+            if(!HasConcept(planet_card, _c_planet_type_number, _c_location_type_number))
                 return true;
-            if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
+            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
             var c_location_world = world_card.Get(_c_world_type_number) as Root.LocationRule.CLocation;
             var c_planet = planet_card.Get(_c_planet_type_number) as CPlanet;
@@ -83,9 +83,9 @@ namespace GameCore.Map
         {
             // if at dstZ already has a world, do nothing, return true
             // the card need both CLand and CLocation
-            if(!HasComponent(planet_card, _c_planet_type_number, _c_location_type_number))
+            if(!HasConcept(planet_card, _c_planet_type_number, _c_location_type_number))
                 return true;
-            if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
+            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
             var c_location_world = world_card.Get(_c_world_type_number) as Root.LocationRule.CLocation;
             var c_planet = planet_card.Get(_c_planet_type_number) as CPlanet;

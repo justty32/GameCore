@@ -12,7 +12,7 @@ namespace GameCore.Interface
     {
         // u:util
         // h:hook
-        // c:component
+        // c:concept
         // d:card
         // r:rule
         // i:interface
@@ -29,7 +29,7 @@ namespace GameCore.Interface
             ,h
         //
             ,c
-        // not have component,
+        // not have concept,
             ,dNHC
         //
             ,r

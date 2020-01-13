@@ -86,60 +86,79 @@ namespace GameCore.Root
             }
             public void Carry()
             {
-                if (Hour > Core.RuleManager.TimeRule.HourMax)
+                if (Hour > Core.Rules.TimeRule.HourMax)
                 {
-                    Day += Hour / (Core.RuleManager.TimeRule.HourMax + 1);
-                    Hour = Hour % (Core.RuleManager.TimeRule.HourMax + 1);
+                    Day += Hour / (Core.Rules.TimeRule.HourMax + 1);
+                    Hour = Hour % (Core.Rules.TimeRule.HourMax + 1);
                 }
                 if (Hour < 0) 
                 {
-                    Day -= ((-Hour) / (Core.RuleManager.TimeRule.HourMax + 1)) + 1;
-                    Hour = (-Hour) % (Core.RuleManager.TimeRule.HourMax + 1);
+                    Day -= ((-Hour) / (Core.Rules.TimeRule.HourMax + 1)) + 1;
+                    Hour = (-Hour) % (Core.Rules.TimeRule.HourMax + 1);
                     if (Hour == 0)
                     {
                         Day++;
                     }
                     else
                     {
-                        Hour = (Core.RuleManager.TimeRule.HourMax + 1) - Hour;
+                        Hour = (Core.Rules.TimeRule.HourMax + 1) - Hour;
                     }
                 }
-                if (Day > Core.RuleManager.TimeRule.DayMax)
+                if (Day > Core.Rules.TimeRule.DayMax)
                 {
-                    Month += Day / Core.RuleManager.TimeRule.DayMax;
-                    Day = Day % Core.RuleManager.TimeRule.DayMax;
+                    Month += Day / Core.Rules.TimeRule.DayMax;
+                    Day = Day % Core.Rules.TimeRule.DayMax;
                     if (Day == 0)
                     {
-                        Day = Core.RuleManager.TimeRule.DayMax;
+                        Day = Core.Rules.TimeRule.DayMax;
                         Month--;
                     }
                 }
                 if (Day < 1) 
                 {
-                    Month -= (-Day) / Core.RuleManager.TimeRule.DayMax + 1;
-                    Day = (-Day) % Core.RuleManager.TimeRule.DayMax;
-                    Day = Core.RuleManager.TimeRule.DayMax - Day;
+                    Month -= (-Day) / Core.Rules.TimeRule.DayMax + 1;
+                    Day = (-Day) % Core.Rules.TimeRule.DayMax;
+                    Day = Core.Rules.TimeRule.DayMax - Day;
                 }
-                if (Month > Core.RuleManager.TimeRule.MonthMax)
+                if (Month > Core.Rules.TimeRule.MonthMax)
                 {
-                    Year += Month / Core.RuleManager.TimeRule.MonthMax;
-                    Month = (Month % Core.RuleManager.TimeRule.MonthMax) + 1;
+                    Year += Month / Core.Rules.TimeRule.MonthMax;
+                    Month = (Month % Core.Rules.TimeRule.MonthMax) + 1;
                     if (Month == 0)
                     {
-                        Month = Core.RuleManager.TimeRule.MonthMax;
+                        Month = Core.Rules.TimeRule.MonthMax;
                         Year--;
                     }
                 }
                 if (Month < 1)
                 {
-                    Year -= (-Month) / Core.RuleManager.TimeRule.MonthMax + 1;
-                    Month = (-Month) % Core.RuleManager.TimeRule.MonthMax;
-                    Month = Core.RuleManager.TimeRule.MonthMax - Month;
+                    Year -= (-Month) / Core.Rules.TimeRule.MonthMax + 1;
+                    Month = (-Month) % Core.Rules.TimeRule.MonthMax;
+                    Month = Core.Rules.TimeRule.MonthMax - Month;
                 }
                 if (Year < 1)
                 {
                     Year = 1;
                 }
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Time time &&
+                       Year == time.Year &&
+                       Month == time.Month &&
+                       Day == time.Day &&
+                       Hour == time.Hour;
+            }
+
+            public override int GetHashCode()
+            {
+                var hashCode = -1541897947;
+                hashCode = hashCode * -1521134295 + Year.GetHashCode();
+                hashCode = hashCode * -1521134295 + Month.GetHashCode();
+                hashCode = hashCode * -1521134295 + Day.GetHashCode();
+                hashCode = hashCode * -1521134295 + Hour.GetHashCode();
+                return hashCode;
             }
         }
         public Time NowTime { get; private set; }

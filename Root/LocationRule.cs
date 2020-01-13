@@ -8,7 +8,7 @@ namespace GameCore.Root
 {
     public class LocationRule : Base.Rule
     {
-        public class CLocation : Base.Component
+        public class CLocation : Base.Concept
         {
             private readonly string _type_name = "CLocation";
             public override string TypeName => _type_name;
@@ -31,9 +31,9 @@ namespace GameCore.Root
                     BelowCards = new List<int>(below_cards);
                 else
                     BelowCards = new List<int>();
-                if(Core.RuleManager.LocationRule.LocationCards.Contains(Card.Number))
+                if(Core.Rules.LocationRule.LocationCards.Contains(Card.Number))
                     return true;
-                Core.RuleManager.LocationRule.LocationCards.Add(Card.Number);
+                Core.Rules.LocationRule.LocationCards.Add(Card.Number);
                 return false;
             }
             public override bool IsUsable()
@@ -82,17 +82,17 @@ namespace GameCore.Root
         public List<int> LocationCards {get; private set;} = null;
         public bool Init()
         {
-            _ctn_location = Base.ComponentManager.GetSpawner<CLocation>().Type_Number;
+            _ctn_location = Base.ConceptManager.GetSpawner<CLocation>().Type_Number;
             LocationCards = new List<int>(2000);
             return false; 
         }
         public bool AddCLocation(Base.Card card, int upper_card, params int[] below_cards)
         {
-            return AddComponent<CLocation>(card).Init(upper_card, below_cards);
+            return AddConcept<CLocation>(card).Init(upper_card, below_cards);
         }
         public bool RemoveCLocation(Base.Card card)
         {
-            if(RemoveComponent<CLocation>(card))
+            if(RemoveConcept<CLocation>(card))
                 return true;
             LocationCards.Remove(card.Number);
             return false;

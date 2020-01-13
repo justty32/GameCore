@@ -5,14 +5,14 @@ using Newtonsoft.Json.Linq;
 
 namespace GameCore.Base
 {
-    public abstract class Component : Util.INode
+    public abstract class Concept : Util.INode
     {
         /*
          * Every Derives should implement TypeName{get;}, Which is the basis to distinguish type of it
          * TypeNumber is also auto-distributed by TypeName, one associated to one.
          * 
          * To create an entity, use GetSpawner<>().Spawn() first, instead of default constructor.
-         * Only if after it, the TypeNumber of the component-type is effective.
+         * Only if after it, the TypeNumber of the concept-type is effective.
          */
         public int TypeNumber { get; set; } = -1; // Which is auto distributed by GameCore, Don't set it Directly ! 
         public abstract string TypeName { get; }
@@ -52,20 +52,20 @@ namespace GameCore.Base
              * If there isn't have specific spawner yet, TypeNumber not change.
              * 
              * type_number setting while spawner be create.
-             * use Component.GetSpawner<Type>() to create spawner
+             * use Concept.GetSpawner<Type>() to create spawner
              */
-            if (Core.ComponentManager.SpawnerTypeNameSet.ContainsKey(TypeName))
-                TypeNumber = Core.ComponentManager.SpawnerTypeNameSet[TypeName];
+            if (Core.ConceptManager.SpawnerTypeNameSet.ContainsKey(TypeName))
+                TypeNumber = Core.ConceptManager.SpawnerTypeNameSet[TypeName];
             return TypeNumber;
         }
-        public Component() {
+        protected Concept() {
             /*
-             * default create, not recommend. please use Component.GetSpawner().Spawn().
+             * default create, not recommend. please use Concept.GetSpawner().Spawn().
              * Should use TypeNumberAutoSet() After, to set the TypeNumber, or still be -1.
              * 
              * If there isn't have specific spawner yet, TypeNumber not change.
              * TypeNumber setting while spawner be create.
-             * use Component.GetSpawner<Type>() to create spawner
+             * use Concept.GetSpawner<Type>() to create spawner
              */
         }
     } 

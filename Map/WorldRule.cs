@@ -10,7 +10,7 @@ namespace GameCore.Map
 {
     public class WorldRule : Base.Rule
     {
-        public class CWorld : Base.Component
+        public class CWorld : Base.Concept
         {
             private const string _type_name = "CWorld";
             public override string TypeName => _type_name;
@@ -45,14 +45,14 @@ namespace GameCore.Map
         public bool Init()
         {
              // rule's initialize
-            _c_world_type_number = ComponentManager.GetSpawner<CWorld>().Type_Number;
-            _c_land_type_number = ComponentManager.GetSpawner<LandRule.CLand>().Type_Number;
-            _c_location_type_number = ComponentManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _c_world_type_number = ConceptManager.GetSpawner<CWorld>().Type_Number;
+            _c_land_type_number = ConceptManager.GetSpawner<LandRule.CLand>().Type_Number;
+            _c_location_type_number = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             return false;
         }
         public bool AddCWorld(Base.Card card, int sizeX, int sizeY)
         {
-            if(AddComponent<CWorld>(card) == null)
+            if(AddConcept<CWorld>(card) == null)
                 return true;
             var c_world = card.Get<CWorld>() as CWorld;
             if(c_world == null)
@@ -63,9 +63,9 @@ namespace GameCore.Map
         {
             // Not Check if the land overlap others
             // the card need both CLand and CLocation
-            if(!HasComponent(land_card, _c_land_type_number, _c_location_type_number))
+            if(!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
                 return true;
-            if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
+            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
             if(positionX < 0 || positionY < 0)
                 return true;
@@ -87,9 +87,9 @@ namespace GameCore.Map
         public bool RemoveLand(Base.Card world_card, Base.Card land_card)
         {
             // the card need both CLand and CLocation
-            if(!HasComponent(land_card, _c_land_type_number, _c_location_type_number))
+            if(!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
                 return true;
-            if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
+            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
             var c_location_land = land_card.Get(_c_location_type_number) as Root.LocationRule.CLocation;
             var c_land = land_card.Get(_c_land_type_number) as LandRule.CLand;
@@ -107,9 +107,9 @@ namespace GameCore.Map
         {
             // Not Check if the land overlap others
             // the card need both CLand and CLocation
-            if(!HasComponent(land_card, _c_land_type_number, _c_location_type_number))
+            if(!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
                 return true;
-            if(!HasComponent(world_card, _c_world_type_number, _c_location_type_number))
+            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
             var c_land = land_card.Get(_c_land_type_number) as LandRule.CLand;
             var c_world = world_card.Get(_c_world_type_number) as CWorld;

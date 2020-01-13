@@ -27,9 +27,9 @@ SomeRule.AddCSome(card);
 Card card = new Card();
 card.Init();
 card.BeNew();
-card.AddComponent(Base.Component.GetSpawner<SomeRule.CSome>().SpawnBase());
-card.GetComponent<SomeRule.CSome>().Init();
-card.GetComponent<SomeRule.CSome>().BeNew();
+card.AddConcept(Base.Concept.GetSpawner<SomeRule.CSome>().SpawnBase());
+card.GetConcept<SomeRule.CSome>().Init();
+card.GetConcept<SomeRule.CSome>().BeNew();
 ```
 
 
@@ -42,12 +42,12 @@ class Big
 {
 	public int Number{ get; set;}
     public float FloatNumber{ get; set;}
-    public Component Component{ get; set;}
+    public Concept Concept{ get; set;}
     private int _number;
 	internal int numbers;  //no specific
 	internal int _numbers; //no specific
-    protected Component _c_component;
-	private int _ctn_component; //component's type number
+    protected Concept _c_concept;
+	private int _ctn_concept; //concept's type number
 	private int _cdn_card; //card's number
 	private Card _cd_card; //card
 	public int GetNumber() => _number;
@@ -58,19 +58,19 @@ class Big
     private void _HideFunc(){}
 }
 ```
-Define class with inherit `Base.Component`, add "C" in front of it, ex. `CLocation`, `CLand`.
+Define class with inherit `Base.Concept`, add "C" in front of it, ex. `CLocation`, `CLand`.
 
 Define class to be a rule, add "Rule" at its tail, ex. `LocationRule`, `TimeRule`.
 
 Reference of the class `Base.Card`, add "cd_" in front of it, ex. `cd_land`, `cd_tile`.
 
-Reference of the class who inherits `Base.Component`, add "c_" in front of it, ex. `c_location`, `c_land`
+Reference of the class who inherits `Base.Concept`, add "c_" in front of it, ex. `c_location`, `c_land`
 
 ```c#
 
 class TimeRule{}
 class LandRule{
-    class CLand : Base.Component
+    class CLand : Base.Concept
     {
         public int num;
     }
@@ -97,7 +97,7 @@ public void BeNew(){
 }
 ```
 
-`BeNew()`, for Card and its containing components who has a only ID, using this to distribute a only ID automatically, sometimes it 
+`BeNew()`, for Card and its containing concepts who has a only ID, using this to distribute a only ID automatically, sometimes it 
 do other things in it.
 
 Most of the time, use the default constructor first, Init() secondly, BeNew() finally.
@@ -107,32 +107,32 @@ little_card.Init();    //example, actually not like this
 little_card.BeNew();   //example.
 ```
 
-For all Component and its subclass, use Base.Component.GetSpawner<T>().Spawn to spawn a instance, T must be a Component's subclass.
+For all Concept and its subclass, use Base.Concept.GetSpawner<T>().Spawn to spawn a instance, T must be a Concept's subclass.
 
 Or use the non-template version: GetSpawner(), put parameter with specific type-number or type-name.
 
 ```c#
-private CLand _c_land = GameCore.Base.Component.GetSpawner<GameCore.Root.LandRule.CLand>().Spawn();
-private Component _c_land = GameCore.Base.Component.GetSpawner<GameCore.Root.LandRule.CLand>().SpawnBase();
-private CLocation _c_location = Component.GetSpawner(c_location_component_type_number).Spawn() as CLocation;
+private CLand _c_land = GameCore.Base.Concept.GetSpawner<GameCore.Root.LandRule.CLand>().Spawn();
+private Concept _c_land = GameCore.Base.Concept.GetSpawner<GameCore.Root.LandRule.CLand>().SpawnBase();
+private CLocation _c_location = Concept.GetSpawner(c_location_concept_type_number).Spawn() as CLocation;
 ```
 
-To visit a component of a `Card`'s instance, use `card.GetComponent()`, and put parameter of the component type-number. Also you can use the template version `card.GetComponent<T>()`.
+To visit a concept of a `Card`'s instance, use `card.GetConcept()`, and put parameter of the concept type-number. Also you can use the template version `card.GetConcept<T>()`.
 
 ```c#
-var c_location = location_card.GetComponent(_c_location_type_number) as CLocation; // need transformation
-var c_location = location_card.GetComponent<CLocation>();
+var c_location = location_card.GetConcept(_c_location_type_number) as CLocation; // need transformation
+var c_location = location_card.GetConcept<CLocation>();
 ```
 
-Every Component inheritance has a only ID, which is distributed automatically at the first instance of component be 
+Every Concept inheritance has a only ID, which is distributed automatically at the first instance of concept be 
 spawned from the correct way.
-> The correct way means using `Component.GetSpawner()` to Spawn a Component.
+> The correct way means using `Concept.GetSpawner()` to Spawn a Concept.
 
-You can get it from static function `GetSpawner()`, or from a instance of component by using `c_instance.TypeNumber`
+You can get it from static function `GetSpawner()`, or from a instance of concept by using `c_instance.TypeNumber`
 
 ```c#
-int _c_location_type_number = Component.GetSpawner<CLocation>().TypeNumber; // by GetSpawner
-var c_location = Component.GetSpawner<CLocation>().Spawn();
+int _c_location_type_number = Concept.GetSpawner<CLocation>().TypeNumber; // by GetSpawner
+var c_location = Concept.GetSpawner<CLocation>().Spawn();
 _c_location_type_number = c_location.TypeNumber;   // by instance.TypeNumber
 ```
 

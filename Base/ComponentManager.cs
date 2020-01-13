@@ -5,64 +5,64 @@ using Newtonsoft.Json.Linq;
 
 namespace GameCore.Base
 {
-    public class ComponentManager{
+    public class ConceptManager{
         public Dictionary<string, int> SpawnerTypeNameSet{get; private set;}
-        public Dictionary<int, IComponentSpawner> SpawnerList{get; private set;}
-        public ComponentManager(){
+        public Dictionary<int, IConceptSpawner> SpawnerList{get; private set;}
+        public ConceptManager(){
             SpawnerTypeNameSet = new Dictionary<string, int>();
-            SpawnerList = new Dictionary<int, IComponentSpawner>();
+            SpawnerList = new Dictionary<int, IConceptSpawner>();
         }
-        public static int GetTypesCount() => Core.ComponentManager.SpawnerList.Count; //return how many types of component.
+        public static int GetTypesCount() => Core.ConceptManager.SpawnerList.Count; //return how many types of concept.
         public static string GetTypeName(int type_number) {
-            if(Core.ComponentManager.SpawnerList.ContainsKey(type_number))
-                return Core.ComponentManager.SpawnerList[type_number]?.Type_Name;
+            if(Core.ConceptManager.SpawnerList.ContainsKey(type_number))
+                return Core.ConceptManager.SpawnerList[type_number]?.Type_Name;
             return null;
         }
         public static int GetTypeNumber(string type_name) {
             // return -1, if not find that.
-            if(Core.ComponentManager.SpawnerTypeNameSet.ContainsKey(type_name))
-                return Core.ComponentManager.SpawnerTypeNameSet[type_name];
+            if(Core.ConceptManager.SpawnerTypeNameSet.ContainsKey(type_name))
+                return Core.ConceptManager.SpawnerTypeNameSet[type_name];
             return -1;
         }
-        public static int GetTypeNumber<TComponentType>()
-            where TComponentType : Component, new()
+        public static int GetTypeNumber<TConceptType>()
+            where TConceptType : Concept, new()
         {
-            return GetSpawner<TComponentType>().Type_Number;
+            return GetSpawner<TConceptType>().Type_Number;
         }
-        public static ComponentSpawner<TComponennt> GetSpawner<TComponennt>()
-            where TComponennt : Component, new()
-        {
-            /*
-             * Return a spawner, which can spawn specific type of components.
-             * Every Type has a only one spawner.
-             */
-            return ComponentSpawner<TComponennt>.GetSpawner();
-        }
-        public static IComponentSpawner GetSpawner(int type_number)
+        public static ConceptSpawner<TComponennt> GetSpawner<TComponennt>()
+            where TComponennt : Concept, new()
         {
             /*
-             * Do Transformate by yourself.
-             * It could return null.
-             * 
-             * Return a spawner, which can spawn specific type of components.
+             * Return a spawner, which can spawn specific type of concepts.
              * Every Type has a only one spawner.
              */
-            if (type_number < 0 || type_number >= Core.ComponentManager.SpawnerList.Count)
-                return null;
-            return Core.ComponentManager.SpawnerList[type_number];
+            return ConceptSpawner<TComponennt>.GetSpawner();
         }
-        public static IComponentSpawner GetSpawner(string type_name)
+        public static IConceptSpawner GetSpawner(int type_number)
         {
             /*
              * Do Transformate by yourself.
              * It could return null.
              * 
-             * Return a spawner, which can spawn specific type of components.
+             * Return a spawner, which can spawn specific type of concepts.
              * Every Type has a only one spawner.
              */
-            if (!Core.ComponentManager.SpawnerTypeNameSet.ContainsKey(type_name))
+            if (type_number < 0 || type_number >= Core.ConceptManager.SpawnerList.Count)
                 return null;
-            return Core.ComponentManager.SpawnerList[Core.ComponentManager.SpawnerTypeNameSet[type_name]];
+            return Core.ConceptManager.SpawnerList[type_number];
+        }
+        public static IConceptSpawner GetSpawner(string type_name)
+        {
+            /*
+             * Do Transformate by yourself.
+             * It could return null.
+             * 
+             * Return a spawner, which can spawn specific type of concepts.
+             * Every Type has a only one spawner.
+             */
+            if (!Core.ConceptManager.SpawnerTypeNameSet.ContainsKey(type_name))
+                return null;
+            return Core.ConceptManager.SpawnerList[Core.ConceptManager.SpawnerTypeNameSet[type_name]];
         }
     }
 }

@@ -92,7 +92,7 @@ namespace GameCore.Base
         }
     }
     /*
-    public class CCom : Base.Component
+    public class CCom : Base.Concept
     {
         public readonly string _type_name = "ChangeThis"; 
         public override string TypeName => _type_name ;
@@ -131,20 +131,20 @@ namespace GameCore.Base
         private int _ctn_ = -1;
         public bool Init()
         {
-            _ctn_ = Base.Component.GetSpawner<CCom>().Type_Number;
+            _ctn_ = Base.Concept.GetSpawner<CCom>().Type_Number;
             return false;
         }
         public CCom AddCTile(Base.Card card)
         {
-            return AddComponent<CCom>(card);
+            return AddConcept<CCom>(card);
         }
         public bool AddCTile(Base.Card card, int a)
         {
-            return AddComponent<CCom>(card).Init();
+            return AddConcept<CCom>(card).Init();
         }
         public bool RemoveCLocation(Base.Card card)
         {
-            if(RemoveComponent<CCom>(card))
+            if(RemoveConcept<CCom>(card))
                 return true;
             return false;
         }

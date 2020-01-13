@@ -5,7 +5,7 @@ namespace GameCore.Map
 {
     public class LandformRule : Base.Rule
     {
-        public class CLandform : Base.Component
+        public class CLandform : Base.Concept
         {
             private string _type_name = "CLandform";
             public override string TypeName => _type_name;
@@ -23,9 +23,9 @@ namespace GameCore.Map
         private int _c_terrain_type_number = -1;
         public bool Init()
         {
-            _c_location_type_number = Base.ComponentManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
-            _c_landform_type_number = Base.ComponentManager.GetSpawner<CLandform>().Type_Number;
-            _c_terrain_type_number = Base.ComponentManager.GetSpawner<TerrainRule.CTerrain>().Type_Number;
+            _c_location_type_number = Base.ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _c_landform_type_number = Base.ConceptManager.GetSpawner<CLandform>().Type_Number;
+            _c_terrain_type_number = Base.ConceptManager.GetSpawner<TerrainRule.CTerrain>().Type_Number;
             return false;
         }
     }
