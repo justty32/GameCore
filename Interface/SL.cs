@@ -16,40 +16,21 @@ namespace GameCore.Interface
 {
     public class Load
     {
-        public Config Config()
+        public bool Config()
         {
             string json = Core.INeed.ImportConfig();
             if(json == null)
-                return null;
+                return true;
             Config config = null;
             try{
                 config = JsonConvert.DeserializeObject<Config>(json);
             }catch(Exception){
-                return null;
-            }
-            return config;
-        }
-        public bool Cards()
-        {
-            string json = Core.INeed.Import(Core.DirName, "cards.json");
-            if(json == null)
-                return true;
-            if(json.Equals(""))
-                return true;
-            try{
-                JArray oj = JArray.Parse(json);
-                for(int i = 0; i < oj.Count; i++)
-                {
-                    Card card = new Card();
-                    if(Core.Cards[i] != null)
-                        Core.Cards[i].Clear();
-                    card.FromJsonObject((JObject)oj[i]);
-                }
-            }catch(Exception){
                 return true;
             }
-            return false;
+            return config == null;
         }
+        public bool Card(params int[] numbers) { return false; }
+        public bool Cards(int start_index, int count) => false;
         /*
         public bool CardFragment(int index, bool is_cover = false)
         {

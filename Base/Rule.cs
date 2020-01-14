@@ -13,6 +13,9 @@ using Newtonsoft.Json.Linq;
 // if call the copy, and parameter f is Flag.NeedConcepts, 
 // it will return if the card has the needed concepts of MoveLand(Card cd)
 
+// make concept's number in default constructor
+// load init data at Init(), can visit cards at that time, suggest visit card 0.
+
 namespace GameCore.Base
 {
     public abstract class Rule : Util.INode
@@ -21,6 +24,7 @@ namespace GameCore.Base
         {
             Core.Rules.RuleDic.Add(this.ToString(), this);
         }
+        public virtual bool Init() => false;
         public static TConcept AddConcept<TConcept>(Card card) where TConcept : Concept, new()
         {
             if (card == null)
@@ -95,16 +99,6 @@ namespace GameCore.Base
             if (card.Has<TConcept>())
                 return null;
             return card.Get<TConcept>();
-        }
-        public virtual JObject ToJsonObject()
-        {
-            return new JObject();
-        }
-        public virtual bool FromJsonObject(JObject js)
-        {
-            if(js == null) 
-                return true;
-            return false;
         }
         public virtual bool IsUsable() => true;
     }

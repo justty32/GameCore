@@ -31,7 +31,13 @@ namespace GameCore.Base
             get
             {
                 if (!cards.ContainsKey(number))
-                    return null;
+                {
+                    if (Core.Load.Card(number))
+                        return null;
+                    if (!cards.ContainsKey(number))
+                        return null;
+                    return cards[number];
+                }
                 else
                     return cards[number];
             }

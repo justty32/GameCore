@@ -8,7 +8,7 @@ namespace GameCore.Interface
     // Can't be changed by outside
     // Difference with Config.cs, is these things shouldn't be change
     // Be separated by version, same version offer same member and same value.
-    public class CoreInfo
+    public static class CoreInfo
     {
         public static readonly string Version = "0.01";
 
