@@ -59,11 +59,13 @@ namespace GameCore
         public static CardList Cards{ get => p_instance._cards;}
         public static HookManager HookManager { get => p_instance._hook_manager;}
         public static RuleManager Rules { get => p_instance._rule_manager;}
+        public static Dynamic Dynamic { get => p_instance._dynamic; }
         private string _dir_name = null;
         private ConceptManager _concept_mananager = null;
         private CardList _cards = null;
         private HookManager _hook_manager = null;
         private RuleManager _rule_manager = null;
+        private Dynamic _dynamic = null;
         public static bool LoadGame(string save_name)
         {
             p_instance._state.Log.AppendLine("loading game from - ");
@@ -78,7 +80,8 @@ namespace GameCore
             p_instance._hook_manager = new HookManager();
             p_instance._rule_manager = new RuleManager();
             p_instance._rule_manager.Init();
-            //TODO: load scripts, modules...
+            p_instance._dynamic = new Dynamic(null);
+            //TODO: load scripts, modules, dynamic...
             return false;
         }
         public static bool SaveGame(string save_name = null)
@@ -94,7 +97,7 @@ namespace GameCore
                 if(Core.INeed.IsSaveDirLegal(save_name))
                     return true;
             }
-            //TODO: save cards, scripts, modules...
+            //TODO: save cards, scripts, modules, dynamic lists...
             return false;
         }
         public static bool CreateNewGame(string save_name = null)
@@ -114,6 +117,7 @@ namespace GameCore
         {
             p_instance._state.Log.AppendLine("release game data...");
             //TODO:release scripts, modules...
+            p_instance._dynamic = null;
             p_instance._rule_manager = null;
             p_instance._hook_manager = null;
             p_instance._cards = null;

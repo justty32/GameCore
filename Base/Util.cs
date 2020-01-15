@@ -11,13 +11,6 @@ namespace GameCore.Base
         {
             bool IsUsable();
         }
-        public bool IsUsable(INode node)
-        {
-            if (node != null)
-                if (node.IsUsable())
-                    return true;
-            return false;
-        }
         public static bool HasAnyNull(params object[] obs)
         {
             foreach (var ob in obs)
@@ -100,7 +93,7 @@ namespace GameCore.Base
         {
             return false;
         }
-        public override bool FromJsonObject(Newtonsoft.Json.Linq.JObject js)
+        public override bool FromJsonObject(JObject js)
         {
             if(base.FromJsonObject(js))
                 return true;

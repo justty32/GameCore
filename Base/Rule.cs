@@ -3,18 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-// every rule, should register in Interface.Rules, using _NewAndRegist()
-// if there are some data need to save to ruledata.json file, implement FromJson and ToJson
-// there are template in Base.Util.RRule, copy that by ctrl-c and ctrl-v
-
-// Rule.Flag, can used to define a function's copy Foo(Flag f)
-// by diff of parameter, can return needed result
-// example : a function LandRule.MoveLand(Card cd), we make a copy MoveLand(Flag f, Card cd)
-// if call the copy, and parameter f is Flag.NeedConcepts, 
-// it will return if the card has the needed concepts of MoveLand(Card cd)
+// there is a template in Base.Util.RRule, copy that by ctrl-c and ctrl-v
 
 // make concept's number in default constructor
-// load init data at Init(), can visit cards at that time, suggest visit card 0.
 
 namespace GameCore.Base
 {
@@ -25,6 +16,34 @@ namespace GameCore.Base
             Core.Rules.RuleDic.Add(this.ToString(), this);
         }
         public virtual bool Init() => false;
+        public virtual bool IsUsable() => true;
+        public virtual bool FromJsonObject(JObject json)
+        {
+            if (json == null)
+                return true;
+            try
+            {
+                if (!((string)json["RuleName"]).Equals(GetType().ToString()))
+                    return true;
+            }catch(Exception)
+            {
+                return true;
+            }
+            return false;
+        }
+        public virtual JObject ToJsonObject()
+        {
+            JObject json = null; 
+            try
+            {
+                json = new JObject();
+                json.Add("RuleName", GetType().ToString());
+            }catch(Exception)
+            {
+                return null;
+            }
+            return json;
+        }
         public static TConcept AddConcept<TConcept>(Card card) where TConcept : Concept, new()
         {
             if (card == null)
@@ -100,6 +119,5 @@ namespace GameCore.Base
                 return null;
             return card.Get<TConcept>();
         }
-        public virtual bool IsUsable() => true;
     }
 }

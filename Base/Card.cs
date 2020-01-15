@@ -87,8 +87,6 @@ namespace GameCore.Base
                     concept_names.Add(c.TypeName);
                     concepts.Add(c.ToJsonObject());
                 }
-                ojs.Add(new JProperty("Concept_numbers", concept_numbers));
-                ojs.Add(new JProperty("Concept_names", concept_names));
                 ojs.Add(new JProperty("Concepts", concepts));
             }catch(Exception){
                 return null;

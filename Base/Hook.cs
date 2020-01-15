@@ -2,390 +2,156 @@
 using System.Collections.Generic;
 using System.Text;
 
+// mostly use class Util for place_holder, as for Tinput, Toutput
+
 namespace GameCore.Base
 {
     public class HookManager
     {
-        /*
-         * Just go create entities unrestricted,
-         * cause all of those will visit same list of registered hooks.
-         */
-        private Dictionary<string, object> hooks = new Dictionary<string, object>();
-        public bool RegisterHook<Tinput, Toutput>(Hook<Tinput, Toutput> hook, string hook_name) {
-            //If there is already the same name hook, Return True
-            if (hooks.ContainsKey(hook_name))
+        public Dictionary<string, IHookServer> Servers = new Dictionary<string, IHookServer>();
+        public bool Register(string register_name, IHookServer hook_server)
+        {
+            if (hook_server == null || register_name == null)
                 return true;
-            hooks.Add(hook_name, hook);
+            if (Servers.ContainsKey(register_name))
+                return true;
+            Servers.Add(register_name, hook_server);
             return false;
         }
-        public bool RegisterHook<Tinput>(Hook<Tinput> hook, string hook_name) {
-            //If there is already the same name hook, Return True
-            if (hooks.ContainsKey(hook_name))
+        public bool UnRegister(string register_name)
+        {
+            if (register_name == null)
                 return true;
-            hooks.Add(hook_name, hook);
+            if (!Servers.ContainsKey(register_name))
+                return true;
+            Servers.Remove(register_name);
             return false;
         }
-        public bool RegisterHook(Hook hook, string hook_name) {
-            //If there is already the same name hook, Return True
-            if (hooks.ContainsKey(hook_name))
+        public bool HasRegister<Tinput, Toutput>(string register_name)
+        {
+            if (register_name == null)
+                return false;
+            if (!Servers.ContainsKey(register_name))
+                return false;
+            if (Servers[register_name] is HookServer<Tinput, Toutput>)
                 return true;
-            hooks.Add(hook_name, hook);
             return false;
         }
-        public bool HasRegistered(string hook_name) => hooks.ContainsKey(hook_name);
-        public IHookUser<Tinput, Toutput> GetHookUser<Tinput, Toutput>(string hook_name)
+        public bool Bind<Tinput, Toutput>(string server_name, HookClient<Tinput, Toutput> client)
         {
-            return hooks?[hook_name] as IHookUser<Tinput, Toutput>;
-        }
-        public IHookUser<Tinput> GetHookUser<Tinput>(string hook_name)
-        {
-            return hooks?[hook_name] as IHookUser<Tinput>;
-        }
-        public IHookUser GetHookUser(string hook_name)
-        {
-            return hooks?[hook_name] as IHookUser;
-        }
-        public int BindHook<Tinput, Toutput>(string hook_name, Func<Tinput, Toutput> func)
-        {
-            //Return func_index in hook's func_list
-            var hook = hooks[hook_name] as Hook<Tinput, Toutput>;
-            return (hook == null) ? -1 : hook.BindHook(func);
-        }
-        public int BindHook<Tinput>(string hook_name, Action<Tinput> func)
-        {
-            //Return func_index in hook's func_list
-            var hook = hooks[hook_name] as Hook<Tinput>;
-            return (hook == null) ? -1 : hook.BindHook(func);
-        }
-        public int BindHook(string hook_name, Action func)
-        {
-            //Return func_index in hook's func_list
-            var hook = hooks[hook_name] as Hook;
-            return (hook == null) ? -1 : hook.BindHook(func);
-        }
-        public void UnbindHook<Tinput, Toutput>(string hook_name, Func<Tinput, Toutput> func)
-        {
-            var hook = hooks[hook_name] as Hook<Tinput, Toutput>;
-            if (hook != null)
-                if (hook.HasFunc(func))
-                    hook.UnbindHook(func);
-        }
-        public void UnbindHook<Tinput>(string hook_name, Action<Tinput> func)
-        {
-            var hook = hooks[hook_name] as Hook<Tinput>;
-            if (hook != null)
-                if (hook.HasFunc(func))
-                    hook.UnbindHook(func);
-        }
-        public void UnbindHook(string hook_name, Action func)
-        {
-            var hook = hooks[hook_name] as Hook;
-            if (hook != null)
-                if (hook.HasFunc(func))
-                    hook.UnbindHook(func);
-        }
-        public void UnbindHookAt<Tinput, Toutput>(string hook_name, int func_index)
-        {
-            var hook = hooks[hook_name] as Hook<Tinput, Toutput>;
-            if (hook != null)
-                    hook.UnbindHookAt(func_index);
-        }
-        public void UnbindHookAt<Tinput>(string hook_name, int func_index)
-        {
-            var hook = hooks[hook_name] as Hook<Tinput>;
-            if (hook != null)
-                if (hook != null)
-                    hook.UnbindHookAt(func_index);
-        }
-        public void UnbindHookAt(string hook_name, int func_index)
-        {
-            var hook = hooks[hook_name] as Hook;
-            if (hook != null)
-                if (hook != null)
-                    hook.UnbindHookAt(func_index);
-        }
-    }
-    public interface IHookUser<Tinput, Toutput>
-    {
-        int BindHook(Func<Tinput, Toutput> func);
-        void UnbindHook(Func<Tinput, Toutput> func);
-        void UnbindHookAt(int func_index);
-        int GetFuncIndex(Func<Tinput, Toutput> func);
-        bool HasFunc(Func<Tinput, Toutput> func);
-        int GetFuncAmount();
-    }
-    public interface IHookUser<Tinput>
-    {
-        int BindHook(Action<Tinput> func);
-        void UnbindHook(Action<Tinput> func);
-        void UnbindHookAt(int func_index);
-        int GetFuncIndex(Action<Tinput> func);
-        bool HasFunc(Action<Tinput> func);
-        int GetFuncAmount();
-    }
-    public interface IHookUser
-    {
-        int BindHook(Action func);
-        void UnbindHook(Action func);
-        void UnbindHookAt(int func_index);
-        int GetFuncIndex(Action func);
-        bool HasFunc(Action func);
-        int GetFuncAmount();
-    }
-    public class Hook<Tinput, Toutput> : IHookUser<Tinput, Toutput>
-    {
-        protected List<Func<Tinput, Toutput>> ts = new List<Func<Tinput, Toutput>>();
-        public string RegisteredName { get; }
-        public bool HasRegistered { get; }
-        private Hook() { }
-        public Hook(string name) {
-            RegisteredName = name;
-            HasRegistered = true;
-            StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (Core.HookManager.RegisterHook<Tinput, Toutput>(this, name))
-            {
-                stringBuilder.Append("_1");
-                for (int i = 2; i < 100; i++)
-                {
-                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
-                    stringBuilder.Append(i);
-                    if (!Core.HookManager.RegisterHook<Tinput, Toutput>(this, stringBuilder.ToString()))
-                        goto end;
-                }
-                stringBuilder = null;
-                HasRegistered = false;
-            }
-            end:
-            RegisteredName = (stringBuilder != null) ? (stringBuilder.ToString()) : (null);
-        }
-        public IHookUser<Tinput, Toutput> GetHookUser() => this;
-        public Func<Tinput, Toutput> GetFuncAt(int index) => (index < 0 || index > ts.Count) ? (null) : (ts?[index]);
-        public void CallAll(Tinput in_thing)
-        {
-            if (in_thing != null)
-                foreach (var iter in ts)
-                {
-                    iter(in_thing);
-                }
-        }
-        public bool CallAll(Tinput in_thing, List<Toutput> out_things)
-        {
-            if (out_things == null)
+            if (server_name == null || client == null)
                 return true;
-            else if (out_things.Count != ts.Count)
-                return true;
+            if (HasRegister<Tinput, Toutput>(server_name))
+                return (Servers[server_name] as HookServer<Tinput, Toutput>).Bind(client);
             else
-            {
-                for (int i = 0; i < ts.Count; i++)
-                {
-                    out_things[i] = ts[i](in_thing);
-                }
-            }
+                return true;
+        }
+        public HookClient<Tinput, Toutput> Bind<Tinput, Toutput>(string server_name, Func<Tinput, Toutput> function)
+        {
+            if (server_name == null || function == null)
+                return null;
+            if (HasRegister<Tinput, Toutput>(server_name))
+                return (Servers[server_name] as HookServer<Tinput, Toutput>).Bind(function);
+            else
+                return null;
+        }
+        public bool UnBind<Tinput, Toutput>(string server_name, HookClient<Tinput, Toutput> client)
+        {
+            if (server_name == null || client == null)
+                return true;
+            if (HasRegister<Tinput, Toutput>(server_name))
+                return (Servers[server_name] as HookServer<Tinput, Toutput>).UnBind(client.Order);
+            else
+                return true;
+        }
+        public bool UnBind(string server_name, int order)
+        {
+            if (server_name == null)
+                return true;
+            if (Servers.ContainsKey(server_name))
+                return Servers[server_name].UnBind(order);
+            else
+                return true;
+        }
+    }
+    public interface IHookServer
+    {
+        bool UnBind(int order);
+    }
+    public class HookServer<Tinput, Toutput> : IHookServer
+    {
+        public List<HookClient<Tinput, Toutput>> Clients { get; private set; } = new List<HookClient<Tinput, Toutput>>();
+        public string RegisteredName = null;
+        public HookServer(string register_name = null)
+        {
+            Register(register_name);    
+        }
+        public bool Register(string register_name)
+        {
+            if (Core.HookManager.Register(register_name, this))
+                return true;
+            RegisteredName = register_name;
             return false;
         }
-        public void CallAll(List<Tinput> in_things)
-        {
-            if (in_things != null)
-                if (in_things.Count == ts.Count)
-                {
-                    for (int i = 0; i < ts.Count; i++)
-                    {
-                        ts[i](in_things[i]);
-                    }
-                }
+        public bool UnRegister() {
+            RegisteredName = null;
+            return Core.HookManager.UnRegister(RegisteredName); 
         }
-        public bool CallAll(List<Tinput> in_things, List<Toutput> out_things)
+        public bool Bind(HookClient<Tinput, Toutput> client)
         {
-            if (in_things == null)
+            if (client == null)
                 return true;
-            if (in_things.Count != ts.Count)
-                return true;
-            if (out_things == null)
-                return true;
-            else if (out_things.Count != ts.Count)
-                return true;
-            else
-            {
-                for (int i = 0; i < ts.Count; i++)
-                {
-                    out_things[i] = ts[i](in_things[i]);
-                }
-            }
+            client.Order = Clients.Count;
+            Clients.Add(client);
+            client.Server = this;
             return false;
         }
-        public void CallAt(int index, Tinput in_thing)
+        public HookClient<Tinput, Toutput> Bind(Func<Tinput, Toutput> function)
         {
-            if (index < 0 || index > ts.Count) { }
-            else if (ts[index] == null) { }
-            else
-            {
-                ts[index](in_thing);
-            }
+            if (function == null)
+                return null;
+            var c = new HookClient<Tinput, Toutput>(function);
+            c.Order = Clients.Count;
+            Clients.Add(c);
+            c.Server = this;
+            return c;
         }
-        public void CallAt(int index, Tinput in_thing, Toutput out_thing)
+        public bool UnBind(int client_order)
         {
-            if (index < 0 || index > ts.Count) { }
-            else if (ts[index] == null) { }
-            else
-            {
-                out_thing = ts[index](in_thing);
-            }
+            if (client_order < 0 || client_order >= Clients.Count)
+                return true;
+            if (Clients?[client_order] == null)
+                return true;
+            Clients[client_order].Order = -1;
+            Clients[client_order].Server = null;
+            Clients.RemoveAt(client_order);
+            for (int i = client_order; i < Clients.Count; i++)
+                Clients[i].Order--;
+            return false;
         }
-        public int BindHook(Func<Tinput, Toutput> func)
+        public bool UnBind(HookClient<Tinput, Toutput> client)
         {
-            //Return func_index in hook's func_list
-            if (HasFunc(func))
-                return GetFuncIndex(func);
-            ts.Add(func);
-            return ts.Count - 1;
+            if (client == null)
+                return true;
+            UnBind(client.Order);
+            return false;
         }
-        public void UnbindHook(Func<Tinput, Toutput> func) => ts.Remove(func);
-        public void UnbindHookAt(int func_index)
-        {
-            if (func_index < ts.Count && func_index >= 0)
-                ts.RemoveAt(func_index);
-        }
-        public bool HasFunc(Func<Tinput, Toutput> func) => ts.Contains(func);
-        public int GetFuncAmount() => ts.Count;
-        public int GetFuncIndex(Func<Tinput, Toutput> func) => ts.FindIndex(pref => pref.Equals(func));
     }
-    public class Hook<Tinput> : IHookUser<Tinput>
+    public class HookClient<Tinput, Toutput>
     {
-        protected List<Action<Tinput>> ts = new List<Action<Tinput>>();
-        public string RegisteredName { get; }
-        public bool HasRegistered { get; }
-        private Hook() { }
-        public Hook(string name)
+        public int Order = -1;
+        public Func<Tinput, Toutput> Function = null;
+        public HookServer<Tinput, Toutput> Server = null;
+        public HookClient(Func<Tinput, Toutput> function)
         {
-            RegisteredName = name;
-            HasRegistered = true;
-            StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (Core.HookManager.RegisterHook<Tinput>(this, name))
-            {
-                stringBuilder.Append("_1");
-                for (int i = 2; i < 100; i++)
-                {
-                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
-                    stringBuilder.Append(i);
-                    if (!Core.HookManager.RegisterHook<Tinput>(this, stringBuilder.ToString()))
-                        goto end;
-                }
-                stringBuilder = null;
-                HasRegistered = false;
-            }
-            end:
-            RegisteredName = (stringBuilder != null) ? (stringBuilder.ToString()) : (null);
+            Function = function;
         }
-        public IHookUser<Tinput> GetHookUser() => this;
-        public Action<Tinput> GetFuncAt(int index) => (index < 0 || index > ts.Count) ? (null) : (ts?[index]);
-        public void CallAll(Tinput in_thing)
+        public bool UnBind()
         {
-            if (in_thing != null)
-                foreach (var iter in ts)
-                {
-                    iter(in_thing);
-                }
+            if (Server == null)
+                return true;
+            Server.UnBind(Order);
+            return false;
         }
-        public void CallAll(List<Tinput> in_things)
-        {
-            if (in_things != null)
-                if (in_things.Count == ts.Count)
-                {
-                    for (int i = 0; i < ts.Count; i++)
-                    {
-                        ts[i](in_things[i]);
-                    }
-                }
-        }
-        public void CallAt(int index, Tinput in_thing)
-        {
-            if (index < 0 || index > ts.Count) { }
-            else if (ts[index] == null) { }
-            else
-            {
-                ts[index](in_thing);
-            }
-        }
-        public int BindHook(Action<Tinput> func)
-        {
-            //Return func_index in hook's func_list
-            if (HasFunc(func))
-                return GetFuncIndex(func);
-            ts.Add(func);
-            return ts.Count - 1;
-        }
-        public void UnbindHook(Action<Tinput> func) => ts.Remove(func);
-        public void UnbindHookAt(int func_index)
-        {
-            if (func_index < ts.Count && func_index >= 0)
-                ts.RemoveAt(func_index);
-        }
-        public bool HasFunc(Action<Tinput> func) => ts.Contains(func);
-        public int GetFuncAmount() => ts.Count;
-        public int GetFuncIndex(Action<Tinput> func) => ts.FindIndex(pref => pref.Equals(func));
-    }
-    public class Hook : IHookUser
-    {
-        protected List<Action> ts = new List<Action>();
-        public string RegisteredName { get; }
-        public bool HasRegistered { get; }
-        private Hook() { }
-        public Hook(string name)
-        {
-            RegisteredName = name;
-            HasRegistered = true;
-            StringBuilder stringBuilder = new StringBuilder(RegisteredName, 500);
-            if (Core.HookManager.RegisterHook(this, name))
-            {
-                stringBuilder.Append("_1");
-                for (int i = 2; i < 100; i++)
-                {
-                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
-                    stringBuilder.Append(i);
-                    if (!Core.HookManager.RegisterHook(this, stringBuilder.ToString()))
-                        goto end;
-                }
-                stringBuilder = null;
-                HasRegistered = false;
-            }
-            end:
-            RegisteredName = (stringBuilder != null) ? (stringBuilder.ToString()) : (null);
-        }
-        public IHookUser GetHookUser() => this;
-        public int GetFuncsAmount() => ts.Count;
-        public Action GetFuncAt(int index) => (index < 0 || index > ts.Count) ? (null) : (ts?[index]);
-        public void CallAll()
-        {
-            foreach (var iter in ts)
-            {
-                iter();
-            }
-        }
-        public void CallAt(int index)
-        {
-            if (index < 0 || index > ts.Count) { }
-            else if (ts[index] == null) { }
-            else
-            {
-                ts[index]();
-            }
-        }
-        public int BindHook(Action func)
-        {
-            //Return func_index in hook's func_list
-            if (HasFunc(func))
-                return GetFuncIndex(func);
-            ts.Add(func);
-            return ts.Count - 1;
-        }
-        public void UnbindHook(Action func) => ts.Remove(func);
-        public void UnbindHookAt(int func_index)
-        {
-            if (func_index < ts.Count && func_index >= 0)
-                ts.RemoveAt(func_index);
-        }
-        public bool HasFunc(Action func) => ts.Contains(func);
-        public int GetFuncAmount() => ts.Count;
-        public int GetFuncIndex(Action func) => ts.FindIndex(pref => pref.Equals(func));
     }
 }
