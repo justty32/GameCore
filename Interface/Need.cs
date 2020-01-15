@@ -12,6 +12,10 @@ namespace GameCore.Interface
         bool Export(string save_dir_name, string file_name, string data, string second_dir_name = null);
         string ImportConfig();
         bool ExportConfig(string data);
+        string ImportInfo(string save_dir_name);
+        bool ExportInfo(string save_dir_name, string data);
+        string ImportRules(string save_dir_name);
+        bool ExportRules(string save_dir_name, string data);
         string ImportCard(string save_dir_name, int number);
         bool ExportCard(string save_dir_name, string data);
         bool IsFileExist(string save_dir_name, string file_name, string second_dir_name = null);

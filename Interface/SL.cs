@@ -29,8 +29,78 @@ namespace GameCore.Interface
             }
             return config == null;
         }
-        public bool Card(params int[] numbers) { return false; }
-        public bool Cards(int start_index, int count) => false;
+        public bool SaveInfo()
+        {
+            string jstr = Core.INeed.ImportInfo(Core.DirName);
+            if (jstr == null)
+                return true;
+            try
+            {
+                JObject json = JObject.Parse(jstr);
+                if (Core.SaveInfo.FromJsonObject(json))
+                    return true;
+                JArray array_cdyn = (JArray)json["CDynamicNames"];
+                List<string> cdyn_names = new List<string>(array_cdyn.Count);
+                for (int i = 0; i < array_cdyn.Count; i++)
+                    cdyn_names.Add((string)array_cdyn[i]);
+                if (Core.Dynamic.SetCDynamicNames(cdyn_names))
+                    return true;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool Rules()
+        {
+            string jstr = Core.INeed.ImportRules(Core.DirName);
+            if (jstr == null)
+                return true;
+            try
+            {
+                JArray json = JArray.Parse(jstr);
+                if (Core.Rules.FromJsonArray(json))
+                    return true;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool Card(params int[] numbers) 
+        {
+            for(int i = 0; i < numbers.Length; i++)
+            {
+                if (numbers[i] < 0 || numbers[i] >= Core.Cards.MaxNumber)
+                    return true;
+                try
+                {
+                    string jstr = Core.INeed.ImportCard(Core.DirName, numbers[i]);
+                    if (jstr == null)
+                        return true;
+                    JObject json = JObject.Parse(jstr);
+                    Base.Card card = new Card();
+                    if (card.FromJsonObject(json))
+                        return true;
+                }
+                catch (Exception)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool AllCards()
+        {
+            for (int i = 0; i < Core.Cards.MaxNumber; i++)
+            {
+                if (this.Card(i))
+                    return true;
+            }
+            return false;
+        }
         /*
         public bool CardFragment(int index, bool is_cover = false)
         {
@@ -152,27 +222,69 @@ namespace GameCore.Interface
             }
             return false;
         }
-        public bool Cards()
+        public bool SaveInfo()
         {
-            // iterate for all index
-            // one index, do one save
             try
             {
-                // add them all into a JArray
-                JArray ja = new JArray();
-                for(int i = 0; i < Core.Cards.cards.Count; i++)
-                {
-                    if(Core.Cards[i] == null)
-                        return true;
-                    ja.Add(Core.Cards[i].ToJsonObject());
-                }
-                // save it
-                if(Core.INeed.Export(Core.DirName, "cards.json", ja.ToString()))
+                JObject json = Core.SaveInfo.ToJsonObject();
+                if (json == null)
                     return true;
-            }catch(Exception){
+                JArray cdyna = new JArray(Core.Dynamic.CDynamicNames.Count);
+                for(int i = 0; i < Core.Dynamic.CDynamicNames.Count; i++)
+                {
+                    cdyna.Add(Core.Dynamic.CDynamicNames[i]);
+                }
+                json.Add("CDynamicNames", cdyna);
+                if (Core.INeed.ExportInfo(Core.DirName, json.ToString()))
+                    return true;
+            }catch(Exception)
+            {
                 return true;
             }
             return false;
+        }
+        public bool Rules()
+        {
+            try
+            {
+                JArray json = Core.Rules.ToJsonArray();
+                if (json == null)
+                    return true;
+                if (Core.INeed.ExportRules(Core.DirName, json.ToString()))
+                    return true;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool Card(params int[] numbers)
+        {
+            if (numbers == null)
+                return true;
+            for(int i = 0; i < numbers.Length; i++)
+            {
+                if (numbers[i] < 0 || numbers[i] >= Core.Cards.MaxNumber)
+                    return true;
+                try
+                {
+                    JObject json = Core.Cards[numbers[i]].ToJsonObject();
+                    if (json == null)
+                        return true;
+                    if (Core.INeed.ExportCard(Core.DirName, json.ToString()))
+                        return true;
+                }
+                catch (Exception)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool AllCards()
+        {
+            return this.Card(new List<int>(Core.Cards.cards.Keys).ToArray());
         }
         /*
         public bool Card(params int[] numbers)

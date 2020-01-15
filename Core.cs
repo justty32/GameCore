@@ -56,17 +56,23 @@ namespace GameCore
 
         public static string DirName {get => p_instance._dir_name;} //target save dir
         public static ConceptManager ConceptManager {get => p_instance._concept_mananager;}
+        public static SaveInfo SaveInfo { get => p_instance._save_info; }
         public static CardList Cards{ get => p_instance._cards;}
         public static HookManager HookManager { get => p_instance._hook_manager;}
         public static RuleManager Rules { get => p_instance._rule_manager;}
         public static Dynamic Dynamic { get => p_instance._dynamic; }
-        private string _dir_name = null;
+        private string _dir_name {
+            get { return _dir_name; }
+            set { p_instance._cards.ChangedCards = new List<int>(30000);
+                _dir_name = value;
+            } } 
         private ConceptManager _concept_mananager = null;
+        private SaveInfo _save_info = null;
         private CardList _cards = null;
         private HookManager _hook_manager = null;
         private RuleManager _rule_manager = null;
         private Dynamic _dynamic = null;
-        public static bool LoadGame(string save_name)
+        public static bool LoadGame(string save_name, bool load_all_cards = false)
         {
             p_instance._state.Log.AppendLine("loading game from - ");
             p_instance._state.Log.Append(save_name);
@@ -76,18 +82,26 @@ namespace GameCore
                 return p_instance._state.T(State.Ar.B, "target save dir not exist");
             p_instance._dir_name = save_name;
             p_instance._concept_mananager = new ConceptManager();
+            p_instance._dynamic = new Dynamic();
             p_instance._cards = new CardList();
+            if (Load.SaveInfo())
+                return true;
             p_instance._hook_manager = new HookManager();
             p_instance._rule_manager = new RuleManager();
             p_instance._rule_manager.Init();
-            p_instance._dynamic = new Dynamic(null);
+            if (Load.Rules())
+                return true;
+            if (load_all_cards)
+                if (Load.AllCards())
+                    return true;
             //TODO: load scripts, modules, dynamic...
             return false;
         }
-        public static bool SaveGame(string save_name = null)
+        public static bool SaveGame(string save_name = null, bool save_all_cards = false)
         {
             if(save_name == null)
                 return true;
+            bool is_save_all_cards = save_all_cards;
             p_instance._dir_name = save_name;
             p_instance._state.Log.AppendLine("save game into - ");
             p_instance._state.Log.AppendLine(save_name);
@@ -96,7 +110,18 @@ namespace GameCore
                     return true;
                 if(Core.INeed.IsSaveDirLegal(save_name))
                     return true;
+                is_save_all_cards = true;
             }
+            if (Save.Rules())
+                return true;
+            if (is_save_all_cards)
+                if (Save.AllCards())
+                    return true;
+            else
+                if (Save.Card(Cards.ChangedCards.ToArray()))
+                    return true;
+            if (Save.SaveInfo())
+                return true;
             //TODO: save cards, scripts, modules, dynamic lists...
             return false;
         }

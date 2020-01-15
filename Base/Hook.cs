@@ -33,7 +33,7 @@ namespace GameCore.Base
                 return false;
             if (!Servers.ContainsKey(register_name))
                 return false;
-            if (Servers[register_name] is HookServer<Tinput, Toutput>)
+            if (Servers[register_name] is Hook<Tinput, Toutput>)
                 return true;
             return false;
         }
@@ -42,7 +42,7 @@ namespace GameCore.Base
             if (server_name == null || client == null)
                 return true;
             if (HasRegister<Tinput, Toutput>(server_name))
-                return (Servers[server_name] as HookServer<Tinput, Toutput>).Bind(client);
+                return (Servers[server_name] as Hook<Tinput, Toutput>).Bind(client);
             else
                 return true;
         }
@@ -51,7 +51,7 @@ namespace GameCore.Base
             if (server_name == null || function == null)
                 return null;
             if (HasRegister<Tinput, Toutput>(server_name))
-                return (Servers[server_name] as HookServer<Tinput, Toutput>).Bind(function);
+                return (Servers[server_name] as Hook<Tinput, Toutput>).Bind(function);
             else
                 return null;
         }
@@ -60,7 +60,7 @@ namespace GameCore.Base
             if (server_name == null || client == null)
                 return true;
             if (HasRegister<Tinput, Toutput>(server_name))
-                return (Servers[server_name] as HookServer<Tinput, Toutput>).UnBind(client.Order);
+                return (Servers[server_name] as Hook<Tinput, Toutput>).UnBind(client.Order);
             else
                 return true;
         }
@@ -78,11 +78,11 @@ namespace GameCore.Base
     {
         bool UnBind(int order);
     }
-    public class HookServer<Tinput, Toutput> : IHookServer
+    public class Hook<Tinput, Toutput> : IHookServer
     {
         public List<HookClient<Tinput, Toutput>> Clients { get; private set; } = new List<HookClient<Tinput, Toutput>>();
         public string RegisteredName = null;
-        public HookServer(string register_name = null)
+        public Hook(string register_name = null)
         {
             Register(register_name);    
         }
@@ -141,7 +141,7 @@ namespace GameCore.Base
     {
         public int Order = -1;
         public Func<Tinput, Toutput> Function = null;
-        public HookServer<Tinput, Toutput> Server = null;
+        public Hook<Tinput, Toutput> Server = null;
         public HookClient(Func<Tinput, Toutput> function)
         {
             Function = function;

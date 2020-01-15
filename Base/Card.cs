@@ -33,7 +33,7 @@ namespace GameCore.Base
             }
             return true;
         }
-        public bool Init(int number, string name = null)
+        private bool Init(int number, string name = null)
         {
             // load a card
             // set number and name, add this to global card list

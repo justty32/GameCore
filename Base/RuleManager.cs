@@ -13,6 +13,7 @@ namespace GameCore.Base
     {
         // rules
         public Dictionary<string, Rule> RuleDic { get; private set; } = new Dictionary<string, Rule>();
+        public Root.TimeRule TimeRule { get; set; } = new Root.TimeRule();
         public bool Init(List<string> order_list = null)
         {
             Core.State.Log.AppendLine("RuleManager initializing...");

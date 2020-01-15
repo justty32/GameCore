@@ -9,7 +9,8 @@ namespace GameCore.Base
     public class CardList
     {
         // wrap the card list
-        public int MaxNumber {get; set;}
+        public int MaxNumber { get; set; } = -1;
+        public List<int> ChangedCards { get; set; } = new List<int>(30000);
         public Dictionary<int, Card> cards { get; private set; } = new Dictionary<int, Card>();
         public bool Add(Card card)
         {
@@ -30,6 +31,7 @@ namespace GameCore.Base
         {
             get
             {
+                ChangedCards.Add(number);
                 if (!cards.ContainsKey(number))
                 {
                     if (Core.Load.Card(number))

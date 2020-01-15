@@ -11,7 +11,7 @@ namespace GameCore.Interface
     public static class CoreInfo
     {
         public static readonly string Version = "0.01";
-
+        public static readonly string dependencies = "json.net, unity2019.2.17f1";
         // not be used now
         public static readonly int Card_amount_per_file = 2000;
     }

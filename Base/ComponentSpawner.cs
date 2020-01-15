@@ -54,7 +54,7 @@ namespace GameCore.Base
                 return spawner;
             }
         }
-        public static ConceptSpawner<Interface.CDynamic> GetDynamicSpawner(string type_name)
+        public static ConceptSpawner<Base.CDynamic> GetDynamicSpawner(string type_name)
         {
             var CM = Core.ConceptManager;
             if (type_name == null)
@@ -66,11 +66,11 @@ namespace GameCore.Base
             // if there already have one, return that
             // which is only judged by TypeName
             if (CM.SpawnerTypeNameSet.ContainsKey(type_name))
-                return (ConceptSpawner<Interface.CDynamic>)CM.SpawnerList[CM.SpawnerTypeNameSet[type_name]];
+                return (ConceptSpawner<Base.CDynamic>)CM.SpawnerList[CM.SpawnerTypeNameSet[type_name]];
             else
             {
                 //create one, set type_number, set type_name
-                var spawner = new ConceptSpawner<Interface.CDynamic>(CM.SpawnerList.Count);
+                var spawner = new ConceptSpawner<Base.CDynamic>(CM.SpawnerList.Count);
                 spawner.Type_Name = type_name;
                 //add list
                 CM.SpawnerTypeNameSet.Add(type_name, CM.SpawnerList.Count);
