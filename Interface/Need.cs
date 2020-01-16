@@ -10,6 +10,7 @@ namespace GameCore.Interface
         // if second_dir_name is null, means that the file is in first level of folder
         string Import(string save_dir_name, string file_name, string second_dir_name = null);
         bool Export(string save_dir_name, string file_name, string data, string second_dir_name = null);
+        bool IsFileExist(string save_dir_name, string file_name, string second_dir_name = null);
         string ImportConfig();
         bool ExportConfig(string data);
         string ImportInfo(string save_dir_name);
@@ -18,7 +19,6 @@ namespace GameCore.Interface
         bool ExportRules(string save_dir_name, string data);
         string ImportCard(string save_dir_name, int number);
         bool ExportCard(string save_dir_name, string data);
-        bool IsFileExist(string save_dir_name, string file_name, string second_dir_name = null);
         bool IsSaveDirExist(string save_dir_name);
         bool NewSaveDir(string save_dir_name);
         bool IsSaveDirLegal(string save_dir_name);

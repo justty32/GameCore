@@ -9,11 +9,26 @@ using Newtonsoft.Json.Linq;
 
 namespace GameCore.Base
 {
+    public class RulesCollection
+    {
+        public Root.TimeRule TimeRule = new Root.TimeRule();
+        public Root.LocationRule LocationRule = new Root.LocationRule();
+        public Map.TileRule TileRule = new Map.TileRule();
+        public Map.TerrainRule TerrainRule = new Map.TerrainRule();
+        public Map.LandformRule LandformRule = new Map.LandformRule();
+        public Map.LandRule LandRule = new Map.LandRule();
+        public Map.WorldRule WorldRule = new Map.WorldRule();
+        public Map.PlanetRule PlanetRule = new Map.PlanetRule();
+    }
     public class RuleManager
     {
         // rules
-        public Dictionary<string, Rule> RuleDic { get; private set; } = new Dictionary<string, Rule>();
-        public Root.TimeRule TimeRule { get; set; } = new Root.TimeRule();
+        public Dictionary<string, Rule> RuleDic { get; private set; }
+        public RulesCollection Rules = null;
+        public RuleManager()
+        {
+            RuleDic = new Dictionary<string, Rule>();
+        }
         public bool Init(List<string> order_list = null)
         {
             Core.State.Log.AppendLine("RuleManager initializing...");

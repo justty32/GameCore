@@ -60,7 +60,7 @@ namespace GameCore.Interface
             try
             {
                 JArray json = JArray.Parse(jstr);
-                if (Core.Rules.FromJsonArray(json))
+                if (Core.RuleManager.FromJsonArray(json))
                     return true;
             }
             catch (Exception)
@@ -247,7 +247,7 @@ namespace GameCore.Interface
         {
             try
             {
-                JArray json = Core.Rules.ToJsonArray();
+                JArray json = Core.RuleManager.ToJsonArray();
                 if (json == null)
                     return true;
                 if (Core.INeed.ExportRules(Core.DirName, json.ToString()))

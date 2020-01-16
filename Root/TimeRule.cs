@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using GameCore.Base;
 
 namespace GameCore.Root
 {
@@ -17,6 +18,7 @@ namespace GameCore.Root
         {
             // Purely store time data 
             // year, month, day, hour
+            // add and sub will do carry(), but copy won't
             public int Year { get; set; } = -1;
             public int Month { get; set; } = -1;
             public int Day { get; set; } = -1;
@@ -69,6 +71,16 @@ namespace GameCore.Root
                 Day -= time.Day;
                 Hour -= time.Hour;
                 Carry();
+            }
+            public bool Copy(Time time)
+            {
+                if (time == null)
+                    return true;
+                Year = time.Year;
+                Month = time.Month;
+                Day = time.Day;
+                Hour = time.Hour;
+                return false;
             }
             public static bool operator ==(Time a, Time b)
             {
@@ -141,7 +153,32 @@ namespace GameCore.Root
                     Year = 1;
                 }
             }
-
+            public JObject ToJsonObject()
+            {
+                JObject json = null;
+                try
+                {
+                    json = JObject.FromObject(this);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+                return json;
+            }
+            public bool FromJsonObject(JObject json)
+            {
+                try
+                {
+                    Time t = json.ToObject<Time>();
+                    if(Copy(t))
+                        return true;
+                }catch(Exception)
+                {
+                    return true;
+                }
+                return false;
+            }
             public override bool Equals(object obj)
             {
                 return obj is Time time &&
@@ -150,7 +187,6 @@ namespace GameCore.Root
                        Day == time.Day &&
                        Hour == time.Hour;
             }
-
             public override int GetHashCode()
             {
                 var hashCode = -1541897947;
@@ -161,12 +197,51 @@ namespace GameCore.Root
                 return hashCode;
             }
         }
-        public Time NowTime { get; private set; }
-        private readonly Base.Hook HHourChange = new Base.Hook("TimeRule.HourChange");
-        private readonly Base.Hook HDayChange = new Base.Hook("TimeRule.DayChange");
-        private readonly Base.Hook HMonthChange = new Base.Hook("TimeRule.MonthChange");
-        private readonly Base.Hook HYearChange = new Base.Hook("TimeRule.YearChange");
-        public TimeRule() {}
+        public class CTime : Concept
+        {
+            public override string TypeName => "CTime";
+            public Time Time { get; set; }
+            public override bool FromJsonObject(JObject js)
+            {
+                if(base.FromJsonObject(js))
+                    return true;
+                try{
+                    Time = new Time();
+                    if (Time.FromJsonObject((JObject)js["Time"]))
+                        return true;
+                }catch(Exception){
+                    return true;
+                }
+                return false;
+            }
+            public override JObject ToJsonObject()
+            {
+                JObject js = base.ToJsonObject();
+                if(js == null)
+                    return null;
+                try{
+                    if (Time == null)
+                        return null;
+                    JObject t = Time.ToJsonObject();
+                    if (t == null)
+                        return null;
+                    js.Add("Time", t);
+                }catch(Exception){
+                    return null;
+                }
+                return js;
+            }
+        }
+        private readonly Hook<object, object> HHourChange = new Hook<object, object>("TimeRule.HHourChangee");
+        private readonly Hook<object, object> HDayChange = new Hook<object, object>("TimeRule.DayChange");
+        private readonly Hook<object, object> HMonthChange = new Hook<object, object>("TimeRule.MonthChange");
+        private readonly Hook<object, object> HYearChange = new Hook<object, object>("TimeRule.YearChange");
+        public int _ctn_time = -1;
+        public Time NowTime { get; set; }
+        public TimeRule() 
+        {
+            _ctn_time = ConceptSpawner<CTime>.GetSpawner().Type_Number;
+        }
         public void SetNowTime(int year = -1, int month = -1 , int day = -1, int hour = -1)
         {
             // If not assign the value, or value < 0, the entry will not change.
@@ -205,10 +280,6 @@ namespace GameCore.Root
             if (hour_max >= 1)
                 HourMax = hour_max;
         }
-        public Base.IHookUser IHHourChange => HHourChange.GetHookUser();
-        public Base.IHookUser IHDayChange => HDayChange.GetHookUser();
-        public Base.IHookUser IHMonthChange => HMonthChange.GetHookUser();
-        public Base.IHookUser IHYearChange => HYearChange.GetHookUser();
         public int HourMax { get; private set; } = 23; // hour will be 0 ~ 23
         public int DayMax { get; private set; } = 30; // day will be 1 ~ 30
         public int MonthMax { get; private set; } = 12; // month will be 1 ~ 12, year will be 1 ~ infinite
@@ -216,13 +287,13 @@ namespace GameCore.Root
         private void _CallTimeChange()
         {
             if (_time_changed[0])
-                HHourChange.CallAll();
+                HHourChange.CallAll(null);
             if (_time_changed[1])
-                HDayChange.CallAll();
+                HDayChange.CallAll(null);
             if (_time_changed[2])
-                HMonthChange.CallAll();
+                HMonthChange.CallAll(null);
             if (_time_changed[3])
-                HYearChange.CallAll();
+                HYearChange.CallAll(null);
             _time_changed[3] = _time_changed[2] = _time_changed[1] = _time_changed[0] = false;
         }
         public void GoOneHour()
@@ -273,7 +344,7 @@ namespace GameCore.Root
             _time_changed[3] = true;
             _CallTimeChange();
         }
-        public bool Init()
+        public override bool Init()
         {
             NowTime = new Time();
             NowTime.Hour = 0;
@@ -294,7 +365,7 @@ namespace GameCore.Root
             }
             return false;
         }
-        public override bool FromJsonObject(Newtonsoft.Json.Linq.JObject js)
+        public override bool FromJsonObject(JObject js)
         {
             if(base.FromJsonObject(js))
                 return true;

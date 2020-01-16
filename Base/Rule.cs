@@ -13,7 +13,7 @@ namespace GameCore.Base
     {
         public Rule()
         {
-            Core.Rules.RuleDic.Add(this.ToString(), this);
+            Core.RuleManager.RuleDic.Add(this.ToString(), this);
         }
         public virtual bool Init() => false;
         public virtual bool IsUsable() => true;

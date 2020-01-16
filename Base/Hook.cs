@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-// mostly use class Util for place_holder, as for Tinput, Toutput
+// mostly use class Util for place_holder, as for Tin, Tout
 
 namespace GameCore.Base
 {
@@ -27,40 +27,40 @@ namespace GameCore.Base
             Servers.Remove(register_name);
             return false;
         }
-        public bool HasRegister<Tinput, Toutput>(string register_name)
+        public bool HasRegister<Tin, Tout>(string register_name)
         {
             if (register_name == null)
                 return false;
             if (!Servers.ContainsKey(register_name))
                 return false;
-            if (Servers[register_name] is Hook<Tinput, Toutput>)
+            if (Servers[register_name] is Hook<Tin, Tout>)
                 return true;
             return false;
         }
-        public bool Bind<Tinput, Toutput>(string server_name, HookClient<Tinput, Toutput> client)
+        public bool Bind<Tin, Tout>(string server_name, HookClient<Tin, Tout> client)
         {
             if (server_name == null || client == null)
                 return true;
-            if (HasRegister<Tinput, Toutput>(server_name))
-                return (Servers[server_name] as Hook<Tinput, Toutput>).Bind(client);
+            if (HasRegister<Tin, Tout>(server_name))
+                return (Servers[server_name] as Hook<Tin, Tout>).Bind(client);
             else
                 return true;
         }
-        public HookClient<Tinput, Toutput> Bind<Tinput, Toutput>(string server_name, Func<Tinput, Toutput> function)
+        public HookClient<Tin, Tout> Bind<Tin, Tout>(string server_name, Func<Tin, Tout> function)
         {
             if (server_name == null || function == null)
                 return null;
-            if (HasRegister<Tinput, Toutput>(server_name))
-                return (Servers[server_name] as Hook<Tinput, Toutput>).Bind(function);
+            if (HasRegister<Tin, Tout>(server_name))
+                return (Servers[server_name] as Hook<Tin, Tout>).Bind(function);
             else
                 return null;
         }
-        public bool UnBind<Tinput, Toutput>(string server_name, HookClient<Tinput, Toutput> client)
+        public bool UnBind<Tin, Tout>(string server_name, HookClient<Tin, Tout> client)
         {
             if (server_name == null || client == null)
                 return true;
-            if (HasRegister<Tinput, Toutput>(server_name))
-                return (Servers[server_name] as Hook<Tinput, Toutput>).UnBind(client.Order);
+            if (HasRegister<Tin, Tout>(server_name))
+                return (Servers[server_name] as Hook<Tin, Tout>).UnBind(client.Order);
             else
                 return true;
         }
@@ -78,9 +78,9 @@ namespace GameCore.Base
     {
         bool UnBind(int order);
     }
-    public class Hook<Tinput, Toutput> : IHookServer
+    public class Hook<Tin, Tout> : IHookServer
     {
-        public List<HookClient<Tinput, Toutput>> Clients { get; private set; } = new List<HookClient<Tinput, Toutput>>();
+        public List<HookClient<Tin, Tout>> Clients { get; private set; } = new List<HookClient<Tin, Tout>>();
         public string RegisteredName = null;
         public Hook(string register_name = null)
         {
@@ -97,7 +97,35 @@ namespace GameCore.Base
             RegisteredName = null;
             return Core.HookManager.UnRegister(RegisteredName); 
         }
-        public bool Bind(HookClient<Tinput, Toutput> client)
+        public List<Tout> CallAll(List<Tin> tins)
+        {
+            if (tins == null)
+                return null;
+            if (tins.Count != Clients.Count)
+                return null;
+            List<Tout> results = new List<Tout>(Clients.Count);
+            for(int i = 0; i < Clients.Count; i++)
+            {
+                results.Add(Clients[i].Function(tins[i]));
+            }
+            return results;
+        }
+        public List<Tout> CallAll(Tin tin)
+        {
+            List<Tout> results = new List<Tout>(Clients.Count);
+            for(int i = 0; i < Clients.Count; i++)
+            {
+                results.Add(Clients[i].Function(tin));
+            }
+            return results;
+        }
+        public Tout Call(int index, Tin parameter)
+        {
+            if (index < 0 || index >= Clients.Count)
+                return default;
+            return Clients[index].Function(parameter);
+        }
+        public bool Bind(HookClient<Tin, Tout> client)
         {
             if (client == null)
                 return true;
@@ -106,11 +134,11 @@ namespace GameCore.Base
             client.Server = this;
             return false;
         }
-        public HookClient<Tinput, Toutput> Bind(Func<Tinput, Toutput> function)
+        public HookClient<Tin, Tout> Bind(Func<Tin, Tout> function)
         {
             if (function == null)
                 return null;
-            var c = new HookClient<Tinput, Toutput>(function);
+            var c = new HookClient<Tin, Tout>(function);
             c.Order = Clients.Count;
             Clients.Add(c);
             c.Server = this;
@@ -129,7 +157,7 @@ namespace GameCore.Base
                 Clients[i].Order--;
             return false;
         }
-        public bool UnBind(HookClient<Tinput, Toutput> client)
+        public bool UnBind(HookClient<Tin, Tout> client)
         {
             if (client == null)
                 return true;
@@ -137,12 +165,12 @@ namespace GameCore.Base
             return false;
         }
     }
-    public class HookClient<Tinput, Toutput>
+    public class HookClient<Tin, Tout>
     {
         public int Order = -1;
-        public Func<Tinput, Toutput> Function = null;
-        public Hook<Tinput, Toutput> Server = null;
-        public HookClient(Func<Tinput, Toutput> function)
+        public Func<Tin, Tout> Function = null;
+        public Hook<Tin, Tout> Server = null;
+        public HookClient(Func<Tin, Tout> function)
         {
             Function = function;
         }

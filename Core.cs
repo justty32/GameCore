@@ -59,7 +59,8 @@ namespace GameCore
         public static SaveInfo SaveInfo { get => p_instance._save_info; }
         public static CardList Cards{ get => p_instance._cards;}
         public static HookManager HookManager { get => p_instance._hook_manager;}
-        public static RuleManager Rules { get => p_instance._rule_manager;}
+        public static RuleManager RuleManager { get => p_instance._rule_manager;}
+        public static RulesCollection Rules { get => p_instance._rules; }
         public static Dynamic Dynamic { get => p_instance._dynamic; }
         private string _dir_name {
             get { return _dir_name; }
@@ -71,6 +72,7 @@ namespace GameCore
         private CardList _cards = null;
         private HookManager _hook_manager = null;
         private RuleManager _rule_manager = null;
+        private RulesCollection _rules = null;
         private Dynamic _dynamic = null;
         public static bool LoadGame(string save_name, bool load_all_cards = false)
         {
@@ -88,6 +90,8 @@ namespace GameCore
                 return true;
             p_instance._hook_manager = new HookManager();
             p_instance._rule_manager = new RuleManager();
+            p_instance._rules = new RulesCollection();
+            p_instance._rule_manager.Rules = p_instance._rules;
             p_instance._rule_manager.Init();
             if (Load.Rules())
                 return true;
@@ -132,7 +136,7 @@ namespace GameCore
             p_instance._state.Log.AppendLine("creating new game...");
             p_instance._state.Log.AppendLine("copy init data into new save dir...");
             //TODO: setting more templates of init save data types, not only new game
-            p_instance._i_need.CopyInitSaveData("new game", save_name);
+            p_instance._i_need.CopyInitSaveData("NewGame", save_name);
             p_instance._state.Log.AppendLine("loading init data...");
             if (LoadGame(save_name))
                 return true;
@@ -143,6 +147,7 @@ namespace GameCore
             p_instance._state.Log.AppendLine("release game data...");
             //TODO:release scripts, modules...
             p_instance._dynamic = null;
+            p_instance._rules = null;
             p_instance._rule_manager = null;
             p_instance._hook_manager = null;
             p_instance._cards = null;
