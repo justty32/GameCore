@@ -15,8 +15,9 @@ namespace GameCore.Base
     {
         public Rule()
         {
-            Core.RuleManager.RuleDic.Add(this.ToString(), this);
+            Core.RuleManager.RuleDic.Add(RuleName, this);
         }
+        public virtual string RuleName { get => GetType().Name; } 
         public virtual bool Init() => false;
         public virtual bool IsUsable() => true;
         public virtual bool FromJsonObject(JObject json)
@@ -25,7 +26,7 @@ namespace GameCore.Base
                 return true;
             try
             {
-                if (!((string)json["RuleName"]).Equals(GetType().ToString()))
+                if (!((string)json["RuleName"]).Equals(RuleName))
                     return true;
             }catch(Exception)
             {
@@ -39,7 +40,7 @@ namespace GameCore.Base
             try
             {
                 json = new JObject();
-                json.Add("RuleName", GetType().ToString());
+                json.Add("RuleName", RuleName);
             }catch(Exception)
             {
                 return null;

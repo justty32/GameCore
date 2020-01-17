@@ -85,7 +85,10 @@ namespace GameCore.Base
             {
                 concept_numbers.Add(c.TypeNumber);
                 concept_names.Add(c.TypeName);
-                concepts.Add(c.ToJsonObject());
+                var cj = c.ToJsonObject();
+                if (!cj.ContainsKey("TypeName"))
+                    cj.Add("TypeName", c.TypeName);
+                concepts.Add(cj);
             }
             ojs.Add(new JProperty("Concepts", concepts));
             }catch(Exception){
@@ -100,6 +103,10 @@ namespace GameCore.Base
             if(ojs == null)
                 return true;
             try{
+                if (!(ojs.ContainsKey("Number")))
+                    return true;
+                if (!(ojs.ContainsKey("Name")))
+                    ojs.Add("Name", "");
                 if(Init((int)ojs["Number"], (string)ojs["Name"]))
                     return true;
                 JArray cs = (JArray)ojs["Concepts"];

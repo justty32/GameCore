@@ -105,9 +105,9 @@ namespace GameCore.Base
                         ArrayBool.Add((bool)array_bool[i]);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return true;
+                return Core.State.WriteException(e);
             }
             if (!IsUsable())
                 return true;
@@ -128,21 +128,13 @@ namespace GameCore.Base
                 JObject data_string = new JObject();
                 JObject data_bool = new JObject();
                 foreach(var data in DataInt)
-                {
                     data_int.Add(data.Key, data.Value);
-                }
                 foreach (var data in DataFloat)
-                {
                     data_float.Add(data.Key, data.Value);
-                }
                 foreach (var data in DataString)
-                {
                     data_string.Add(data.Key, data.Value);
-                }
                 foreach (var data in DataBool)
-                {
                     data_bool.Add(data.Key, data.Value);
-                }
                 JArray array_int = new JArray();
                 JArray array_float = new JArray();
                 JArray array_string = new JArray();
@@ -164,9 +156,9 @@ namespace GameCore.Base
                 js.Add("ArrayString", array_string);
                 js.Add("ArrayBool", array_bool);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return null;
+                return Core.State.WriteException<JObject>(e);
             }
             return js;
         }
@@ -179,28 +171,6 @@ namespace GameCore.Base
                 ArrayInt, ArrayFloat, ArrayString, ArrayBool
                 ))
                 return false;
-            return true;
-        }
-        public static bool IsCDynamic(JObject concept_json)
-        {
-            if (concept_json == null)
-                return false;
-            try
-            {   if (Util.HasAnyFalse(
-                    concept_json.ContainsKey("DataInt"),
-                    concept_json.ContainsKey("DataFloat"),
-                    concept_json.ContainsKey("DataString"),
-                    concept_json.ContainsKey("DataBool"),
-                    concept_json.ContainsKey("ArrayInt"),
-                    concept_json.ContainsKey("ArrayFloat"),
-                    concept_json.ContainsKey("ArrayString"),
-                    concept_json.ContainsKey("ArrayBool")))
-                    return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
             return true;
         }
     }

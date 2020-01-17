@@ -29,50 +29,66 @@ namespace GameCore.Base
         {
             RuleDic = new Dictionary<string, Rule>();
         }
-        public bool Init(List<string> order_list = null)
+        public bool Init(List<string> initial_order_list = null)
         {
-            Core.State.Log.AppendLine("RuleManager initializing...");
-            if (order_list == null || order_list.Count != RuleDic.Count)
+            var order_list = initial_order_list;
+            List<string> d_list = new List<string>();
+            Core.State.Log.AppendLine("...RuleManager start initializing by initial order list...");
+            if (order_list == null )
             {
-                Core.State.Log.AppendLine("rules' init order list error, using default init order");
-                foreach (var rule_pair in RuleDic)
+                Core.State.Log.AppendLine("init order list not found, the order will be random");
+                order_list = new List<string>(RuleDic.Keys);
+            }
+            else if (order_list.Count < RuleDic.Count)
+            {
+                Core.State.Log.AppendLine("rules down below are not in init order list");
+                Core.State.Log.AppendLine("these rules will be Initialized randomly after init order list's initialization...");
+                foreach(var rs in RuleDic.Keys)
                 {
-                    if (rule_pair.Value.Init())
+                    if (!order_list.Contains(rs))
+                        d_list.Add(rs);
+                }
+                foreach (var s in d_list)
+                    Core.State.Log.AppendLine(s);
+            }
+            Core.State.Log.AppendLine("...Rules are initializing...");
+            for(int i = 0; i < order_list.Count; i++)
+            {
+                if(RuleDic.ContainsKey(order_list[i]))
+                {
+                    if (RuleDic[order_list[i]].Init())
                     {
-                        Core.State.Log.Append(rule_pair.Key);
+                        Core.State.Log.Append(order_list[i]);
                         Core.State.Log.AppendLine(" initialized failed");
                         return true;
-                    }
-                    Core.State.Log.Append(rule_pair.Key);
-                    Core.State.Log.AppendLine(" intialized");
-                }
-            }
-            else
-            {
-                for(int i = 0; i < order_list.Count; i++)
-                {
-                    if(RuleDic.ContainsKey(order_list[i]))
-                    {
-                        if (RuleDic[order_list[i]].Init())
-                        {
-                            Core.State.Log.Append(RuleDic[order_list[i]].GetType().ToString());
-                            Core.State.Log.AppendLine(" initialized failed");
-                            return true;
-                        }
-                        else
-                        {
-                            Core.State.Log.Append(RuleDic[order_list[i]].GetType().ToString());
-                            Core.State.Log.AppendLine(" intialized");
-                        }
                     }
                     else
                     {
                         Core.State.Log.Append(order_list[i]);
-                        Core.State.Log.AppendLine(" not found!");
+                        Core.State.Log.AppendLine(" intialized");
                     }
                 }
+                else
+                {
+                    Core.State.Log.Append(order_list[i]);
+                    Core.State.Log.AppendLine(" not found!");
+                }
             }
-            Core.State.Log.AppendLine("RuleManager initialization finished");
+            for(int i = 0; i < d_list.Count; i++)
+            {
+                if (RuleDic[d_list[i]].Init())
+                {
+                    Core.State.Log.Append(d_list[i]);
+                    Core.State.Log.AppendLine(" initialized failed");
+                    return true;
+                }
+                else
+                {
+                    Core.State.Log.Append(d_list[i]);
+                    Core.State.Log.AppendLine(" intialized");
+                }
+            }
+            Core.State.Log.AppendLine("...Rules' initialization finished...");
             return false;
         }
         public bool FromJsonArray(JArray ja)
@@ -81,7 +97,7 @@ namespace GameCore.Base
                 return true;
             try
             {
-                Core.State.Log.AppendLine("RuleManager doing FromJsonArray for rules...");
+                Core.State.Log.AppendLine("...RuleManager doing FromJsonArray for rules...");
                 for(int i = 0; i < ja.Count; i++)
                 {
                     if(RuleDic.ContainsKey((string)ja[i]["RuleName"]))
@@ -97,7 +113,7 @@ namespace GameCore.Base
                         Core.State.Log.AppendLine(" error from json object !!!");
                     }
                 }
-                Core.State.Log.AppendLine("RuleManager doing FromJsonArray done");
+                Core.State.Log.AppendLine("...RuleManager doing FromJsonArray done");
             }catch(Exception e)
             {
                 return Core.State.WriteException(e);

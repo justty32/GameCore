@@ -5,8 +5,8 @@ using GameCore.Base;
 using GameCore.Interface;
 
 // TODO: object pool for card
-//       create new game, exit game
-//       load/save game
+// TODO : rule's init order list, annotations, logs, try catch replacing
+// TODO: Dynamic rules
 
 namespace GameCore
 {
@@ -78,7 +78,7 @@ namespace GameCore
         private Dynamic _dynamic = null;
         public static bool LoadGame(string save_name, bool load_all_cards = false)
         {
-            p_instance._state.Log.Append("loading game from - ");
+            p_instance._state.Log.Append("...Loading game from - ");
             p_instance._state.Log.AppendLine(save_name);
             if (save_name == null)
                 return p_instance._state.T(State.Ar.PN);
