@@ -48,7 +48,7 @@ namespace GameCore.Map
         }
         private int _ctn_location = -1;
         private int _ctn_tile = -1;
-        public bool Init()
+        public override bool Init()
         {
             _ctn_location = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             _ctn_tile = ConceptManager.GetSpawner<CTile>().Type_Number;

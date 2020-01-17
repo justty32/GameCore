@@ -38,7 +38,7 @@ namespace GameCore.Map
         private int _c_tile_type_number = -1; // prestore
         private int _c_land_type_number = -1; // prestore
         public int CLandTypeNumber { get => _c_location_type_number; }
-        public bool Init()
+        public override bool Init()
         {
             // rule's initialize
             _c_land_type_number = Base.ConceptManager.GetSpawner<CLand>().Type_Number;

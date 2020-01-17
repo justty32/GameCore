@@ -105,6 +105,18 @@ namespace GameCore.Base
             }
             return cs;
         }
+        public CDynamic GetCDynamic(string type_name)
+        {
+            if (type_name == null)
+                return null;
+            if (Has(type_name))
+            {
+                var cd = Get(type_name);
+                return cd as CDynamic;    
+            }
+            else
+                return null;
+        }               
         public bool Add(Concept thing)
         {
             // If there is already have same-type one, Do nothing, return true.

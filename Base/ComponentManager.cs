@@ -12,6 +12,7 @@ namespace GameCore.Base
             SpawnerTypeNameSet = new Dictionary<string, int>();
             SpawnerList = new Dictionary<int, IConceptSpawner>();
         }
+        public static bool ContainsTypeName(string type_name) { if (type_name == null) { return false; } return Core.ConceptManager.SpawnerTypeNameSet.ContainsKey(type_name); }
         public static int GetTypesCount() => Core.ConceptManager.SpawnerList.Count; //return how many types of concept.
         public static string GetTypeName(int type_number) {
             if(Core.ConceptManager.SpawnerList.ContainsKey(type_number))

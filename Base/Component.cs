@@ -21,6 +21,8 @@ namespace GameCore.Base
             JObject js = null;
             try{
                 js = new JObject(new JProperty("TypeName", TypeName));
+                if (js == null)
+                    return null;
             }catch(Exception){
                 return null;
             }
@@ -31,10 +33,10 @@ namespace GameCore.Base
             if(js == null)
                 return true;
             try{
-                if(!((string)js[TypeName]).Equals(TypeName))
+                if(!((string)js["TypeName"]).Equals(TypeName))
                     return true;
-            }catch(Exception){
-                return true;
+            }catch(Exception e){
+                return Core.State.WriteException(e);
             }
             return false; 
         }

@@ -42,7 +42,7 @@ namespace GameCore.Map
         private int _c_world_type_number = -1; // prestore
         private int _c_land_type_number = -1; // prestore
         public int  CWorldTypeNumber{ get => _c_world_type_number ; }
-        public bool Init()
+        public override bool Init()
         {
              // rule's initialize
             _c_world_type_number = ConceptManager.GetSpawner<CWorld>().Type_Number;

@@ -48,27 +48,18 @@ namespace GameCore.Root
                     return true;
                 try{
                     // check if the object's typename meets this
-                    if(!((string)ojs[TypeName]).Equals(TypeName))
+                    if(base.FromJsonObject(ojs))
                         return true;
                     // take out data
                     UpperCard = (int)ojs["UpperCard"];
                     BelowCards = ((JArray)ojs["BelowCards"]).Select(c => (int)c).ToList();
-                }catch(Exception){
-                    return true;
+                }catch(Exception e){
+                    return Core.State.WriteException(e);
                 }
                 return false;
             }
             public override JObject ToJsonObject()
             {
-                // first type, example
-                JObject e = JObject.FromObject(
-                    new {
-                        TypeName = TypeName,
-                        UpperCard = UpperCard,
-                        BelowCards = BelowCards
-                    }
-                );
-                // second type, good but complex
                 JObject js = new JObject(
                     //put typename, and data
                     new JProperty("TypeName", TypeName)
@@ -80,7 +71,7 @@ namespace GameCore.Root
         }
         private int _ctn_location = -1;
         public List<int> LocationCards {get; private set;} = null;
-        public bool Init()
+        public override bool Init()
         {
             _ctn_location = Base.ConceptManager.GetSpawner<CLocation>().Type_Number;
             LocationCards = new List<int>(2000);

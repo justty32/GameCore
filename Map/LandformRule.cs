@@ -21,7 +21,7 @@ namespace GameCore.Map
         private int _c_location_type_number = -1;
         private int _c_landform_type_number = -1;
         private int _c_terrain_type_number = -1;
-        public bool Init()
+        public override bool Init()
         {
             _c_location_type_number = Base.ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
             _c_landform_type_number = Base.ConceptManager.GetSpawner<CLandform>().Type_Number;

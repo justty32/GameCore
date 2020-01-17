@@ -23,8 +23,6 @@ namespace GameCore.Interface
             for(int i = 0; i < CDynamicNames.Count; i++)
             {
                 var sp = ConceptSpawner<CDynamic>.GetDynamicSpawner(CDynamicNames[i]);
-                if (sp != null)
-                    CDynamicSpawners.Add(sp.Type_Name, sp);
             }
             return false;
         }

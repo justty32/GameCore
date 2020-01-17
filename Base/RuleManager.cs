@@ -98,10 +98,9 @@ namespace GameCore.Base
                     }
                 }
                 Core.State.Log.AppendLine("RuleManager doing FromJsonArray done");
-            }catch(Exception)
+            }catch(Exception e)
             {
-                Core.State.Log.AppendLine("RuleManager doing FromJsonArray exception !!!");
-                return true;
+                return Core.State.WriteException(e);
             }
             return false;
         }

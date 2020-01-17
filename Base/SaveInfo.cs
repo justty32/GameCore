@@ -28,7 +28,7 @@ namespace GameCore.Base
                 foreach(var module in modules.Properties())
                     DependentModule.Add(module.Name, (int)module.Value);
                 CardAmount = (int)json["CardAmount"];
-                Core.Cards.MaxNumber = CardAmount;
+                Core.Cards.MaxNumber = CardAmount - 1;
             }catch(Exception)
             {
                 return true;
@@ -47,7 +47,7 @@ namespace GameCore.Base
                     modules.Add(module.Key, module.Value);
                 }
                 json.Add("DependentModule", modules);
-                CardAmount = Core.Cards.MaxNumber;
+                CardAmount = Core.Cards.MaxNumber + 1;
                 json.Add("CardAmount", CardAmount);
             }
             catch (Exception)

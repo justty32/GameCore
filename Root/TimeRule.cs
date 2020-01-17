@@ -72,8 +72,16 @@ namespace GameCore.Root
                 Hour -= time.Hour;
                 Carry();
             }
+            public bool Equal(Time time)
+            {
+                return Year == time.Year &&
+                        Month == time.Month &&
+                        Day == time.Day &&
+                        Hour == time.Hour;
+            }
             public bool Copy(Time time)
             {
+                // not useful for JObject.ToObject<Time>()
                 if (time == null)
                     return true;
                 Year = time.Year;
@@ -81,20 +89,6 @@ namespace GameCore.Root
                 Day = time.Day;
                 Hour = time.Hour;
                 return false;
-            }
-            public static bool operator ==(Time a, Time b)
-            {
-                return  a.Year == b.Year &&
-                        a.Month == b.Month &&
-                        a.Day == b.Day &&
-                        a.Hour == b.Hour;
-            }
-            public static bool operator !=(Time a, Time b)
-            {
-                return a.Year != b.Year &&
-                        a.Month != b.Month &&
-                        a.Day != b.Day &&
-                        a.Hour != b.Hour;
             }
             public void Carry()
             {
@@ -158,11 +152,15 @@ namespace GameCore.Root
                 JObject json = null;
                 try
                 {
-                    json = JObject.FromObject(this);
+                    json = new JObject();
+                    json.Add("Year", Year);
+                    json.Add("Month", Month);
+                    json.Add("Day", Day);
+                    json.Add("Hour", Hour);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return null;
+                    return Core.State.WriteException<JObject>(e);
                 }
                 return json;
             }
@@ -170,37 +168,21 @@ namespace GameCore.Root
             {
                 try
                 {
-                    Time t = json.ToObject<Time>();
-                    if(Copy(t))
-                        return true;
-                }catch(Exception)
+                    Year = (int)json["Year"];
+                    Month = (int)json["Month"];
+                    Day = (int)json["Day"];
+                    Hour = (int)json["Hour"];
+                }catch(Exception e)
                 {
-                    return true;
+                    return Core.State.WriteException(e);
                 }
                 return false;
-            }
-            public override bool Equals(object obj)
-            {
-                return obj is Time time &&
-                       Year == time.Year &&
-                       Month == time.Month &&
-                       Day == time.Day &&
-                       Hour == time.Hour;
-            }
-            public override int GetHashCode()
-            {
-                var hashCode = -1541897947;
-                hashCode = hashCode * -1521134295 + Year.GetHashCode();
-                hashCode = hashCode * -1521134295 + Month.GetHashCode();
-                hashCode = hashCode * -1521134295 + Day.GetHashCode();
-                hashCode = hashCode * -1521134295 + Hour.GetHashCode();
-                return hashCode;
             }
         }
         public class CTime : Concept
         {
             public override string TypeName => "CTime";
-            public Time Time { get; set; }
+            public Time Time { get; set; } = new Time();
             public override bool FromJsonObject(JObject js)
             {
                 if(base.FromJsonObject(js))
@@ -223,11 +205,9 @@ namespace GameCore.Root
                     if (Time == null)
                         return null;
                     JObject t = Time.ToJsonObject();
-                    if (t == null)
-                        return null;
                     js.Add("Time", t);
-                }catch(Exception){
-                    return null;
+                }catch(Exception e){
+                    return Core.State.WriteException<JObject>(e);
                 }
                 return js;
             }

@@ -59,6 +59,26 @@ namespace GameCore.Interface
         private StringBuilder log = new StringBuilder(10000);
         // if log's length bigger than 20000, clear it at next calling
         public StringBuilder Log { get { if (log.Length > 20000) { log.Clear(); log.AppendLine("log clear."); }return log; } private set { log = value; } }
+        public string LogPop { get { var str = log.ToString(); log.Clear(); return str; } }
+        public bool AppendLogLine(string str)
+        {
+            if (str == null)
+                return true;
+            Log.AppendLine(str);
+            return false;
+        }
+        public bool AppendLog(string str, bool is_append_line = false)
+        {
+            if (str == null)
+                return true;
+            if (is_append_line)
+                Log.AppendLine(str);
+            else
+                Log.Append(str);
+            return false;
+        }
+        public bool WriteException(Exception e, bool result = true) { AppendLogLine(e.ToString()); return result; }
+        public T WriteException<T>(Exception e, T result = default){ AppendLogLine(e.ToString()); return result; }
         public object N(Ar action_result = Ar.B, string log = null)
         {
             // set action result, and return null

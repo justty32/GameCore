@@ -73,21 +73,21 @@ namespace GameCore.Base
             // number : number
             // name : name
             // concepts : [{c1's json object},{c2},{c3}]
-            JObject ojs;
-                try{
-                ojs = new JObject();
-                ojs.Add(new JProperty("Number", Number));
-                ojs.Add(new JProperty("Name", Name));
-                JArray concept_numbers = new JArray();
-                JArray concept_names = new JArray();
-                JArray concepts = new JArray();
-                foreach(Concept c in Concepts)
-                {
-                    concept_numbers.Add(c.TypeNumber);
-                    concept_names.Add(c.TypeName);
-                    concepts.Add(c.ToJsonObject());
-                }
-                ojs.Add(new JProperty("Concepts", concepts));
+            JObject ojs = new JObject();
+            try{
+            ojs = new JObject();
+            ojs.Add(new JProperty("Number", Number));
+            ojs.Add(new JProperty("Name", Name));
+            JArray concept_numbers = new JArray();
+            JArray concept_names = new JArray();
+            JArray concepts = new JArray();
+            foreach(Concept c in Concepts)
+            {
+                concept_numbers.Add(c.TypeNumber);
+                concept_names.Add(c.TypeName);
+                concepts.Add(c.ToJsonObject());
+            }
+            ojs.Add(new JProperty("Concepts", concepts));
             }catch(Exception){
                 return null;
             }
@@ -105,12 +105,16 @@ namespace GameCore.Base
                 JArray cs = (JArray)ojs["Concepts"];
                 for(int i = 0; i < cs.Count ; i++)
                 {
+                    if (!((JObject)cs[i]).ContainsKey("TypeName"))
+                        continue;
+                    if (!ConceptManager.ContainsTypeName((string)cs[i]["TypeName"]))
+                        continue;
                     var c = ConceptManager.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
                     if(!c.FromJsonObject((JObject)cs[i]))
                         Add(c);
                 }
-            }catch(Exception){
-                return true;
+            }catch(Exception e){
+                return Core.State.WriteException(e);
             }
             return false;
         }

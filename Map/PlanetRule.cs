@@ -23,7 +23,7 @@ namespace GameCore.Map
         private int _c_world_type_number = -1; // prestore
         private int _c_planet_type_number = -1; // prestore
         public int  CPlanetTypeNumber{ get => _c_planet_type_number ; }
-        public bool Init()
+        public override bool Init()
         {
              // rule's initialize
             _c_world_type_number = ConceptSpawner<WorldRule.CWorld>.GetSpawner().Type_Number;

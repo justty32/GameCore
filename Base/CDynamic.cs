@@ -44,42 +44,66 @@ namespace GameCore.Base
                 DataFloat = new Dictionary<string, float>();
                 DataString = new Dictionary<string, string>();
                 DataBool = new Dictionary<string, bool>();
-                JObject data_int = (JObject)js["DataInt"];
-                foreach(var j in data_int)
+                if (js.ContainsKey("DataInt"))
                 {
-                    DataInt.Add(j.Key, (int)j.Value);
+                    JObject data_int = (JObject)js["DataInt"];
+                    foreach(var j in data_int)
+                    {
+                        DataInt.Add(j.Key, (int)j.Value);
+                    }
                 }
-                JObject data_float = (JObject)js["DataFloat"];
-                foreach (var j in data_float)
+                if (js.ContainsKey("DataFloat"))
                 {
-                    DataFloat.Add(j.Key, (float)j.Value);
+                    JObject data_float = (JObject)js["DataFloat"];
+                    foreach (var j in data_float)
+                    {
+                        DataFloat.Add(j.Key, (float)j.Value);
+                    }
                 }
-                JObject data_string = (JObject)js["DataString"];
-                foreach (var j in data_string)
+                if (js.ContainsKey("DataString"))
                 {
-                    DataString.Add(j.Key, (string)j.Value);
+                    JObject data_string = (JObject)js["DataString"];
+                    foreach (var j in data_string)
+                    {
+                        DataString.Add(j.Key, (string)j.Value);
+                    }
                 }
-                JObject data_bool = (JObject)js["DataBool"];
-                foreach(var j in data_bool)
+                if (js.ContainsKey("DataBool"))
                 {
-                    DataBool.Add(j.Key, (bool)j.Value);
+                    JObject data_bool = (JObject)js["DataBool"];
+                    foreach(var j in data_bool)
+                    {
+                        DataBool.Add(j.Key, (bool)j.Value);
+                    }
                 }
-                JArray array_int = (JArray)js["ArrayInt"];
-                JArray array_float = (JArray)js["ArrayFloat"];
-                JArray array_string = (JArray)js["ArrayString"];
-                JArray array_bool = (JArray)js["ArrayBool"];
-                ArrayInt = new List<int>(array_int.Count);
-                ArrayString = new List<string>(array_string.Count);
-                ArrayBool = new List<bool>(array_bool.Count);
-                ArrayFloat = new List<float>(array_float.Count);
-                for (int i = 0; i < array_int.Count; i++)
-                    ArrayInt.Add((int)array_int[i]);
-                for (int i = 0; i < array_float.Count; i++)
-                    ArrayFloat.Add((float)array_float[i]); 
-                for (int i = 0; i < array_string.Count; i++)
-                    ArrayString.Add((string)array_string[i]);
-                for (int i = 0; i < array_bool.Count; i++)
-                    ArrayBool.Add((bool)array_bool[i]);
+                ArrayInt = new List<int>();
+                ArrayString = new List<string>();
+                ArrayBool = new List<bool>();
+                ArrayFloat = new List<float>();
+                if (js.ContainsKey("ArrayInt"))
+                {
+                    JArray array_int = (JArray)js["ArrayInt"];
+                    for (int i = 0; i < array_int.Count; i++)
+                        ArrayInt.Add((int)array_int[i]);
+                }
+                if (js.ContainsKey("ArrayFloat"))
+                {
+                    JArray array_float = (JArray)js["ArrayFloat"];
+                    for (int i = 0; i < array_float.Count; i++)
+                        ArrayFloat.Add((float)array_float[i]); 
+                }
+                if (js.ContainsKey("ArrayString"))
+                {
+                    JArray array_string = (JArray)js["ArrayString"];
+                    for (int i = 0; i < array_string.Count; i++)
+                        ArrayString.Add((string)array_string[i]);
+                }
+                if (js.ContainsKey("ArrayBool"))
+                {
+                    JArray array_bool = (JArray)js["ArrayBool"];
+                    for (int i = 0; i < array_bool.Count; i++)
+                        ArrayBool.Add((bool)array_bool[i]);
+                }
             }
             catch (Exception)
             {
@@ -100,24 +124,24 @@ namespace GameCore.Base
             {
                 js.Add("TypeName", TypeName);
                 JObject data_int = new JObject();
+                JObject data_float = new JObject();
+                JObject data_string = new JObject();
+                JObject data_bool = new JObject();
                 foreach(var data in DataInt)
                 {
                     data_int.Add(data.Key, data.Value);
                 }
-                JObject data_float = new JObject();
                 foreach (var data in DataFloat)
                 {
-                    data_int.Add(data.Key, data.Value);
+                    data_float.Add(data.Key, data.Value);
                 }
-                JObject data_string = new JObject();
                 foreach (var data in DataString)
                 {
-                    data_int.Add(data.Key, data.Value);
+                    data_string.Add(data.Key, data.Value);
                 }
-                JObject data_bool = new JObject();
                 foreach (var data in DataBool)
                 {
-                    data_int.Add(data.Key, data.Value);
+                    data_bool.Add(data.Key, data.Value);
                 }
                 JArray array_int = new JArray();
                 JArray array_float = new JArray();

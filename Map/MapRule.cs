@@ -8,7 +8,7 @@ namespace GameCore.Map
     {
         public TileRule TileRule {get; private set;}
         public TerrainRule TerrainRule {get; private set;}
-        public bool Init()
+        public override bool Init()
         {
             TileRule = new TileRule();
             TerrainRule = new TerrainRule();
