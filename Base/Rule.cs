@@ -57,6 +57,18 @@ namespace GameCore.Base
                 return null;
             return card.Get<TConcept>();
         }
+        public static bool AddConcept(Card card, IList<int> c_type_numbers)
+        {
+            if (!Card.IsUsable(card))
+                return true;
+            foreach(int t in c_type_numbers)
+            {
+                var c = ConceptManager.GetSpawner(t).SpawnBase();
+                if (c != null)
+                    card.Add(c);
+            }
+            return false;
+        }
         public static bool RemoveConcept<TConcept>(Card card) where TConcept : Concept, new()
         {
             if (card == null)
@@ -113,6 +125,14 @@ namespace GameCore.Base
             else
                 return true;
             return true;
+        }
+        public static int GetConceptTypeNumber<TConcept>() where TConcept : Concept, new()
+        {
+            return ConceptSpawner<TConcept>.GetSpawner().TypeNumber;
+        }
+        public static int GetDynamicConceptTypeNumber(string type_name)
+        {
+            return ConceptSpawner<CDynamic>.GetDynamicSpawner(type_name).TypeNumber;
         }
         public static TConcept GetConcept<TConcept>(Card card) where TConcept : Concept, new()
         {

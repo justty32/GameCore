@@ -18,9 +18,13 @@ namespace GameCore.Base
         }
         public bool Add(Card card)
         {
+            if (!Card.IsUsable(card))
+                return true;
             if (cards.ContainsKey(card.Number))
                 return true;
             cards.Add(card.Number, card);
+            if(!ChangedCards.Contains(card.Number))
+            ChangedCards.Add(card.Number);
             return false;
         }
         public bool Remove(int number)
@@ -28,6 +32,8 @@ namespace GameCore.Base
             if (!cards.ContainsKey(number))
                 return true;
             cards.Remove(number);
+            if(ChangedCards.Contains(number))
+                ChangedCards.Remove(number);
             return false;
         }
         public bool Contains(int number) => cards.ContainsKey(number);

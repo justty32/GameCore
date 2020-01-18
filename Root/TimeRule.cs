@@ -220,7 +220,7 @@ namespace GameCore.Root
         public Time NowTime { get; set; }
         public TimeRule() 
         {
-            _ctn_time = ConceptSpawner<CTime>.GetSpawner().Type_Number;
+            _ctn_time = ConceptSpawner<CTime>.GetSpawner().TypeNumber;
         }
         public void SetNowTime(int year = -1, int month = -1 , int day = -1, int hour = -1)
         {

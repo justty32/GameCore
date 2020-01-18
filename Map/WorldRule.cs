@@ -45,9 +45,9 @@ namespace GameCore.Map
         public override bool Init()
         {
              // rule's initialize
-            _c_world_type_number = ConceptManager.GetSpawner<CWorld>().Type_Number;
-            _c_land_type_number = ConceptManager.GetSpawner<LandRule.CLand>().Type_Number;
-            _c_location_type_number = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _c_world_type_number = ConceptManager.GetSpawner<CWorld>().TypeNumber;
+            _c_land_type_number = ConceptManager.GetSpawner<LandRule.CLand>().TypeNumber;
+            _c_location_type_number = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().TypeNumber;
             return false;
         }
         public bool AddCWorld(Base.Card card, int sizeX, int sizeY)

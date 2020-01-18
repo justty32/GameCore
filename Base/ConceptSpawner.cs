@@ -8,8 +8,8 @@ namespace GameCore.Base
 {
     public interface IConceptSpawner {
         Concept SpawnBase();
-        int Type_Number { get; }
-        string Type_Name { get; }
+        int TypeNumber { get; }
+        string TypeName { get; }
     }
     public class ConceptSpawner<TComponennt> : IConceptSpawner
         where TComponennt : Concept, new()
@@ -22,10 +22,10 @@ namespace GameCore.Base
             * 
             * TypeNumber will be auto Distributed while creating a New Type Spawner.
             */
-        public int Type_Number { get; } = -1;  // What type of Concept to spawn
-        public string Type_Name { get; set; } = null; // What type of Concept to spawn
+        public int TypeNumber { get; } = -1;  // What type of Concept to spawn
+        public string TypeName { get; set; } = null; // What type of Concept to spawn
         private ConceptSpawner() {}
-        private ConceptSpawner(int t_type_number) => Type_Number = t_type_number;
+        private ConceptSpawner(int t_type_number) => TypeNumber = t_type_number;
         public static ConceptSpawner<TComponennt> GetSpawner()
         {
             // Should only used by Concept.
@@ -47,10 +47,10 @@ namespace GameCore.Base
             {
                 //create one, set type_number, set type_name
                 var spawner = new ConceptSpawner<TComponennt>(CM.SpawnerList.Count);
-                spawner.Type_Name = t.TypeName;
+                spawner.TypeName = t.TypeName;
                 //add list
                 CM.SpawnerTypeNameSet.Add(t.TypeName, CM.SpawnerList.Count);
-                CM.SpawnerList.Add(spawner.Type_Number, spawner);
+                CM.SpawnerList.Add(spawner.TypeNumber, spawner);
                 return spawner;
             }
         }
@@ -71,10 +71,10 @@ namespace GameCore.Base
             {
                 //create one, set type_number, set type_name
                 var spawner = new ConceptSpawner<Base.CDynamic>(CM.SpawnerList.Count);
-                spawner.Type_Name = type_name;
+                spawner.TypeName = type_name;
                 //add list
                 CM.SpawnerTypeNameSet.Add(type_name, CM.SpawnerList.Count);
-                CM.SpawnerList.Add(spawner.Type_Number, spawner);
+                CM.SpawnerList.Add(spawner.TypeNumber, spawner);
                 // if dynamic not have it yet, add it
                 if (!Core.Dynamic.CDynamicSpawners.ContainsKey(type_name))
                     Core.Dynamic.CDynamicSpawners.Add(type_name, spawner);
@@ -87,7 +87,7 @@ namespace GameCore.Base
         {
             /*Return by default constructer, Concept().*/
             TComponennt concept = new TComponennt();
-            concept.TypeNumber = Type_Number;
+            concept.TypeNumber = TypeNumber;
             return concept;
         }
         public Concept SpawnBase()

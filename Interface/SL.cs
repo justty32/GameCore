@@ -95,6 +95,42 @@ namespace GameCore.Interface
             }
             return false;
         }
+        public Card CardFromOtherSave(string save_name, int number)
+        {
+            if (number < 0)
+                return null;
+            try
+            {
+                string jstr = Core.INeed.ImportCard(save_name, number);
+                if (jstr == null)
+                    return null;
+                JObject ojs = JObject.Parse(jstr);
+                Card card = new Card();
+                if (!(ojs.ContainsKey("Number")))
+                    return null;
+                if (!(ojs.ContainsKey("Name")))
+                    ojs.Add("Name", "");
+                card.Number = (int)ojs["Number"];
+                card.Name = (string)ojs["Name"];
+                card.concepts = new Dictionary<int, Concept>();
+                JArray cs = (JArray)ojs["Concepts"];
+                for(int i = 0; i < cs.Count ; i++)
+                {
+                    if (!((JObject)cs[i]).ContainsKey("TypeName"))
+                        continue;
+                    if (!ConceptManager.ContainsTypeName((string)cs[i]["TypeName"]))
+                        continue;
+                    var c = ConceptManager.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
+                    if(!c.FromJsonObject((JObject)cs[i]))
+                        card.Add(c);
+                }
+                return card;
+            }
+            catch (Exception e)
+            {
+                return Core.State.WriteException<Card>(e);
+            }
+        }
     }
     public class Save
     {

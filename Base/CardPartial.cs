@@ -7,10 +7,20 @@ namespace GameCore.Base
     public partial class Card
     {
         // which is just edit from ConceptSet, but remove something.
-        private Dictionary<int, Concept> concepts;
+        public Dictionary<int, Concept> concepts;
         public IList<Concept> Concepts { get => new List<Concept>(concepts.Values); }
         public int ConceptsCount => concepts.Count;
-        public IList<int> ConceptsTypesCount => new List<int>(concepts.Keys); //return what types of concept it have
+        public IList<int> ConceptsTypes => new List<int>(concepts.Keys); //return what types of concept it have
+        public Card()
+        {
+            concepts = new Dictionary<int, Concept>();
+        }
+        public Card(string name)
+        {
+            concepts = new Dictionary<int, Concept>();
+            if(name != null)
+                Name = name;
+        }
         public bool Has(int type_number) => concepts.ContainsKey(type_number);
         public bool Has(params int[] type_numbers)
         {
@@ -48,7 +58,7 @@ namespace GameCore.Base
         }
         public bool Has<TConcept>() where TConcept : Concept, new()
         {
-            return Has(ConceptManager.GetSpawner<TConcept>().Type_Number);
+            return Has(ConceptManager.GetSpawner<TConcept>().TypeNumber);
         }
         public Concept Get(int type_number)
         {
@@ -73,7 +83,7 @@ namespace GameCore.Base
             // if any error, return null
             if (!Has<TConcept>())
                 return null;
-            return Get(ConceptManager.GetSpawner<TConcept>().Type_Number) as TConcept;
+            return Get(ConceptManager.GetSpawner<TConcept>().TypeNumber) as TConcept;
         }
         public List<Concept> Get(params int[] type_numbers)
         {
@@ -175,7 +185,32 @@ namespace GameCore.Base
         }
         public void Remove<TConcept>() where TConcept : Concept, new()
         {
-            Remove(ConceptManager.GetSpawner<TConcept>().Type_Number);
+            Remove(ConceptManager.GetSpawner<TConcept>().TypeNumber);
+        }
+        public static Card Copy(Card target, bool init_new_one = true, string name = null, params int[] type_numbers)
+        {
+            if (target == null)
+                return null;
+            Card card = new Card(name);
+            if (init_new_one)
+            {
+                if (card.InitBeNew(name))
+                    return null;
+            }
+            List<int> types = new List<int>(target.ConceptsTypes);
+            if (type_numbers.Length != 0)
+                types = new List<int>(type_numbers);
+            for(int i = 0; i < types.Count; i++)
+            {
+                Concept c = target.Get(types[i]);
+                if (c == null)
+                    continue;
+                var cn = ConceptManager.GetSpawner(c.TypeNumber).SpawnBase();
+                cn.FromJsonObject(c.ToJsonObject());
+                cn.TypeNumber = c.TypeNumber;
+                card.Add(cn);
+            }
+            return card;
         }
     }
 }

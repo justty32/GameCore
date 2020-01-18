@@ -15,9 +15,9 @@ namespace GameCore.Map
         private int _c_terrain_type_number = -1;
         public override bool Init()
         {
-            _c_location_type_number = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
-            _c_landform_type_number = ConceptManager.GetSpawner<LandformRule.CLandform>().Type_Number;
-            _c_terrain_type_number = ConceptManager.GetSpawner<CTerrain>().Type_Number;
+            _c_location_type_number = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().TypeNumber;
+            _c_landform_type_number = ConceptManager.GetSpawner<LandformRule.CLandform>().TypeNumber;
+            _c_terrain_type_number = ConceptManager.GetSpawner<CTerrain>().TypeNumber;
             return false;
         }
     }

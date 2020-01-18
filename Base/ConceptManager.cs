@@ -16,7 +16,7 @@ namespace GameCore.Base
         public static int GetTypesCount() => Core.ConceptManager.SpawnerList.Count; //return how many types of concept.
         public static string GetTypeName(int type_number) {
             if(Core.ConceptManager.SpawnerList.ContainsKey(type_number))
-                return Core.ConceptManager.SpawnerList[type_number]?.Type_Name;
+                return Core.ConceptManager.SpawnerList[type_number]?.TypeName;
             return null;
         }
         public static int GetTypeNumber(string type_name) {
@@ -28,7 +28,7 @@ namespace GameCore.Base
         public static int GetTypeNumber<TConceptType>()
             where TConceptType : Concept, new()
         {
-            return GetSpawner<TConceptType>().Type_Number;
+            return GetSpawner<TConceptType>().TypeNumber;
         }
         public static ConceptSpawner<TComponennt> GetSpawner<TComponennt>()
             where TComponennt : Concept, new()

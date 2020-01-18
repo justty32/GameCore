@@ -41,9 +41,9 @@ namespace GameCore.Map
         public override bool Init()
         {
             // rule's initialize
-            _c_land_type_number = Base.ConceptManager.GetSpawner<CLand>().Type_Number;
-            _c_tile_type_number = Base.ConceptManager.GetSpawner<TileRule.CTile>().Type_Number;
-            _c_location_type_number = Base.ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
+            _c_land_type_number = Base.ConceptManager.GetSpawner<CLand>().TypeNumber;
+            _c_tile_type_number = Base.ConceptManager.GetSpawner<TileRule.CTile>().TypeNumber;
+            _c_location_type_number = Base.ConceptManager.GetSpawner<Root.LocationRule.CLocation>().TypeNumber;
             return false;
         }
         public bool AddCLand(Base.Card card, int sizeX, int sizeY)

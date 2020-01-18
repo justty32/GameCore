@@ -16,11 +16,17 @@ namespace GameCore.Base
         // the Card is not usable, while Number is -1
         //
         // Init() to load a card, BeNewCard() to create a new card
-        public int Number { get; private set;} = -1;
+        public int Number { get; set;} = -1;
         public string Name { get; set; } = "";
+        public static bool IsUsable(Card card)
+        {
+            if (card == null)
+                return false;
+            return card.IsUsable();
+        }
         public bool IsUsable()
         {
-            if(Number < 0)
+            if(Number < 0 || Number > Core.Cards.MaxNumber)
                 return false;
             if(Concepts == null)
                 return false;
@@ -38,22 +44,24 @@ namespace GameCore.Base
             // load a card
             // set number and name, add this to global card list
             Clear();
-            if(number < 0 || Core.Cards.Contains(number)
-                || number > Core.Cards.MaxNumber)
+            if(number < 0 || number > Core.Cards.MaxNumber)
                 return true;
             Number = number;
+            if (name != null)
+                Name = name;
+            else
+                Name = "";
+            concepts = new Dictionary<int, Concept>();
             if(Core.Cards.Add(this))
                 return true;
-            Name = name;
-            concepts = new Dictionary<int, Concept>();
             return false;
         }
-        public void InitBeNew(string name = null)
+        public bool InitBeNew(string name = null)
         {
             // be a new card, with new distributed number and specific name
             Clear();
             Core.Cards.MaxNumber++;
-            Init(Core.Cards.MaxNumber, name);
+            return Init(Core.Cards.MaxNumber, name);
         }
         public void Clear()
         {
@@ -91,8 +99,8 @@ namespace GameCore.Base
                 concepts.Add(cj);
             }
             ojs.Add(new JProperty("Concepts", concepts));
-            }catch(Exception){
-                return null;
+            }catch(Exception e){
+                return Core.State.WriteException<JObject>(e);
             }
             return ojs;
         }

@@ -73,7 +73,7 @@ namespace GameCore.Root
         public List<int> LocationCards {get; private set;} = null;
         public override bool Init()
         {
-            _ctn_location = Base.ConceptManager.GetSpawner<CLocation>().Type_Number;
+            _ctn_location = Base.ConceptManager.GetSpawner<CLocation>().TypeNumber;
             LocationCards = new List<int>(2000);
             return false; 
         }

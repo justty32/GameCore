@@ -14,6 +14,10 @@ namespace GameCore.Interface
         // used in Core, not Data
         // Difference with CoreInfo, these configurations are changeable every time
         // need to be offered a instance in Core, while Core.Init()
-
+        public List<string> RulesInitOrder;
+        public Config()
+        {
+            RulesInitOrder = new List<string>();
+        }
     }
 }

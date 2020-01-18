@@ -6,7 +6,11 @@ using GameCore.Interface;
 
 // TODO: object pool for card
 // TODO : rule's init order list, annotations, logs, try catch replacing
-// TODO: Dynamic rules
+// TODO: Dynamic rules, scripts, modules, simplify concept acess
+// TODO: resources relation in Interface
+// TODO: language interface
+// hair, face, nose, eyes...
+//body adjust, movement,
 
 namespace GameCore
 {
@@ -95,7 +99,7 @@ namespace GameCore
             p_instance._rule_manager.Rules = p_instance._rules;
             if (Load.SaveInfo())
                 return true;
-            p_instance._rule_manager.Init();
+            p_instance._rule_manager.Init(p_instance._config.RulesInitOrder);
             if (Load.Rules())
                 return true;
             if (load_all_cards)
@@ -109,6 +113,8 @@ namespace GameCore
             if(save_name == null)
                 return true;
             bool is_save_all_cards = save_all_cards;
+            // because the accessing of _dir_name will wash it, so make a copy
+            List<int> changed_cards = new List<int>(Cards.ChangedCards.ToArray());
             p_instance._dir_name = save_name;
             p_instance._state.Log.AppendLine("save game into - ");
             p_instance._state.Log.AppendLine(save_name);
@@ -125,7 +131,7 @@ namespace GameCore
                 if (Save.AllCards())
                     return true;
             else
-                if (Save.Card(Cards.ChangedCards.ToArray()))
+                if (Save.Card(changed_cards.ToArray()))
                     return true;
             if (Save.SaveInfo())
                 return true;

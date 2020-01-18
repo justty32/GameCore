@@ -50,8 +50,8 @@ namespace GameCore.Map
         private int _ctn_tile = -1;
         public override bool Init()
         {
-            _ctn_location = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().Type_Number;
-            _ctn_tile = ConceptManager.GetSpawner<CTile>().Type_Number;
+            _ctn_location = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().TypeNumber;
+            _ctn_tile = ConceptManager.GetSpawner<CTile>().TypeNumber;
             return false;
         }
         public CTile AddCTile(Base.Card card)

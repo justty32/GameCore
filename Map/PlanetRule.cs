@@ -26,9 +26,9 @@ namespace GameCore.Map
         public override bool Init()
         {
              // rule's initialize
-            _c_world_type_number = ConceptSpawner<WorldRule.CWorld>.GetSpawner().Type_Number;
-            _c_planet_type_number = ConceptSpawner<CPlanet>.GetSpawner().Type_Number;
-            _c_location_type_number = ConceptSpawner<Root.LocationRule.CLocation>.GetSpawner().Type_Number;
+            _c_world_type_number = ConceptSpawner<WorldRule.CWorld>.GetSpawner().TypeNumber;
+            _c_planet_type_number = ConceptSpawner<CPlanet>.GetSpawner().TypeNumber;
+            _c_location_type_number = ConceptSpawner<Root.LocationRule.CLocation>.GetSpawner().TypeNumber;
             return false;
         }
         public bool AddCPlanet(Base.Card card)
