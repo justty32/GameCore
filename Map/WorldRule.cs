@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using GameCore.Base;
 
-// TODO:declare a hook: LandMoved(land, new_posX, new_posY), hook_name:"LandMoved"
 
 namespace GameCore.Map
 {

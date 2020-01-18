@@ -7,10 +7,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using GameCore.Base;
 
-// TODO: Now, only implement SLs about config and cards
-//       and that cards can only be SL by full stuck in one file now.
-//       So, next step is implement the fragment SL about cards,
-//       also about rules, scripts, mods....
+// TODO: module list, module, language, model list
 
 namespace GameCore.Interface
 {

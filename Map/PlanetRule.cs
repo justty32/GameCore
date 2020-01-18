@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using GameCore.Base;
 
-// TODO:declare a hook: WorldMoved(land, new_posZ), hook_name:"WorldMoved"
 
 namespace GameCore.Map
 {

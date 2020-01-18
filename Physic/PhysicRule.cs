@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-// TODO : fill more attribute into CPhysical
 
 namespace GameCore.Physic
 {

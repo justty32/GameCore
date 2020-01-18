@@ -4,9 +4,6 @@ using System.Text;
 using GameCore.Interface;
 using Newtonsoft.Json.Linq;
 
-// TODO: except this fromjson(), still need cdynamic's name_set and so on... 
-//also set Dynamic's CDynamicNames(at Interface/SL.cs), Cards.MaxNumber
-
 namespace GameCore.Base
 {
     public class SaveInfo

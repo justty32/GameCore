@@ -4,21 +4,12 @@ using System.Text;
 using GameCore.Base;
 using Newtonsoft.Json.Linq;
 
-// TODO: make a init order list, include static rules and dynamic rules
-//  then init by that order list
-
 namespace GameCore.Base
 {
     public class RulesCollection
     {
         public Root.TimeRule TimeRule = new Root.TimeRule();
         public Root.LocationRule LocationRule = new Root.LocationRule();
-        public Map.TileRule TileRule = new Map.TileRule();
-        public Map.TerrainRule TerrainRule = new Map.TerrainRule();
-        public Map.LandformRule LandformRule = new Map.LandformRule();
-        public Map.LandRule LandRule = new Map.LandRule();
-        public Map.WorldRule WorldRule = new Map.WorldRule();
-        public Map.PlanetRule PlanetRule = new Map.PlanetRule();
     }
     public class RuleManager
     {

@@ -4,10 +4,8 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 
 // there is a template in Base.Util.RRule, copy that by ctrl-c and ctrl-v
-
-// TODO: add RuleName like concept's TypeName, and adjust RuleManager and its from json.
-
 // make concept's number in default constructor
+// TODO : make dynamic rules, which change rule name
 
 namespace GameCore.Base
 {

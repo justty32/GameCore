@@ -5,10 +5,10 @@ using GameCore.Base;
 using GameCore.Interface;
 
 // TODO: object pool for card
-// TODO : rule's init order list, annotations, logs, try catch replacing
-// TODO: Dynamic rules, scripts, modules, simplify concept acess
-// TODO: resources relation in Interface
-// TODO: language interface
+//  rule's init order list, annotations, logs, try catch replacing
+//  Dynamic rules, scripts, modules, simplify concept acess
+//  resources relation in Interface
+//  language interface
 // hair, face, nose, eyes...
 //body adjust, movement,
 

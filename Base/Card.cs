@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-// TODO : Now we have a card's json object, which has their own number and name
-//        to make a standard, like how many card json object in a file
-//        a file is a big json file, {card_amount : 55, cards : [{c1}. {c2}, ...{c55}]}
-
 namespace GameCore.Base
 {
     public partial class Card : Util.INode

@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 //dynamic concept and dynamic rule
 //dynamic rule composed by scripts with hooks
 // TODO: add dynamic rules' init process at rule manager's init()
-// TODO: add a dictionary of processing CDynamic, relation is about dynamic typename
 
 namespace GameCore.Interface
 {
