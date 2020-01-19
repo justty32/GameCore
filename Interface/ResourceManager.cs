@@ -4,6 +4,8 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 
 // TODO : model, action, face, body, thing, material...
+// sound
+// load this from INeed
 
 namespace GameCore.Interface
 {
@@ -18,24 +20,18 @@ namespace GameCore.Interface
         public Dictionary<int, string> Material = new Dictionary<int, string>();
         // effects
         public Dictionary<int, string> Partical = new Dictionary<int, string>();
-        public bool FromJsonObject(JObject json)
+        public ResourceManager FromJsonObject(JObject json)
         {
             if (json == null)
-                return true;
+                return null;
             try
             {
                 var rm = json.ToObject<ResourceManager>();
-                Organism = rm.Organism;
-                Scene = rm.Scene;
-                Artical = rm.Artical;
-                Terrain = rm.Terrain;
-                Material = rm.Material;
-                Partical = rm.Partical;
+                return rm;
             } catch(Exception e)
             {
-                return Core.State.WriteException(e);
+                return Core.State.WriteException<ResourceManager>(e);
             }
-            return false;
         }
         public JObject ToJsonObject()
         {
