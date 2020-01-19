@@ -22,7 +22,7 @@ namespace GameCore.Base
             * 
             * TypeNumber will be auto Distributed while creating a New Type Spawner.
             */
-        public int TypeNumber { get; } = -1;  // What type of Concept to spawn
+        public int TypeNumber { get;} = -1;  // What type of Concept to spawn
         public string TypeName { get; set; } = null; // What type of Concept to spawn
         private ConceptSpawner() {}
         private ConceptSpawner(int t_type_number) => TypeNumber = t_type_number;
@@ -54,7 +54,7 @@ namespace GameCore.Base
                 return spawner;
             }
         }
-        public static ConceptSpawner<Base.CDynamic> GetDynamicSpawner(string type_name)
+        public static ConceptSpawner<Base.CDynamic> GetCDynamicSpawner(string type_name)
         {
             var CM = Core.ConceptManager;
             if (type_name == null)
@@ -94,6 +94,18 @@ namespace GameCore.Base
         {
             // Same as Spawn(), but return base reference
             return Spawn();
+        }
+        public static TComponennt SpawnFromJsonObject(JObject json)
+        {
+            if (json == null)
+                return null;
+            var sp = GetSpawner();
+            if (sp == null)
+                return null;
+            var c = sp.Spawn();
+            if (c == null)
+                return null;
+            return (c.FromJsonObject(json)) as TComponennt;
         }
     }
 }

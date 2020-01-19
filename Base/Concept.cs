@@ -28,17 +28,40 @@ namespace GameCore.Base
             }
             return js;
         }
-        public virtual bool FromJsonObject(JObject js)
+        public virtual Concept FromJsonObject(JObject js)
         {
             if(js == null)
-                return true;
+                return null;
             try{
                 if(!((string)js["TypeName"]).Equals(TypeName))
-                    return true;
+                    return null;
             }catch(Exception e){
-                return Core.State.WriteException(e);
+                return Core.State.WriteException<Concept>(e);
             }
-            return false; 
+            return null; 
+        }
+        public static JObject AlignJsonOjbect(JObject js)
+        {
+            if (js == null)
+                return null;
+            try{
+                // check is legal
+                if (!js.ContainsKey("TypeName"))
+                    return null;
+                // remove redundantion
+                if (js.ContainsKey("Card"))
+                    js.Remove("Card");
+                // reset type number
+                int tn = ConceptManager.GetTypeNumber((string)js["TypeName"]);
+                if (tn < 0)
+                    return null;
+                if (js.ContainsKey("TypeNumber"))
+                    js.Remove("TypeNumber");
+                js.Add("TypeNumber", tn);
+            }catch(Exception e){
+                return Core.State.WriteException<JObject>(e);
+            }
+            return js;
         }
         public Card Card { get; set; } = null;
         public virtual bool IsUsable()

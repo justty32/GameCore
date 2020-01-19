@@ -20,17 +20,18 @@ namespace GameCore.Map
                 PositionY = position_y;
                 return false;
             }
-            public override bool FromJsonObject(JObject js)
+            public override Concept FromJsonObject(JObject ojs)
             {
-                if(base.FromJsonObject(js))
-                    return true;
+                CTile c = null;
+                var js = AlignJsonOjbect(ojs);
+                if (js == null)
+                    return null;
                 try{
-                    Init((int)js["PositionX"]
-                        ,(int)js["PositionY"]);
-                }catch(Exception){
-                    return true;
+                    c = js.ToObject<CTile>();
+                }catch(Exception e){
+                    return Core.State.WriteException<Concept>(e);
                 }
-                return false;
+                return c;
             }
             public override JObject ToJsonObject()
             {

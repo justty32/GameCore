@@ -32,11 +32,12 @@ namespace GameCore.Base
             }
             foreach(var rpair in RuleDic)
             {
+                Core.State.Log.AppendLine("down below rules are not in init order list");
+                Core.State.Log.AppendLine("it will still be worked, but the order will be randomly");
                 if (!order_list.Contains(rpair.Key))
                 {
                     order_list.Add(rpair.Key);
-                    Core.State.Log.Append(rpair.Key);
-                    Core.State.Log.AppendLine(" - rule is not in init order list, it will still be worked, but the order will be randomly");
+                    Core.State.Log.AppendLine(rpair.Key);
                 }
             }
             return order_list;

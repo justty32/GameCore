@@ -42,21 +42,17 @@ namespace GameCore.Root
                     return false;
                 return true;
             }
-            public override bool FromJsonObject(JObject ojs)
+            public override Base.Concept FromJsonObject(JObject js)
             {
+                var ojs = AlignJsonOjbect(js);
                 if(ojs == null)
-                    return true;
+                    return null;
                 try{
-                    // check if the object's typename meets this
-                    if(base.FromJsonObject(ojs))
-                        return true;
-                    // take out data
-                    UpperCard = (int)ojs["UpperCard"];
-                    BelowCards = ((JArray)ojs["BelowCards"]).Select(c => (int)c).ToList();
+                    CLocation c = ojs.ToObject<CLocation>();
+                    return c;
                 }catch(Exception e){
-                    return Core.State.WriteException(e);
+                    return Core.State.WriteException<Base.Concept>(e);
                 }
-                return false;
             }
             public override JObject ToJsonObject()
             {

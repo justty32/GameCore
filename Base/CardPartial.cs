@@ -187,7 +187,7 @@ namespace GameCore.Base
         {
             Remove(ConceptManager.GetSpawner<TConcept>().TypeNumber);
         }
-        public static Card Copy(Card target, bool init_new_one = true, string name = null, params int[] type_numbers)
+        public static Card CopyFrom(Card target, bool init_new_one = true, string name = null, params int[] type_numbers)
         {
             if (target == null)
                 return null;
@@ -205,9 +205,12 @@ namespace GameCore.Base
                 Concept c = target.Get(types[i]);
                 if (c == null)
                     continue;
-                var cn = ConceptManager.GetSpawner(c.TypeNumber).SpawnBase();
-                cn.FromJsonObject(c.ToJsonObject());
-                cn.TypeNumber = c.TypeNumber;
+                var c_spawner = ConceptManager.GetSpawner(c.TypeNumber);
+                if (c_spawner == null)
+                    continue;
+                var cn = c_spawner.SpawnBase().FromJsonObject(c.ToJsonObject());
+                if (cn == null)
+                    continue;
                 card.Add(cn);
             }
             return card;

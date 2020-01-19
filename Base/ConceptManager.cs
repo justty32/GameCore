@@ -65,5 +65,14 @@ namespace GameCore.Base
                 return null;
             return Core.ConceptManager.SpawnerList[Core.ConceptManager.SpawnerTypeNameSet[type_name]];
         }
+        public static ConceptSpawner<CDynamic> GetCDynamicSpawner(string name)
+        {
+            return ConceptSpawner<CDynamic>.GetCDynamicSpawner(name);
+        }
+        public TComponennt SpawnFromJsonObject<TComponennt>(JObject json)
+            where TComponennt : Concept, new()
+        {
+            return ConceptSpawner<TComponennt>.SpawnFromJsonObject(json);
+        }
     }
 }

@@ -85,88 +85,42 @@ namespace GameCore.Base
         }
     }
     /*
-    public class CCom : Base.Concept
+    public class SampleRule : Rule
     {
-        public readonly string _type_name = "ChangeThis"; 
-        public override string TypeName => _type_name ;
-        public bool Init()
+        public class CSample : Concept
         {
-            return false;
-        }
-        public override bool FromJsonObject(JObject js)
-        {
-            if(base.FromJsonObject(js))
-                return true;
-            try{
-                Init();
-            }catch(Exception){
-                return true;
+            public override string TypeName => _type_name;
+            private string _type_name = "CSample";
+            public override Concept FromJsonObject(JObject ojson)
+            {
+                var json = AlignJsonOjbect(ojson);
+                if (json == null)
+                    return null;
+                try
+                {
+                    CSample c = json.ToObject<CSample>();
+                    return c;
+                }catch(Exception e)
+                {
+                    return Core.State.WriteException<Concept>(e);
+                }
             }
-            return false;
-        }
-        public override JObject ToJsonObject()
-        {
-            JObject js = base.ToJsonObject();
-            if(js == null)
-                return null;
-            try{
-                // put data
-            }catch(Exception){
-                return null;
+            public override JObject ToJsonObject()
+            {
+                try
+                {
+                    JObject json = JObject.FromObject(this);
+                    return json;
+                }catch(Exception e)
+                {
+                    return Core.State.WriteException<JObject>(e);
+                }
             }
-            return js;
         }
-    }
-    */
-    /*
-    public class RRule : Base.Rule
-    {
-        private int _ctn_ = -1;
-        public bool Init()
+        private int _ctn_sample = -1;
+        public SampleRule()
         {
-            _ctn_ = Base.Concept.GetSpawner<CCom>().Type_Number;
-            return false;
-        }
-        public CCom AddCTile(Base.Card card)
-        {
-            return AddConcept<CCom>(card);
-        }
-        public bool AddCTile(Base.Card card, int a)
-        {
-            return AddConcept<CCom>(card).Init();
-        }
-        public bool RemoveCLocation(Base.Card card)
-        {
-            if(RemoveConcept<CCom>(card))
-                return true;
-            return false;
-        }
-        public override bool IsUsable()
-        {
-            return true;
-        }
-        public override bool FromJsonObject(JObject js)
-        {
-            if(base.FromJsonObject(js))
-                return true;
-            try{
-                //get data
-            }catch(Exception){
-                return true;
-            }
-            return false;
-        }
-        public override JObject ToJsonObject()
-        {
-            JObject js = base.ToJsonObject();
-            if(js == null)
-                return null;
-            try{
-                // put data
-            }catch(Exception){
-                return null;
-            }
-            return js;
+            _ctn_sample = ConceptSpawner<CSample>.GetSpawner().TypeNumber;
         }
     }
     */

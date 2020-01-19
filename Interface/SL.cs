@@ -117,9 +117,13 @@ namespace GameCore.Interface
                         continue;
                     if (!ConceptManager.ContainsTypeName((string)cs[i]["TypeName"]))
                         continue;
-                    var c = ConceptManager.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
-                    if(!c.FromJsonObject((JObject)cs[i]))
-                        card.Add(c);
+                    var csp = ConceptManager.GetSpawner((string)cs[i]["TypeName"]);
+                    if (csp == null)
+                        continue;
+                    var c = csp.SpawnBase().FromJsonObject((JObject)cs[i]);
+                    if (c == null)
+                        continue;
+                    card.Add(c);
                 }
                 return card;
             }

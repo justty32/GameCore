@@ -130,7 +130,7 @@ namespace GameCore.Base
         }
         public static int GetDynamicConceptTypeNumber(string type_name)
         {
-            return ConceptSpawner<CDynamic>.GetDynamicSpawner(type_name).TypeNumber;
+            return ConceptSpawner<CDynamic>.GetCDynamicSpawner(type_name).TypeNumber;
         }
         public static TConcept GetConcept<TConcept>(Card card) where TConcept : Concept, new()
         {

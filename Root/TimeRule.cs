@@ -183,18 +183,17 @@ namespace GameCore.Root
         {
             public override string TypeName => "CTime";
             public Time Time { get; set; } = new Time();
-            public override bool FromJsonObject(JObject js)
+            public override Concept FromJsonObject(JObject ojs)
             {
-                if(base.FromJsonObject(js))
-                    return true;
+                var js = AlignJsonOjbect(ojs);
+                if(js == null)
+                    return null;
                 try{
-                    Time = new Time();
-                    if (Time.FromJsonObject((JObject)js["Time"]))
-                        return true;
-                }catch(Exception){
-                    return true;
+                    CTime c = js.ToObject<CTime>();
+                    return c;
+                }catch(Exception e){
+                    return Core.State.WriteException<Concept>(e);
                 }
-                return false;
             }
             public override JObject ToJsonObject()
             {

@@ -120,8 +120,11 @@ namespace GameCore.Base
                         continue;
                     if (!ConceptManager.ContainsTypeName((string)cs[i]["TypeName"]))
                         continue;
-                    var c = ConceptManager.GetSpawner((string)cs[i]["TypeName"]).SpawnBase();
-                    if(!c.FromJsonObject((JObject)cs[i]))
+                    var c_spawner = ConceptManager.GetSpawner((string)cs[i]["TypeName"]);
+                    if (c_spawner == null)
+                        continue;
+                    var c = c_spawner.SpawnBase().FromJsonObject((JObject)cs[i]);
+                    if (c != null)
                         Add(c);
                 }
             }catch(Exception e){
