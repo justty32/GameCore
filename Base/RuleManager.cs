@@ -90,7 +90,7 @@ namespace GameCore.Base
                     for(int j = 0; j < ja.Count; j++)
                     {
                         // if rule name equals to target
-                        if(((JObject)ja[j]).ContainsKey("RuleName"))
+                        if(Util.JObjectContainsKey((JObject)ja[j], "RuleName"))
                         if (((string)ja[j]["RuleName"]).Equals(InitOrderList[i]))
                         {
                             // and rule dic contains it, init it
@@ -132,7 +132,7 @@ namespace GameCore.Base
                         var rule_json = RuleDic[InitOrderList[i]].ToJsonObject();
                         if(rule_json == null)
                             return null;
-                        if (!rule_json.ContainsKey("RuleName"))
+                        if (!Util.JObjectContainsKey(rule_json, "RuleName"))
                              rule_json.Add("RuleName", RuleDic[InitOrderList[i]].RuleName);
                         ja.Insert(0, rule_json);
                         Core.State.Log.Append(InitOrderList[i]);

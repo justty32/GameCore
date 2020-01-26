@@ -125,14 +125,14 @@ namespace GameCore
                     return true;
                 is_save_all_cards = true;
             }
-            if (Save.Rules())
-                return true;
             if (is_save_all_cards)
                 if (Save.AllCards())
                     return true;
             else
                 if (Save.Card(changed_cards.ToArray()))
                     return true;
+            if (Save.Rules())
+                return true;
             if (Save.SaveInfo())
                 return true;
             //TODO: save cards, scripts, modules, dynamic lists...

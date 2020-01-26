@@ -32,27 +32,5 @@ namespace GameCore.Interface
             }
             return false;
         }
-        public static bool IsCDynamic(JObject concept_json)
-        {
-            if (concept_json == null)
-                return false;
-            try
-            {   if (Util.HasAnyFalse(
-                    concept_json.ContainsKey("DataInt"),
-                    concept_json.ContainsKey("DataFloat"),
-                    concept_json.ContainsKey("DataString"),
-                    concept_json.ContainsKey("DataBool"),
-                    concept_json.ContainsKey("ArrayInt"),
-                    concept_json.ContainsKey("ArrayFloat"),
-                    concept_json.ContainsKey("ArrayString"),
-                    concept_json.ContainsKey("ArrayBool")))
-                    return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            return true;
-        }
     }
 }

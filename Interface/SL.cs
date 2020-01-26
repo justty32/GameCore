@@ -103,9 +103,9 @@ namespace GameCore.Interface
                     return null;
                 JObject ojs = JObject.Parse(jstr);
                 Card card = new Card();
-                if (!(ojs.ContainsKey("Number")))
+                if (!Util.JObjectContainsKey(ojs, "Number"))
                     return null;
-                if (!(ojs.ContainsKey("Name")))
+                if (!(Util.JObjectContainsKey(ojs, "Name")))
                     ojs.Add("Name", "");
                 card.Number = (int)ojs["Number"];
                 card.Name = (string)ojs["Name"];
@@ -113,7 +113,7 @@ namespace GameCore.Interface
                 JArray cs = (JArray)ojs["Concepts"];
                 for(int i = 0; i < cs.Count ; i++)
                 {
-                    if (!((JObject)cs[i]).ContainsKey("TypeName"))
+                    if (!(Util.JObjectContainsKey((JObject)cs[i], "TypeName")))
                         continue;
                     if (!ConceptManager.ContainsTypeName((string)cs[i]["TypeName"]))
                         continue;
@@ -192,7 +192,7 @@ namespace GameCore.Interface
                     JObject json = Core.Cards[numbers[i]].ToJsonObject();
                     if (json == null)
                         return true;
-                    if (Core.INeed.ExportCard(Core.DirName, json.ToString()))
+                    if (Core.INeed.ExportCard(Core.DirName, numbers[i], json.ToString()))
                         return true;
                 }
                 catch (Exception e)

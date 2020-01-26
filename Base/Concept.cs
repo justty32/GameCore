@@ -46,16 +46,16 @@ namespace GameCore.Base
                 return null;
             try{
                 // check is legal
-                if (!js.ContainsKey("TypeName"))
+                if (!Util.JObjectContainsKey(js, "TypeName"))
                     return null;
                 // remove redundantion
-                if (js.ContainsKey("Card"))
+                if (Util.JObjectContainsKey(js, "Card"))
                     js.Remove("Card");
                 // reset type number
                 int tn = ConceptManager.GetTypeNumber((string)js["TypeName"]);
                 if (tn < 0)
                     return null;
-                if (js.ContainsKey("TypeNumber"))
+                if (Util.JObjectContainsKey(js, "TypeNumber"))
                     js.Remove("TypeNumber");
                 js.Add("TypeNumber", tn);
             }catch(Exception e){
@@ -64,6 +64,11 @@ namespace GameCore.Base
             return js;
         }
         public Card Card { get; set; } = null;
+        public static TConcept Spawn<TConcept>()
+            where TConcept : Concept, new()
+        {
+            return ConceptSpawner<TConcept>.GetSpawner().Spawn();
+        }
         public virtual bool IsUsable()
         {
             if (TypeNumber >= 0)

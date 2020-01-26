@@ -11,6 +11,12 @@ namespace GameCore.Base
         {
             bool IsUsable();
         }
+        public static bool JObjectContainsKey(JObject json, string key)
+        {
+            if (key == null)
+                return false;
+            return json[key] != null;
+        }
         public static bool HasAnyNull(params object[] obs)
         {
             foreach (var ob in obs)

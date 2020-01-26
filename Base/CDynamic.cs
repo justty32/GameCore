@@ -53,11 +53,11 @@ namespace GameCore.Base
                 return null;
             try
             {
-                if (!js.ContainsKey("TypeName"))
+                if (!Util.JObjectContainsKey(js,"TypeName"))
                     return null;
                 if (!Core.Dynamic.CDynamicNames.Contains((string)js["TypeName"]))
                     return null;
-                if(js.ContainsKey("Card"))
+                if(Util.JObjectContainsKey(js, "Card"))
                     js.Remove("Card");
                 CDynamic c = js.ToObject<CDynamic>();
                 if (c == null)
