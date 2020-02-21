@@ -10,6 +10,7 @@ namespace GameCore.Interface
         // Difference with CoreInfo, these configurations are changeable every time
         // need to be offered a instance in Core, while Core.Init()
         public List<string> RulesInitOrder;
+        public bool MultiThreadIO = true;
         public Config()
         {
             RulesInitOrder = new List<string>();

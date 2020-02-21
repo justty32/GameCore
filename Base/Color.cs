@@ -81,17 +81,5 @@ namespace GameCore.Base
             else if(Val < 0) { Val = 0; }
         }
         public GColor() { }
-        public GColor(int color)
-        {
-            Copy(Interface.ColorManager.FromInt(color));
-        }
-        public static implicit operator int(GColor color)
-        {
-            return Interface.ColorManager.ToInt(color);
-        }
-        public static explicit operator GColor(int color)
-        {
-            return Interface.ColorManager.FromInt(color);
-        }
     }
 }

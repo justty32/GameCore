@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
 using GameCore.Base;
 
 namespace GameCore.Interface
 {
+    
     class ColorManager
     {
+        /*
         public static Color ToRGBColor(GColor color)
         {
             color.Align();
@@ -50,5 +51,6 @@ namespace GameCore.Interface
             Color32 color32 = new Color32(bs[0], bs[1], bs[2], bs[3]);
             return FromRGB(bs[0], bs[1], bs[2]);
         }
+        */
     }
 }

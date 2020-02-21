@@ -131,35 +131,60 @@ namespace GameCore
         public static bool SaveGame(string save_name = null, bool save_all_cards = false)
         {
             if (p_instance == null)
-                return p_instance._state.T(State.Ar.B, "target save dir isn't exist");
-            if(save_name == null)
                 return p_instance._state.T(State.Ar.B, "core hasn't initialized yet, load game failed");
+            if(save_name == null && p_instance._dir_name == null)
+                return p_instance._state.T(State.Ar.B, "save dir's name not specificed while saving game");
             bool is_save_all_cards = save_all_cards;
             // because the accessing of _dir_name will wash it, so make a copy
             List<int> changed_cards = new List<int>(Cards.ChangedCards.ToArray());
             string pre_save_name = p_instance._dir_name;
-            p_instance._dir_name = save_name;
+            p_instance._dir_name = save_name == null ? pre_save_name : save_name;
             p_instance._state.Log.Append("save game into - ");
             p_instance._state.Log.AppendLine(save_name);
             if(pre_save_name != null && p_instance._i_need.IsSaveDirLegal(pre_save_name))
-                if(!save_name.Equals(pre_save_name) && !p_instance._i_need.IsSaveDirExist(save_name))
-                    p_instance._i_need.CopySaveData(pre_save_name, save_name);
-            if (!Core.INeed.IsSaveDirExist(save_name)){
-                p_instance._state.Log.Append(save_name);
+                if(!p_instance._dir_name.Equals(pre_save_name) && !p_instance._i_need.IsSaveDirExist(save_name))
+                    p_instance._i_need.CopySaveData(pre_save_name, p_instance._dir_name);
+            if (!Core.INeed.IsSaveDirExist(p_instance._dir_name)){
+                p_instance._state.Log.Append(p_instance._dir_name);
                 p_instance._state.Log.AppendLine("not exist, start create new dir");
-                if(Core.INeed.NewSaveDir(save_name))
+                if(Core.INeed.NewSaveDir(p_instance._dir_name))
                     return p_instance._state.T(State.Ar.B, "create new save dir failed, save game failed");
-                if(!Core.INeed.IsSaveDirLegal(save_name))
+                if(!Core.INeed.IsSaveDirLegal(p_instance._dir_name))
                     return p_instance._state.T(State.Ar.B, "create new save dir failed, save game failed");
                 is_save_all_cards = true;
             }
             p_instance._state.Log.AppendLine("saving cards");
             if (is_save_all_cards)
+            {
                 if (Save.AllCards())
                     return p_instance._state.T(State.Ar.B, "save cards failed");
+            }
             else
-                if (Save.Card(changed_cards.ToArray()))
-                    return p_instance._state.T(State.Ar.B, "save cards failed");
+            {
+                if (p_instance._config.MultiThreadIO)
+                {
+                    p_instance._state.T(State.Ar.B, "save cards multi threading");
+                    var card_mulsave_result = Save.MulCard(changed_cards.ToArray());
+                    if (card_mulsave_result == null)
+                        return p_instance._state.T(State.Ar.B, "save cards failed");
+                    bool card_mul_save_lock = true;
+                    while (card_mul_save_lock)
+                    {
+                        foreach (var per_card_mulsave_result in card_mulsave_result)
+                        {
+                            if (per_card_mulsave_result.Value == null)
+                                return p_instance._state.T(State.Ar.B, "save card" + per_card_mulsave_result.Key.ToString() + " file failed");
+                            card_mul_save_lock = !per_card_mulsave_result.Value[0];
+                        }
+                    }
+                    p_instance._state.T(State.Ar.B, "save cards multi threading finished");
+                }
+                else
+                {
+                    if (Save.Card(changed_cards.ToArray()))
+                        return p_instance._state.T(State.Ar.B, "save cards failed");
+                }
+            }
             p_instance._state.Log.AppendLine("saving rules");
             if (Save.Rules())
                 return p_instance._state.T(State.Ar.B, "save rules failed");
