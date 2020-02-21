@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GameCore.Base;
-using Newtonsoft.Json.Linq;
+﻿using System.Collections.Generic;
 
 namespace GameCore.Base
 {
@@ -16,6 +12,11 @@ namespace GameCore.Base
         {
             ChangedCards = new List<int>();
         }
+        public bool NewCard(string name = null)
+        {
+            Card cd = new Card();
+            return cd.InitBeNew(name);
+        }
         public bool Add(Card card)
         {
             if (!Card.IsUsable(card))
@@ -23,17 +24,54 @@ namespace GameCore.Base
             if (cards.ContainsKey(card.Number))
                 return true;
             cards.Add(card.Number, card);
-            if(!ChangedCards.Contains(card.Number))
-            ChangedCards.Add(card.Number);
+            if (!ChangedCards.Contains(card.Number))
+                ChangedCards.Add(card.Number);
             return false;
         }
-        public bool Remove(int number)
+        public bool Remove(int number, bool remove_changed_card = true)
         {
             if (!cards.ContainsKey(number))
                 return true;
             cards.Remove(number);
-            if(ChangedCards.Contains(number))
-                ChangedCards.Remove(number);
+            if(remove_changed_card)
+                if (ChangedCards.Contains(number))
+                    ChangedCards.Remove(number);
+            return false;
+        }
+        public bool Release(int count = 0, bool save_cards = false, bool from_last_addition = false)
+        {
+            if (count < 0)
+                return true;
+            if (from_last_addition)
+            {
+                for(int i = 1; i <= count; i++)
+                {
+                    cards.Remove(cards.Count - i);
+                    if (save_cards)
+                        if (ChangedCards.Contains(cards.Count - i))
+                        {
+                            Core.Save.Card(cards.Count - i);
+                            ChangedCards.Remove(cards.Count - i);
+                        }
+                }
+            }
+            else
+            {
+                int i = 0;
+                foreach (var cdn in cards.Keys)
+                {
+                    cards.Remove(cdn);
+                    if (save_cards)
+                        if (ChangedCards.Contains(cdn))
+                        {
+                            Core.Save.Card(cdn);
+                            ChangedCards.Remove(cdn);
+                        }
+                    i++;
+                    if (i > count)
+                        break;
+                }
+            }
             return false;
         }
         public bool Contains(int number) => cards.ContainsKey(number);
@@ -41,7 +79,7 @@ namespace GameCore.Base
         {
             get
             {
-                if(!ChangedCards.Contains(number))
+                if (!ChangedCards.Contains(number))
                     ChangedCards.Add(number);
                 if (!cards.ContainsKey(number))
                 {

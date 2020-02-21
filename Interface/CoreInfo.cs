@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GameCore.Interface
+﻿namespace GameCore.Interface
 {
     // static data
     // Can't be changed by outside
@@ -11,8 +7,9 @@ namespace GameCore.Interface
     public static class CoreInfo
     {
         public static readonly string Version = "0.01";
-        public static readonly string dependencies = "json.net, unity2019.2.17f1";
-        // not be used now
+        public static readonly string dependencies = "json.net" +
+            ", unity2019.2.17f1";
         public static readonly int Card_amount_per_file = 2000;
+        public static readonly int Bits = 32;
     }
 }

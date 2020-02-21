@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -23,31 +22,34 @@ namespace GameCore.Interface
         // Action Result
         public enum Ar
         {
-        // good, bad, execption, parameter null, parameter bad, other
+            // good, bad, execption, parameter null, parameter bad, other
             G, B, E, PN, PB, O
-        //
-            ,u = 20
-        //
-            ,h = 30
-        //
-            ,c = 40
-        // not have concept,
-            ,d = 50 ,dNHC
-        //
-            ,r = 60
-        //
-            ,i = 70
-        // save dir not exist, save dir illegal
-            ,l = 80 ,lSDNE,lSDI
-        //
-            ,s = 90
+            //
+            , u = 20
+            //
+            , h = 30
+            //
+            , c = 40
+            // not have concept,
+            , d = 50, dNHC
+            //
+            , r = 60
+            //
+            , i = 70
+            // save dir not exist, save dir illegal
+            , l = 80, lSDNE, lSDI
+            //
+            , s = 90
         }
         private LinkedList<Ar> ars = new LinkedList<Ar>();
         public Ar AR
         {
             get
             {
-                return ars.First.Value;
+                if (ars.Count > 0)
+                    return ars.First.Value;
+                else
+                    return Ar.G;
             }
             set
             {
@@ -58,8 +60,23 @@ namespace GameCore.Interface
         }
         private StringBuilder log = new StringBuilder(10000);
         // if log's length bigger than 20000, clear it at next calling
-        public StringBuilder Log { get { if (log.Length > 20000) { log.Clear(); log.AppendLine("log clear."); }return log; } private set { log = value; } }
-        public string LogPop { get { var str = log.ToString(); log.Clear(); return str; } }
+        public StringBuilder Log {
+            get
+            {
+                if (log.Length > 20000)
+                {
+                    log.Clear();
+                    log.AppendLine("log clear.");
+                }
+                return log;
+            } 
+            private set
+            {
+                log = value;
+            }
+        }
+        public string PopLog() => LogPop;
+        private string LogPop { get { var str = log.ToString(); log.Clear(); return str; } }
         public bool AppendLogLine(string str)
         {
             if (str == null)
@@ -77,8 +94,14 @@ namespace GameCore.Interface
                 Log.Append(str);
             return false;
         }
-        public bool WriteException(Exception e, bool result = true) { AppendLogLine(e.ToString()); return result; }
-        public T WriteException<T>(Exception e, T result = default){ AppendLogLine(e.ToString()); return result; }
+        public bool WriteException(Exception e, bool result = true)
+        {
+            AppendLogLine(e.ToString()); return result;
+        }
+        public T WriteException<T>(Exception e, T result = default)
+        {
+            AppendLogLine(e.ToString()); return result;
+        }
         public object N(Ar action_result = Ar.B, string log = null)
         {
             // set action result, and return null
@@ -87,7 +110,7 @@ namespace GameCore.Interface
                 Log.AppendLine(log);
             return null;
         }
-        public bool T(Ar action_result = Ar.B, string log = null) 
+        public bool T(Ar action_result = Ar.B, string log = null)
         {
             // set action result, and return true
             Core.State.AR = action_result;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 // mostly use class Util for place_holder, as for Tin, Tout
 
@@ -82,9 +81,10 @@ namespace GameCore.Base
     {
         public List<HookClient<Tin, Tout>> Clients { get; private set; } = new List<HookClient<Tin, Tout>>();
         public string RegisteredName = null;
+
         public Hook(string register_name = null)
         {
-            Register(register_name);    
+            Register(register_name);
         }
         public bool Register(string register_name)
         {
@@ -93,9 +93,10 @@ namespace GameCore.Base
             RegisteredName = register_name;
             return false;
         }
-        public bool UnRegister() {
+        public bool UnRegister()
+        {
             RegisteredName = null;
-            return Core.HookManager.UnRegister(RegisteredName); 
+            return Core.HookManager.UnRegister(RegisteredName);
         }
         public List<Tout> CallAll(List<Tin> tins)
         {
@@ -104,7 +105,7 @@ namespace GameCore.Base
             if (tins.Count != Clients.Count)
                 return null;
             List<Tout> results = new List<Tout>(Clients.Count);
-            for(int i = 0; i < Clients.Count; i++)
+            for (int i = 0; i < Clients.Count; i++)
             {
                 results.Add(Clients[i].Function(tins[i]));
             }
@@ -113,7 +114,7 @@ namespace GameCore.Base
         public List<Tout> CallAll(Tin tin)
         {
             List<Tout> results = new List<Tout>(Clients.Count);
-            for(int i = 0; i < Clients.Count; i++)
+            for (int i = 0; i < Clients.Count; i++)
             {
                 results.Add(Clients[i].Function(tin));
             }

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using GameCore.Base;
 using Newtonsoft.Json.Linq;
-using GameCore.Base;
+using System;
 
 namespace GameCore.Root
 {
@@ -16,15 +14,18 @@ namespace GameCore.Root
         // A month has 30 days, from 1 to 30, so DayMax is 30, and MonthMax is 12
         public class Time
         {
-            // Purely store time data 
+            // Purely store time data
             // year, month, day, hour
             // add and sub will do carry(), but copy won't
-            public int Year { get; set; } = -1;
-            public int Month { get; set; } = -1;
-            public int Day { get; set; } = -1;
-            public int Hour { get; set; } = -1;
+            public int Year { get; set; } = 1;
+            public int Month { get; set; } = 1;
+            public int Day { get; set; } = 1;
+            public int Hour { get; set; } = 0;
+            public bool CarryDay = false;
+            public bool CarryMonth = false;
+            public bool CarryYear = false;
             public Time() { }
-            public Time(int year, int month, int day, int hour)
+            public Time(int year = 1, int month = 1, int day = 1, int hour = 0)
             {
                 Year = year;
                 Month = month;
@@ -34,14 +35,27 @@ namespace GameCore.Root
             }
             public Time(Time time)
             {
-                Year = time.Year;
-                Month = time.Month;
-                Day = time.Day;
-                Hour = time.Hour;
+                if (time != null)
+                {
+                    Year = time.Year;
+                    Month = time.Month;
+                    Day = time.Day;
+                    Hour = time.Hour;
+                    Carry();
+                }
+            }
+            public void Set(int year, int month, int day, int hour)
+            {
+                ResetCarryFlag();
+                Year = year;
+                Month = month;
+                Day = day;
+                Hour = hour;
                 Carry();
             }
             public void Add(int year, int month, int day, int hour)
             {
+                ResetCarryFlag();
                 Year += year;
                 Month += month;
                 Day += day;
@@ -50,6 +64,7 @@ namespace GameCore.Root
             }
             public void Add(Time time)
             {
+                ResetCarryFlag();
                 Year += time.Year;
                 Month += time.Month;
                 Day += time.Day;
@@ -58,6 +73,7 @@ namespace GameCore.Root
             }
             public void Sub(int year, int month, int day, int hour)
             {
+                ResetCarryFlag();
                 Year -= year;
                 Month -= month;
                 Day -= day;
@@ -66,14 +82,26 @@ namespace GameCore.Root
             }
             public void Sub(Time time)
             {
+                ResetCarryFlag();
                 Year -= time.Year;
                 Month -= time.Month;
                 Day -= time.Day;
                 Hour -= time.Hour;
                 Carry();
             }
-            public bool Equal(Time time)
+            public void Mul(float multiple = 1.0f)
             {
+                ResetCarryFlag();
+                Year = (int)(Year * multiple);
+                Month = (int)(Month * multiple);
+                Day = (int)(Day * multiple);
+                Hour = (int)(Hour * multiple);
+                Carry();
+            }
+            public bool IsEqual(Time time)
+            {
+                if (time == null)
+                    return false;
                 return Year == time.Year &&
                         Month == time.Month &&
                         Day == time.Day &&
@@ -84,11 +112,18 @@ namespace GameCore.Root
                 // not useful for JObject.ToObject<Time>()
                 if (time == null)
                     return true;
+                ResetCarryFlag();
                 Year = time.Year;
                 Month = time.Month;
                 Day = time.Day;
                 Hour = time.Hour;
                 return false;
+            }
+            public void ResetCarryFlag()
+            {
+                CarryDay = false;
+                CarryMonth = false;
+                CarryYear = false;
             }
             public void Carry()
             {
@@ -96,8 +131,9 @@ namespace GameCore.Root
                 {
                     Day += Hour / (Core.Rules.TimeRule.HourMax + 1);
                     Hour = Hour % (Core.Rules.TimeRule.HourMax + 1);
+                    CarryDay = true;
                 }
-                if (Hour < 0) 
+                if (Hour < 0)
                 {
                     Day -= ((-Hour) / (Core.Rules.TimeRule.HourMax + 1)) + 1;
                     Hour = (-Hour) % (Core.Rules.TimeRule.HourMax + 1);
@@ -119,8 +155,9 @@ namespace GameCore.Root
                         Day = Core.Rules.TimeRule.DayMax;
                         Month--;
                     }
+                    CarryMonth = true;
                 }
-                if (Day < 1) 
+                if (Day < 1)
                 {
                     Month -= (-Day) / Core.Rules.TimeRule.DayMax + 1;
                     Day = (-Day) % Core.Rules.TimeRule.DayMax;
@@ -135,6 +172,7 @@ namespace GameCore.Root
                         Month = Core.Rules.TimeRule.MonthMax;
                         Year--;
                     }
+                    CarryYear = true;
                 }
                 if (Month < 1)
                 {
@@ -172,7 +210,8 @@ namespace GameCore.Root
                     Month = (int)json["Month"];
                     Day = (int)json["Day"];
                     Hour = (int)json["Hour"];
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     return Core.State.WriteException(e);
                 }
@@ -186,190 +225,143 @@ namespace GameCore.Root
             public override Concept FromJsonObject(JObject ojs)
             {
                 var js = AlignJsonOjbect(ojs);
-                if(js == null)
+                if (js == null)
                     return null;
-                try{
-                    CTime c = js.ToObject<CTime>();
+                try
+                {
+                    var c = Spawn<CTime>();
+                    c.Time.FromJsonObject((JObject)js["Time"]);
                     return c;
-                }catch(Exception e){
+                }
+                catch (Exception e)
+                {
                     return Core.State.WriteException<Concept>(e);
                 }
             }
             public override JObject ToJsonObject()
             {
                 JObject js = base.ToJsonObject();
-                if(js == null)
+                if (js == null)
                     return null;
-                try{
+                try
+                {
                     if (Time == null)
-                        return null;
+                        this.Time = new Time();
                     JObject t = Time.ToJsonObject();
                     js.Add("Time", t);
-                }catch(Exception e){
+                }
+                catch (Exception e)
+                {
                     return Core.State.WriteException<JObject>(e);
                 }
                 return js;
             }
         }
-        private readonly Hook<object, object> HHourChange = new Hook<object, object>("TimeRule.HHourChangee");
-        private readonly Hook<object, object> HDayChange = new Hook<object, object>("TimeRule.DayChange");
-        private readonly Hook<object, object> HMonthChange = new Hook<object, object>("TimeRule.MonthChange");
-        private readonly Hook<object, object> HYearChange = new Hook<object, object>("TimeRule.YearChange");
         public int _ctn_time = -1;
-        public Time NowTime { get; set; }
-        public TimeRule() 
-        {
-            _ctn_time = ConceptSpawner<CTime>.GetSpawner().TypeNumber;
-        }
-        public void SetNowTime(int year = -1, int month = -1 , int day = -1, int hour = -1)
-        {
-            // If not assign the value, or value < 0, the entry will not change.
-            // Do not trigger the hook.
-            // day and month need be > 0
-            if (hour >= 0)
-                NowTime.Hour = hour;
-            if (day > 0)
-                NowTime.Day = day;
-            if (month > 0)
-                NowTime.Month = month;
-            if (year > 0)
-                NowTime.Year = year;
-            NowTime.Carry();
-        }
-        public void SetNowTime(Time time)
-        {
-            if (time.Hour >= 0)
-                NowTime.Hour = time.Hour;
-            if (time.Day > 0)
-                NowTime.Day = time.Day;
-            if (time.Month > 0)
-                NowTime.Month = time.Month;
-            if (time.Year >= 0)
-                NowTime.Year = time.Year;
-            NowTime.Carry();
-        }
-        public void SetTimeMax(int month_max = -1, int day_max = -1, int hour_max = -1)
-        {
-            // If not assign the values, do no change it.
-            // Year has no max
-            if (month_max >= 1)
-                MonthMax = month_max;
-            if (day_max >= 1)
-                DayMax = day_max;
-            if (hour_max >= 1)
-                HourMax = hour_max;
-        }
+        // hook's parameter is card's number
+        public Hook<int, object> HGoOneHour = new Hook<int, object>("HGoOneHour");
+        public Hook<int, object> HGoOneDay = new Hook<int, object>("HGoOneDay");
+        public Hook<int, object> HGoOneMonth = new Hook<int, object>("HGoOneMonth");
+        public Hook<int, object> HGoOneYear = new Hook<int, object>("HGoOneYear");
+        public Hook<int, object> HTimeChange = new Hook<int, object>("HTimeChange");
         public int HourMax { get; private set; } = 23; // hour will be 0 ~ 23
         public int DayMax { get; private set; } = 30; // day will be 1 ~ 30
         public int MonthMax { get; private set; } = 12; // month will be 1 ~ 12, year will be 1 ~ infinite
-        private bool[] _time_changed = new bool[4] {false, false, false, false}; //hour, day, month, year, used by _CallTimeChange()
-        private void _CallTimeChange()
+        public TimeRule()
         {
-            if (_time_changed[0])
-                HHourChange.CallAll(null);
-            if (_time_changed[1])
-                HDayChange.CallAll(null);
-            if (_time_changed[2])
-                HMonthChange.CallAll(null);
-            if (_time_changed[3])
-                HYearChange.CallAll(null);
-            _time_changed[3] = _time_changed[2] = _time_changed[1] = _time_changed[0] = false;
-        }
-        public void GoOneHour()
-        {
-            NowTime.Hour++;
-            _time_changed[0] = true;
-            if (NowTime.Hour >= HourMax)
-            {
-                NowTime.Hour = 0;
-                GoOneDay();
-            }
-            else
-            {
-                _CallTimeChange();
-            }
-        }
-        public void GoOneDay()
-        {
-            NowTime.Day++;
-            _time_changed[1] = true;
-            if (NowTime.Day >= DayMax)
-            {
-                NowTime.Day = 1;
-                GoOneMonth();
-            }
-            else
-            {
-                _CallTimeChange();
-            }
-        }
-        public void GoOneMonth()
-        {
-            NowTime.Month++;
-            _time_changed[2] = true;
-            if (NowTime.Month >= MonthMax)
-            {
-                NowTime.Month = 1;
-                GoOneYear();
-            }
-            else
-            {
-                _CallTimeChange();
-            }
-        }
-        public void GoOneYear()
-        {
-            NowTime.Year++;
-            _time_changed[3] = true;
-            _CallTimeChange();
+            _ctn_time = Concept.Spawn<CTime>().TypeNumber;
         }
         public override bool Init()
         {
-            NowTime = new Time();
-            NowTime.Hour = 0;
-            NowTime.Day = 1;
-            NowTime.Month = 1;
-            NowTime.Year = 1;
+            HourMax = 23;
+            DayMax = 30;
+            MonthMax = 12;
+            return false;
+        }
+        public bool SetTime(Card card, int year = -1, int month = -1
+                                , int day = -1, int hour = -1)
+        {
+            if (!HasConcept(card, _ctn_time))
+                return true;
+            var t = card.Get<CTime>().Time;
+            if (t == null)
+                t = new Time();
+            if (year != -1)
+                t.Year = year;
+            if (month != -1)
+                t.Month = month;
+            if (day != -1)
+                t.Day = day;
+            if (hour != -1)
+                t.Hour = hour;
+            t.Carry();
+            HTimeChange.CallAll(card.Number);
+            return false;
+        }
+        public bool GoOneHour(Card card, bool is_call_hook = false)
+        {
+            if (!HasConcept(card, _ctn_time))
+                return true;
+            var t = card.Get<CTime>().Time;
+            if(t == null)
+                return true;
+            t.Add(0, 0, 0, 1);
+            HTimeChange.CallAll(card.Number);
+            HGoOneHour.CallAll(card.Number);
+            if (t.CarryDay)
+                HGoOneDay.CallAll(card.Number);
+            if (t.CarryMonth)
+                HGoOneMonth.CallAll(card.Number);
+            if (t.CarryYear)
+                HGoOneYear.CallAll(card.Number);
             return false;
         }
         public override bool IsUsable()
         {
-            if(NowTime != null)
-            {
-                if (NowTime.Hour >= 0
-                    && NowTime.Day > 0
-                    && NowTime.Month > 0
-                    && NowTime.Year > 0)
-                    return true;
-            }
-            return false;
+            return HourMax > 2
+                    && DayMax > 2
+                    && MonthMax > 2
+                    && HGoOneHour != null
+                    && HGoOneDay != null
+                    && HGoOneMonth != null
+                    && HGoOneYear != null;
         }
         public override bool FromJsonObject(JObject js)
         {
-            if(base.FromJsonObject(js))
+            if (base.FromJsonObject(js))
                 return true;
-            try{
-                SetNowTime((int)js["NowTime"][0],
-                    (int)js["NowTime"][1],
-                    (int)js["NowTime"][2],
-                    (int)js["NowTime"][3]);
-            }catch(Exception){
-                return true;
+            try
+            {
+                HourMax = (int)js["HourMax"];
+                DayMax = (int)js["DayMax"];
+                MonthMax = (int)js["MonthMax"];
+                if (!IsUsable())
+                    return true;
+            }
+            catch (Exception e)
+            {
+                return Core.State.WriteException(e);
             }
             return false;
         }
         public override JObject ToJsonObject()
         {
             var js = base.ToJsonObject();
-            try{
-                JArray t = new JArray();
-                t.Add(new JValue(NowTime.Year));
-                t.Add(new JValue(NowTime.Month));
-                t.Add(new JValue(NowTime.Day));
-                t.Add(new JValue(NowTime.Hour));
-                js.Add("NowTime", t);
-            }catch(Exception){
-                return null;
+            try
+            {
+                if (!IsUsable())
+                {
+                    HourMax = 23;
+                    DayMax = 30;
+                    MonthMax = 12;
+                }
+                js.Add("HourMax", HourMax);
+                js.Add("DayMax", DayMax);
+                js.Add("MonthMax", MonthMax);
+            }
+            catch (Exception e)
+            {
+                return Core.State.WriteException<JObject>(e);
             }
             return js;
         }

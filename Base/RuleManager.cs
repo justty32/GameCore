@@ -1,16 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using GameCore.Base;
-using Newtonsoft.Json.Linq;
 
 namespace GameCore.Base
 {
     public class RulesCollection
     {
+        public Root.EntityRule EntityRule = new Root.EntityRule();
         public Root.TimeRule TimeRule = new Root.TimeRule();
         public Root.LocationRule LocationRule = new Root.LocationRule();
+        public Thing.ItemRule ItemRule = new Thing.ItemRule();
+        public Thing.CraftRule CraftRule = new Thing.CraftRule();
+        public Thing.StoreRule StoreRule = new Thing.StoreRule();
+        public Thing.MaterialRule MaterialRule = new Thing.MaterialRule();
     }
+
     public class RuleManager
     {
         // rules
@@ -21,7 +25,7 @@ namespace GameCore.Base
         {
             RuleDic = new Dictionary<string, Rule>();
         }
-        private List<string> _AlignInitOrderListByRuleDic(List<string> order_list)
+        private List<string> _AlignInitOrderListByRuleDic(List<string> order_list, bool log = true)
         {
             if (RuleDic == null)
                 return null;
@@ -30,10 +34,13 @@ namespace GameCore.Base
                 order_list = new List<string>(RuleDic.Keys);
                 Core.State.Log.AppendLine("initial order list not found");
             }
-            foreach(var rpair in RuleDic)
+            if (log)
             {
-                Core.State.Log.AppendLine("down below rules are not in init order list");
+                Core.State.Log.AppendLine("down below rules are not in order list");
                 Core.State.Log.AppendLine("it will still be worked, but the order will be randomly");
+            }
+            foreach (var rpair in RuleDic)
+            {
                 if (!order_list.Contains(rpair.Key))
                 {
                     order_list.Add(rpair.Key);
@@ -48,9 +55,9 @@ namespace GameCore.Base
             Core.State.Log.AppendLine("...RuleManager start initializing by initial order list...");
             order_list = _AlignInitOrderListByRuleDic(order_list);
             Core.State.Log.AppendLine("...Rules are initializing...");
-            for(int i = 0; i < order_list.Count; i++)
+            for (int i = 0; i < order_list.Count; i++)
             {
-                if(RuleDic.ContainsKey(order_list[i]))
+                if (RuleDic.ContainsKey(order_list[i]))
                 {
                     if (RuleDic[order_list[i]].Init())
                     {
@@ -83,35 +90,43 @@ namespace GameCore.Base
             try
             {
                 Core.State.Log.AppendLine("...RuleManager doing FromJsonArray for rules...");
-                InitOrderList = _AlignInitOrderListByRuleDic(InitOrderList);
-                for(int i = 0; i < InitOrderList.Count; i++)
+                InitOrderList = _AlignInitOrderListByRuleDic(InitOrderList, false);
+                for (int i = 0; i < InitOrderList.Count; i++)
                 {
                     // for every rules in jarray
-                    for(int j = 0; j < ja.Count; j++)
+                    for (int j = 0; j < ja.Count; j++)
                     {
                         // if rule name equals to target
-                        if(Util.JObjectContainsKey((JObject)ja[j], "RuleName"))
-                        if (((string)ja[j]["RuleName"]).Equals(InitOrderList[i]))
+                        if (Util.JObjectContainsKey((JObject)ja[j], "RuleName"))
                         {
-                            // and rule dic contains it, init it
-                            if(RuleDic.ContainsKey(InitOrderList[i]))
+                            if (((string)ja[j]["RuleName"]).Equals(InitOrderList[i]))
                             {
-                                if (RuleDic[InitOrderList[i]].FromJsonObject((JObject)ja[j]))
-                                    return true;
-                                Core.State.Log.Append(InitOrderList[i]);
-                                Core.State.Log.AppendLine(" has from json object");
+                                // and rule dic contains it, init it
+                                if (RuleDic.ContainsKey(InitOrderList[i]))
+                                {
+                                    if (RuleDic[InitOrderList[i]].FromJsonObject((JObject)ja[j]))
+                                        return true;
+                                    Core.State.Log.Append(InitOrderList[i]);
+                                    Core.State.Log.AppendLine(" has from json object");
+                                }
+                                else
+                                {
+                                    Core.State.Log.Append(InitOrderList[i]);
+                                    Core.State.Log.AppendLine(" error from json object !!!");
+                                }
                             }
-                            else
-                            {
-                                Core.State.Log.Append(InitOrderList[i]);
-                                Core.State.Log.AppendLine(" error from json object !!!");
-                            }
+                        }
+                        else
+                        {
+                            Core.State.Log.Append(InitOrderList[i]);
+                            Core.State.Log.AppendLine(" 's data not in save file ");
                         }
                         // if not find, do nothing
                     }
                 }
                 Core.State.Log.AppendLine("...RuleManager doing FromJsonArray done");
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return Core.State.WriteException(e);
             }
@@ -124,23 +139,25 @@ namespace GameCore.Base
             JArray ja = new JArray();
             try
             {
-                InitOrderList = _AlignInitOrderListByRuleDic(InitOrderList);
-                for(int i = InitOrderList.Count - 1; i >= 0; i--)
+                Core.State.Log.AppendLine("...RuleManager doing ToJsonArray...");
+                InitOrderList = _AlignInitOrderListByRuleDic(InitOrderList, false);
+                for (int i = InitOrderList.Count - 1; i >= 0; i--)
                 {
-                    if(RuleDic.ContainsKey(InitOrderList[i]))
+                    if (RuleDic.ContainsKey(InitOrderList[i]))
                     {
                         var rule_json = RuleDic[InitOrderList[i]].ToJsonObject();
-                        if(rule_json == null)
+                        if (rule_json == null)
                             return null;
                         if (!Util.JObjectContainsKey(rule_json, "RuleName"))
-                             rule_json.Add("RuleName", RuleDic[InitOrderList[i]].RuleName);
+                            rule_json.Add("RuleName", RuleDic[InitOrderList[i]].RuleName);
                         ja.Insert(0, rule_json);
                         Core.State.Log.Append(InitOrderList[i]);
                         Core.State.Log.AppendLine(" has been to json object");
                     }
                 }
-                Core.State.Log.AppendLine("...RuleManager doing ToJsonArray done");
-            }catch(Exception e)
+                Core.State.Log.AppendLine("...RuleManager doing ToJsonArray done...");
+            }
+            catch (Exception e)
             {
                 return Core.State.WriteException<JArray>(e);
             }

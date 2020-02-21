@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace GameCore.Base
 {
@@ -89,7 +86,19 @@ namespace GameCore.Base
             }
             return true;
         }
+        public static bool IsAllUsable(params INode[] nodes)
+        {
+            foreach(var n in nodes)
+            {
+                if (n == null)
+                    return false;
+                if (!n.IsUsable())
+                    return false;
+            }
+            return true;
+        }
     }
+
     /*
     public class SampleRule : Rule
     {
@@ -115,7 +124,12 @@ namespace GameCore.Base
             {
                 try
                 {
+                    Card temp_c = this.Card;
+                    Card = null;
                     JObject json = JObject.FromObject(this);
+                    if(json["Card"] != null)
+                        json.Remove("Card");
+                    Card = temp_c;
                     return json;
                 }catch(Exception e)
                 {
@@ -123,10 +137,53 @@ namespace GameCore.Base
                 }
             }
         }
+        public Hook<int, object> HSampleDestroy = new Hook<int, object>();
         private int _ctn_sample = -1;
         public SampleRule()
         {
-            _ctn_sample = ConceptSpawner<CSample>.GetSpawner().TypeNumber;
+            _ctn_sample = Concept.Spawn<CSample>().TypeNumber;
+        }
+        public bool BeSample(Card card)
+        {
+            // check condition
+            // check has concepts
+            if(!UnHasConcept(card, _ctn_sample))
+                return true;
+            // add concepts
+            var c = AddConcept<CSample>(card);
+            if(c == null)
+                return true;
+            // set attributes
+            // do other actions
+            return false;
+        }
+        public bool DestroySample(Card card)
+        {
+            // check concepts
+            if(!HasConcept(card, _ctn_sample))
+                return true;
+            // get concept
+            var c = card.Get<CSample>();
+            if (c == null)
+            {
+                card.Remove(_ctn_sample);
+                return true;
+            }
+            // make hook input
+            // do actions
+            // call hook
+            HSampleDestroy.CallAll(card.Number);
+            // remove concept
+            card.Remove(_ctn_sample);
+            return false;
+        }
+        public bool SomeAction(Card card)
+        {
+            // check and get concepts
+            // check condition
+            // make hook input
+            // do actions
+            // make hook calling
         }
     }
     */

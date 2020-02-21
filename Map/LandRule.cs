@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace GameCore.Map
 {
@@ -10,11 +8,12 @@ namespace GameCore.Map
         {
             private const string _type_name = "CLand";
             public override string TypeName => _type_name;
-            public List<List<int>> TileCards { get; private set; } 
+            public List<List<int>> TileCards { get; private set; }
             public int SizeX { get; private set; } = -1;
             public int SizeY { get; private set; } = -1;
             public int PositionX { get; internal set; } = -1;
             public int PositionY { get; internal set; } = -1;
+
             public bool Init(int sizeX, int sizeY)
             {
                 // not BeNew(), just allocate the memory of array
@@ -34,10 +33,12 @@ namespace GameCore.Map
                 return false;
             }
         }
+
         private int _c_location_type_number = -1; // prestore
         private int _c_tile_type_number = -1; // prestore
         private int _c_land_type_number = -1; // prestore
         public int CLandTypeNumber { get => _c_location_type_number; }
+
         public override bool Init()
         {
             // rule's initialize
@@ -46,22 +47,24 @@ namespace GameCore.Map
             _c_location_type_number = Base.ConceptManager.GetSpawner<Root.LocationRule.CLocation>().TypeNumber;
             return false;
         }
+
         public bool AddCLand(Base.Card card, int sizeX, int sizeY)
         {
-            if(AddConcept<CLand>(card) == null)
+            if (AddConcept<CLand>(card) == null)
                 return true;
             var c_land = card.Get<CLand>() as CLand;
-            if(c_land == null)
+            if (c_land == null)
                 return true;
             return c_land.Init(sizeX, sizeY);
         }
+
         public bool SetTile(Base.Card land_card, int positionX, int positionY, Base.Card tile_card)
         {
             // land card need both concept CLand and CLocation
             // tile card need both  concept CTile and CLocation
-            if(!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
+            if (!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
                 return true;
-            if(!HasConcept(tile_card, _c_tile_type_number, _c_location_type_number))
+            if (!HasConcept(tile_card, _c_tile_type_number, _c_location_type_number))
                 return true;
             // set land's tile_list[x][y] to tile's CLocation number
             var c_land = land_card.Get(_c_land_type_number) as CLand;

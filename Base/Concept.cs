@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace GameCore.Base
 {
@@ -10,41 +8,48 @@ namespace GameCore.Base
         /*
          * Every Derives should implement TypeName{get;}, Which is the basis to distinguish type of it
          * TypeNumber is also auto-distributed by TypeName, one associated to one.
-         * 
+         *
          * To create an entity, use GetSpawner<>().Spawn() first, instead of default constructor.
          * Only if after it, the TypeNumber of the concept-type is effective.
          */
-        public int TypeNumber { get; set; } = -1; // Which is auto distributed by GameCore, Don't set it Directly ! 
+        public int TypeNumber { get; set; } = -1; // Which is auto distributed by GameCore, Don't set it Directly !
         public abstract string TypeName { get; }
         public virtual JObject ToJsonObject()
         {
             JObject js = null;
-            try{
+            try
+            {
                 js = new JObject(new JProperty("TypeName", TypeName));
                 if (js == null)
                     return null;
-            }catch(Exception){
+            }
+            catch (Exception)
+            {
                 return null;
             }
             return js;
         }
         public virtual Concept FromJsonObject(JObject js)
         {
-            if(js == null)
+            if (js == null)
                 return null;
-            try{
-                if(!((string)js["TypeName"]).Equals(TypeName))
+            try
+            {
+                if (!((string)js["TypeName"]).Equals(TypeName))
                     return null;
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 return Core.State.WriteException<Concept>(e);
             }
-            return null; 
+            return ConceptManager.GetSpawner(TypeName).SpawnBase();
         }
         public static JObject AlignJsonOjbect(JObject js)
         {
             if (js == null)
                 return null;
-            try{
+            try
+            {
                 // check is legal
                 if (!Util.JObjectContainsKey(js, "TypeName"))
                     return null;
@@ -58,10 +63,26 @@ namespace GameCore.Base
                 if (Util.JObjectContainsKey(js, "TypeNumber"))
                     js.Remove("TypeNumber");
                 js.Add("TypeNumber", tn);
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 return Core.State.WriteException<JObject>(e);
             }
             return js;
+        }
+        public virtual Concept Copy()
+        {
+            Concept c = null;
+            try
+            {
+                var j = ToJsonObject();
+                var jj = AlignJsonOjbect(j);
+                c = FromJsonObject(jj);
+            }catch(Exception)
+            {
+                return null;
+            }
+            return c;
         }
         public Card Card { get; set; } = null;
         public static TConcept Spawn<TConcept>()
@@ -80,7 +101,7 @@ namespace GameCore.Base
             /*
              * Set TypeNumber by TypeName, then return TypeNumber.
              * If there isn't have specific spawner yet, TypeNumber not change.
-             * 
+             *
              * type_number setting while spawner be create.
              * use Concept.GetSpawner<Type>() to create spawner
              */
@@ -88,16 +109,16 @@ namespace GameCore.Base
                 TypeNumber = Core.ConceptManager.SpawnerTypeNameSet[TypeName];
             return TypeNumber;
         }
-        protected Concept() {
+        protected Concept()
+        {
             /*
              * default create, not recommend. please use Concept.GetSpawner().Spawn().
              * Should use TypeNumberAutoSet() After, to set the TypeNumber, or still be -1.
-             * 
+             *
              * If there isn't have specific spawner yet, TypeNumber not change.
              * TypeNumber setting while spawner be create.
              * use Concept.GetSpawner<Type>() to create spawner
              */
         }
-    } 
+    }
 }
-

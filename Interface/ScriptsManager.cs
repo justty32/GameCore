@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GameCore.Base;
-using GameCore.Interface;
+﻿using System.Collections.Generic;
 
 // TODO: make a connection of sciprt and outside script, include Add(), Remove(), ....
 
@@ -11,6 +7,7 @@ namespace GameCore.Interface
     public class ScriptsManager
     {
         public Dictionary<string, object> Scripts = new Dictionary<string, object>();
+
         public Script<Tin, Tout> Get<Tin, Tout>(string script_name)
             where Tin : class
             where Tout : class
@@ -22,6 +19,7 @@ namespace GameCore.Interface
             return Scripts[script_name] as Script<Tin, Tout>;
         }
     }
+
     public class Script<Tin, Tout>
         where Tin : class
         where Tout : class
@@ -30,6 +28,7 @@ namespace GameCore.Interface
         {
             return null;
         }
+
         /*public KeyValuePair<bool, Tout> CallB(Tout tout)
         {
             var result = Call(tout);

@@ -1,9 +1,5 @@
-﻿using System.Drawing;
-using System;
+﻿using GameCore.Base;
 using System.Collections.Generic;
-using System.Text;
-using GameCore.Base;
-
 
 namespace GameCore.Map
 {
@@ -18,62 +14,70 @@ namespace GameCore.Map
             public int PostionZ { get; set; } = -1;
             public List<int> LandCards { get; private set; } // reference to CLocation's Number
             public int FillingTypeNumber { get; private set; } // things filling between lands
-            public CWorld(){
+
+            public CWorld()
+            {
                 LandCards = new List<int>();
             }
+
             public bool Init(int sizeX, int sizeY)
             {
-                if(sizeX < 1 || sizeY < 1)
+                if (sizeX < 1 || sizeY < 1)
                     return true;
                 SizeX = sizeX;
                 SizeY = sizeY;
                 return false;
             }
+
             public bool SetFillingTypeNumber(int filled_thing)
             {
-                if(filled_thing < 0)
+                if (filled_thing < 0)
                     return true;
                 FillingTypeNumber = filled_thing;
                 return false;
             }
         }
+
         private int _c_location_type_number = -1; // prestore
         private int _c_world_type_number = -1; // prestore
         private int _c_land_type_number = -1; // prestore
-        public int  CWorldTypeNumber{ get => _c_world_type_number ; }
+        public int CWorldTypeNumber { get => _c_world_type_number; }
+
         public override bool Init()
         {
-             // rule's initialize
+            // rule's initialize
             _c_world_type_number = ConceptManager.GetSpawner<CWorld>().TypeNumber;
             _c_land_type_number = ConceptManager.GetSpawner<LandRule.CLand>().TypeNumber;
             _c_location_type_number = ConceptManager.GetSpawner<Root.LocationRule.CLocation>().TypeNumber;
             return false;
         }
+
         public bool AddCWorld(Base.Card card, int sizeX, int sizeY)
         {
-            if(AddConcept<CWorld>(card) == null)
+            if (AddConcept<CWorld>(card) == null)
                 return true;
             var c_world = card.Get<CWorld>() as CWorld;
-            if(c_world == null)
+            if (c_world == null)
                 return true;
             return c_world.Init(sizeX, sizeY);
         }
+
         public bool AddLand(Base.Card world_card, int positionX, int positionY, Base.Card land_card)
         {
             // Not Check if the land overlap others
             // the card need both CLand and CLocation
-            if(!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
+            if (!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
                 return true;
-            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
+            if (!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
-            if(positionX < 0 || positionY < 0)
+            if (positionX < 0 || positionY < 0)
                 return true;
             var c_location_land = land_card.Get(_c_location_type_number) as Root.LocationRule.CLocation;
             var c_land = land_card.Get(_c_land_type_number) as LandRule.CLand;
             var c_world = world_card.Get(_c_world_type_number) as CWorld;
-            if(c_location_land == null || c_world == null || c_land == null)
+            if (c_location_land == null || c_world == null || c_land == null)
                 return true;
-            if(positionX + c_land.SizeX > c_world.SizeX
+            if (positionX + c_land.SizeX > c_world.SizeX
                 || positionY + c_land.SizeY > c_world.SizeY)
                 return true;
             // adding
@@ -83,17 +87,18 @@ namespace GameCore.Map
             c_location_land.SetUpperCard(world_card.Number);
             return false;
         }
+
         public bool RemoveLand(Base.Card world_card, Base.Card land_card)
         {
             // the card need both CLand and CLocation
-            if(!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
+            if (!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
                 return true;
-            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
+            if (!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
             var c_location_land = land_card.Get(_c_location_type_number) as Root.LocationRule.CLocation;
             var c_land = land_card.Get(_c_land_type_number) as LandRule.CLand;
             var c_world = world_card.Get(_c_world_type_number) as CWorld;
-            if(c_location_land == null || c_world == null || c_land == null)
+            if (c_location_land == null || c_world == null || c_land == null)
                 return true;
             // remove
             c_land.PositionX = -1;
@@ -102,19 +107,20 @@ namespace GameCore.Map
             c_location_land.SetUpperCard();
             return false;
         }
+
         public bool MoveLandTo(Base.Card world_card, int dstX, int dstY, Base.Card land_card)
         {
             // Not Check if the land overlap others
             // the card need both CLand and CLocation
-            if(!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
+            if (!HasConcept(land_card, _c_land_type_number, _c_location_type_number))
                 return true;
-            if(!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
+            if (!HasConcept(world_card, _c_world_type_number, _c_location_type_number))
                 return true;
             var c_land = land_card.Get(_c_land_type_number) as LandRule.CLand;
             var c_world = world_card.Get(_c_world_type_number) as CWorld;
-            if(c_world == null || c_land == null)
+            if (c_world == null || c_land == null)
                 return true;
-            if(dstX + c_land.SizeX > c_world.SizeX
+            if (dstX + c_land.SizeX > c_world.SizeX
                 || dstY + c_land.SizeY > c_world.SizeY
                 || dstX + c_land.SizeX < 0
                 || dstY + c_land.SizeY < 0)

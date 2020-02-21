@@ -14,7 +14,7 @@ using GameCore.Interface;
 
 namespace GameCore
 {
-    public class Core
+    public partial class Core
     {
         public static bool is_debug = false;
         private static Core p_instance = null;
@@ -23,11 +23,13 @@ namespace GameCore
         public static Config Config { get => p_instance._config;}
         public static Load Load { get => p_instance._load;}
         public static Save Save { get => p_instance._save;}
+        public static ResourceManager ResourceManager { get => p_instance._resource_manager; }
         private INeed _i_need = null;
         private State _state = null;
         private Config _config = null;
         private Load _load = null;
         private Save _save = null;
+        private ResourceManager _resource_manager = null;
         private Core(){}
         public static bool Init(INeed needed_interface, Config config = null)
         {
@@ -35,10 +37,11 @@ namespace GameCore
             p_instance._state = new State();
             p_instance._state.Log.AppendLine("Core initializing...");
             if (needed_interface == null)
-                return p_instance._state.T(State.Ar.PN);
+                return p_instance._state.T(State.Ar.PN, "needed interface null");
             p_instance._i_need = needed_interface;
             p_instance._load = new Load();
             p_instance._save = new Save();
+            p_instance._resource_manager = new ResourceManager();
             if (config != null)
             {
                 p_instance._state.Log.AppendLine("load config from function's parameter");
@@ -48,8 +51,16 @@ namespace GameCore
             {
                 p_instance._state.Log.AppendLine("load config from file");
                 if (p_instance._load.Config())
-                    return true;
+                {
+                    p_instance._config = new Config();
+                    return p_instance._state.T(State.Ar.B, "loading config failed");
+                }
             }
+            p_instance._state.Log.AppendLine("load config success");
+            p_instance._state.AppendLogLine("loading commmon resource");
+            if(p_instance._load.CommonResource())
+                p_instance._state.AppendLogLine("load commmon resource failed...");
+            p_instance._state.AppendLogLine("Core initialized success...");
             return false;
         }
         public static void Clear(bool are_you_sure = false){ 
@@ -82,12 +93,14 @@ namespace GameCore
         private Dynamic _dynamic = null;
         public static bool LoadGame(string save_name, bool load_all_cards = false)
         {
+            if (p_instance == null)
+                return p_instance._state.T(State.Ar.B, "core hasn't initialized yet, load game failed");
+            if (save_name == null)
+                return p_instance._state.T(State.Ar.PN, "target save dir isn't exist");
             p_instance._state.Log.Append("...Loading game from - ");
             p_instance._state.Log.AppendLine(save_name);
-            if (save_name == null)
-                return p_instance._state.T(State.Ar.PN);
             if (!(p_instance._i_need.IsSaveDirExist(save_name) && p_instance._i_need.IsSaveDirLegal(save_name)))
-                return p_instance._state.T(State.Ar.B, "target save dir not exist");
+                return p_instance._state.T(State.Ar.B, "target save dir isn't exist");
             p_instance._concept_mananager = new ConceptManager();
             p_instance._dynamic = new Dynamic();
             p_instance._cards = new CardList();
@@ -97,44 +110,63 @@ namespace GameCore
             p_instance._rule_manager = new RuleManager();
             p_instance._rules = new RulesCollection();
             p_instance._rule_manager.Rules = p_instance._rules;
+            p_instance._state.AppendLogLine("load save info");
             if (Load.SaveInfo())
-                return true;
+                return p_instance._state.T(State.Ar.B, "failed");
+            p_instance._state.AppendLogLine("rules initializing");
             p_instance._rule_manager.Init(p_instance._config.RulesInitOrder);
+            p_instance._state.AppendLogLine("load rules");
             if (Load.Rules())
-                return true;
+                return p_instance._state.T(State.Ar.B, "failed");
             if (load_all_cards)
+            {
+                p_instance._state.AppendLogLine("load cards");
                 if (Load.AllCards())
-                    return true;
+                    return p_instance._state.T(State.Ar.B, "failed");
+            }
+            p_instance._state.AppendLogLine("load game successed");
             //TODO: load scripts, modules, dynamic...
             return false;
         }
         public static bool SaveGame(string save_name = null, bool save_all_cards = false)
         {
+            if (p_instance == null)
+                return p_instance._state.T(State.Ar.B, "target save dir isn't exist");
             if(save_name == null)
-                return true;
+                return p_instance._state.T(State.Ar.B, "core hasn't initialized yet, load game failed");
             bool is_save_all_cards = save_all_cards;
             // because the accessing of _dir_name will wash it, so make a copy
             List<int> changed_cards = new List<int>(Cards.ChangedCards.ToArray());
+            string pre_save_name = p_instance._dir_name;
             p_instance._dir_name = save_name;
-            p_instance._state.Log.AppendLine("save game into - ");
+            p_instance._state.Log.Append("save game into - ");
             p_instance._state.Log.AppendLine(save_name);
+            if(pre_save_name != null && p_instance._i_need.IsSaveDirLegal(pre_save_name))
+                if(!save_name.Equals(pre_save_name) && !p_instance._i_need.IsSaveDirExist(save_name))
+                    p_instance._i_need.CopySaveData(pre_save_name, save_name);
             if (!Core.INeed.IsSaveDirExist(save_name)){
+                p_instance._state.Log.Append(save_name);
+                p_instance._state.Log.AppendLine("not exist, start create new dir");
                 if(Core.INeed.NewSaveDir(save_name))
-                    return true;
+                    return p_instance._state.T(State.Ar.B, "create new save dir failed, save game failed");
                 if(!Core.INeed.IsSaveDirLegal(save_name))
-                    return true;
+                    return p_instance._state.T(State.Ar.B, "create new save dir failed, save game failed");
                 is_save_all_cards = true;
             }
+            p_instance._state.Log.AppendLine("saving cards");
             if (is_save_all_cards)
                 if (Save.AllCards())
-                    return true;
+                    return p_instance._state.T(State.Ar.B, "save cards failed");
             else
                 if (Save.Card(changed_cards.ToArray()))
-                    return true;
+                    return p_instance._state.T(State.Ar.B, "save cards failed");
+            p_instance._state.Log.AppendLine("saving rules");
             if (Save.Rules())
-                return true;
+                return p_instance._state.T(State.Ar.B, "save rules failed");
+            p_instance._state.Log.AppendLine("saving save info");
             if (Save.SaveInfo())
-                return true;
+                return p_instance._state.T(State.Ar.B, "save save info failed");
+            p_instance._state.Log.AppendLine("save finished success.");
             //TODO: save cards, scripts, modules, dynamic lists...
             return false;
         }
@@ -142,17 +174,24 @@ namespace GameCore
         {
             if (save_name == null)
                 return true;
+            if (p_instance == null)
+                return true;
+            if(p_instance._i_need.IsSaveDirExist(save_name))
+                return State.AppendLogLine("the save dir has already exist");
             p_instance._state.Log.AppendLine("creating new game...");
             p_instance._state.Log.AppendLine("copy init data into new save dir...");
             //TODO: setting more templates of init save data types, not only new game
-            p_instance._i_need.CopyInitSaveData("NewGame", save_name);
+            if (p_instance._i_need.CopyInitSaveData("NewWorld", save_name))
+                return State.AppendLogLine("copy failed");
             p_instance._state.Log.AppendLine("loading init data...");
             if (LoadGame(save_name))
-                return true;
+                return State.AppendLogLine("load game failed");
             return false;
         }
         public static bool ExitGame()
         {
+            if (p_instance == null)
+                return true;
             p_instance._state.Log.AppendLine("release game data...");
             //TODO:release scripts, modules...
             p_instance._dynamic = null;
@@ -161,7 +200,7 @@ namespace GameCore
             p_instance._hook_manager = null;
             p_instance._cards = null;
             p_instance._concept_mananager = null;
-            p_instance._dir_name = null;
+            //p_instance._dir_name = null;
             p_instance._state.Log.AppendLine("game data release finished");
             return false;
         }

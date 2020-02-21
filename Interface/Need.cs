@@ -1,8 +1,4 @@
-using System;
-using Newtonsoft.Json;
-using System.IO;
-using System.Text;
-
+using System.Collections.Generic;
 namespace GameCore.Interface
 {
     public interface INeed
@@ -13,6 +9,8 @@ namespace GameCore.Interface
         string Import(string save_dir_name, string file_name, string second_dir_name = null);
         bool Export(string save_dir_name, string file_name, string data, string second_dir_name = null);
         bool IsFileExist(string save_dir_name, string file_name, string second_dir_name = null);
+        string ImportCommonFile(string file_name, string second_dir_name = null, string third_dir_name = null);
+        bool ExportCommonFile(string data, string file_name, string second_dir_name = null, string third_dir_name = null);
         string ImportConfig();
         bool ExportConfig(string data);
         string ImportInfo(string save_dir_name);
@@ -25,7 +23,10 @@ namespace GameCore.Interface
         bool NewSaveDir(string save_dir_name);
         bool IsSaveDirLegal(string save_dir_name);
         bool CopyInitSaveData(string source_name, string target_name);
+        bool CopySaveData(string source_name, string target_name);
+        Dictionary<int, bool[]> MulExportCard(string save_dir_name, Dictionary<int, List<KeyValuePair<int, string>>> muldatas);
     }
+
     /*
     public class Need : GameCore.Interface.INeed
     {

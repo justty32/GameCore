@@ -1,16 +1,15 @@
-
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json.Linq;
 
 namespace GameCore.Base
 {
-    public interface IConceptSpawner {
+    public interface IConceptSpawner
+    {
         Concept SpawnBase();
+
         int TypeNumber { get; }
         string TypeName { get; }
     }
+
     public class ConceptSpawner<TComponennt> : IConceptSpawner
         where TComponennt : Concept, new()
     {
@@ -19,13 +18,18 @@ namespace GameCore.Base
             *
             * Use Concept.GetSpawner() to get the specific spawner.
             * It will return a existed one, or create a new one.
-            * 
+            *
             * TypeNumber will be auto Distributed while creating a New Type Spawner.
             */
-        public int TypeNumber { get;} = -1;  // What type of Concept to spawn
+        public int TypeNumber { get; } = -1;  // What type of Concept to spawn
         public string TypeName { get; set; } = null; // What type of Concept to spawn
-        private ConceptSpawner() {}
+
+        private ConceptSpawner()
+        {
+        }
+
         private ConceptSpawner(int t_type_number) => TypeNumber = t_type_number;
+
         public static ConceptSpawner<TComponennt> GetSpawner()
         {
             // Should only used by Concept.
@@ -54,6 +58,7 @@ namespace GameCore.Base
                 return spawner;
             }
         }
+
         public static ConceptSpawner<Base.CDynamic> GetCDynamicSpawner(string type_name)
         {
             var CM = Core.ConceptManager;
@@ -83,6 +88,7 @@ namespace GameCore.Base
                 return spawner;
             }
         }
+
         public TComponennt Spawn()
         {
             /*Return by default constructer, Concept().*/
@@ -90,11 +96,13 @@ namespace GameCore.Base
             concept.TypeNumber = TypeNumber;
             return concept;
         }
+
         public Concept SpawnBase()
         {
             // Same as Spawn(), but return base reference
             return Spawn();
         }
+
         public static TComponennt SpawnFromJsonObject(JObject json)
         {
             if (json == null)
