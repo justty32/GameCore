@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GameCore.Base
 {
-    class Text
+    public class GText
     {
         public int Type = (int)Sort.Name;
         public int Number = 0;
@@ -15,6 +15,15 @@ namespace GameCore.Base
         public enum Sort
         {
             Name, Talk, Descipt
+        }
+        public bool CopyFrom(GText text)
+        {
+            if (text == null)
+                return true;
+            Type = text.Type;
+            Number = text.Number;
+            Parameters = new List<int>(text.Parameters);
+            return false;
         }
     }
 }

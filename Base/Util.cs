@@ -98,7 +98,6 @@ namespace GameCore.Base
             return true;
         }
     }
-
     /*
     public class SampleRule : Rule
     {
@@ -136,6 +135,14 @@ namespace GameCore.Base
                     return Core.State.WriteException<JObject>(e);
                 }
             }
+            public override Concept Copy()
+            {
+                var c = Spawn<CSample>();
+                if(c == null)
+                    return null;
+                // do something
+                return c;
+            }
         }
         public Hook<int, object> HSampleDestroy = new Hook<int, object>();
         private int _ctn_sample = -1;
@@ -160,10 +167,8 @@ namespace GameCore.Base
         public bool DestroySample(Card card)
         {
             // check concepts
-            if(!HasConcept(card, _ctn_sample))
-                return true;
             // get concept
-            var c = card.Get<CSample>();
+            var c = card.Get<CSample>(_ctn_sample);
             if (c == null)
             {
                 card.Remove(_ctn_sample);
@@ -184,6 +189,7 @@ namespace GameCore.Base
             // make hook input
             // do actions
             // make hook calling
+            return false;
         }
     }
     */

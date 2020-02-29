@@ -70,7 +70,8 @@ namespace GameCore.Base
                 concepts.Clear();
             concepts = null;
             Name = "";
-            Core.Cards.Remove(Number);
+            if(Core.Cards.Contains(Number))
+                Core.Cards.Remove(Number);
             Number = -1;
         }
         public JObject ToJsonObject()

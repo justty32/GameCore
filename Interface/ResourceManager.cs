@@ -23,6 +23,7 @@ namespace GameCore.Interface
         public Dictionary<string, int> DicDescript = new Dictionary<string, int>();
         public Dictionary<string, int> DicTalk = new Dictionary<string, int>();
         public Dictionary<string, int> DicName = new Dictionary<string, int>();
+        public Dictionary<string, int> DicSound = new Dictionary<string, int>();
         public Dictionary<int, string> IconDic = new Dictionary<int, string>();
         public Dictionary<int, string> ColorDic = new Dictionary<int, string>();
         public Dictionary<int, string> OrganismDic = new Dictionary<int, string>();
@@ -36,19 +37,20 @@ namespace GameCore.Interface
         public Dictionary<int, string> DescriptDic = new Dictionary<int, string>();
         public Dictionary<int, string> TalkDic = new Dictionary<int, string>();
         public Dictionary<int, string> NameDic = new Dictionary<int, string>();
+        public Dictionary<int, string> SoundDic = new Dictionary<int, string>();
         private bool _Align()
         {
             List<Dictionary<string, int>> dics = new List<Dictionary<string, int>>
             {
                 DicIcon, DicColor, DicOrganism, DicPartical, DicTerrain,
                 DicScene, DicBuild, DicItem, DicMaterial, DicWord, 
-                DicDescript, DicTalk, DicName
+                DicDescript, DicTalk, DicName, DicSound
             };
             List<Dictionary<int, string>> tics = new List<Dictionary<int, string>>
             {
                 IconDic, ColorDic, OrganismDic, ParticalDic, TerrainDic,
                 SceneDic, BuildDic, ItemDic, MaterialDic, WordDic, 
-                DescriptDic, TalkDic,  NameDic
+                DescriptDic, TalkDic, NameDic, SoundDic
             };
             for(int i = 0; i < dics.Count; i++)
                 foreach (var kv in dics[i])
@@ -66,8 +68,9 @@ namespace GameCore.Interface
         {
             if (key == null)
                 return 0;
-            if (DicIcon.ContainsKey(key))
-                return DicIcon[key];
+            int value;
+            if (DicIcon.TryGetValue(key, out value))
+                return value;
             else
                 return 0;
         }
@@ -75,8 +78,9 @@ namespace GameCore.Interface
         {
             if (key == null)
                 return 0;
-            if (DicColor.ContainsKey(key))
-                return DicColor[key];
+            int value;
+            if (DicColor.TryGetValue(key, out value))
+                return value;
             else
                 return 0;
         }
@@ -106,8 +110,9 @@ namespace GameCore.Interface
                     dic = DicPartical;
                     break;
             }
-            if (dic.ContainsKey(key))
-                return dic[key];
+            int value;
+            if (dic.TryGetValue(key, out value))
+                return value;
             else
                 return 0;
         }
@@ -115,8 +120,9 @@ namespace GameCore.Interface
         {
             if (key == null)
                 return 0;
-            if (DicMaterial.ContainsKey(key))
-                return DicMaterial[key];
+            int value;
+            if (DicMaterial.TryGetValue(key, out value))
+                return value;
             else
                 return 0;
         }
@@ -143,8 +149,19 @@ namespace GameCore.Interface
                     dic = DicWord;
                     break;
             }
-            if (dic.ContainsKey(key))
-                return dic[key];
+            int value;
+            if (dic.TryGetValue(key, out value))
+                return value;
+            else
+                return 0;
+        }
+        public int GetSound(string key)
+        {
+            if (key == null)
+                return 0;
+            int value;
+            if (DicSound.TryGetValue(key, out value))
+                return value;
             else
                 return 0;
         }

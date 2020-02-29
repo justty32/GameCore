@@ -256,6 +256,14 @@ namespace GameCore.Root
                 }
                 return js;
             }
+            public override Concept Copy()
+            {
+                var c = Spawn<CTime>();
+                if(c == null)
+                    return null;
+                c.Time.Copy(Time);
+                return c;
+            }
         }
         public int _ctn_time = -1;
         // hook's parameter is card's number

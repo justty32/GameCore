@@ -46,6 +46,13 @@ namespace GameCore.Root
                     return Core.State.WriteException<JObject>(e);
                 }
             }
+            public override Concept Copy()
+            {
+                CLocation c = Spawn<CLocation>();
+                if(c == null)
+                    return null;
+                return c;
+            }
         }
         public class HINEntityLeaveLocation
         {

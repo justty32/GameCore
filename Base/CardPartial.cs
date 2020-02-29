@@ -86,6 +86,10 @@ namespace GameCore.Base
         {
             return Get(ConceptManager.GetSpawner<TConcept>().TypeNumber) as TConcept;
         }
+        public TConcept Get<TConcept>(int type_number) where TConcept : Concept, new()
+        {
+            return Get(type_number) as TConcept;
+        }
         public CDynamic GetCDynamic(string type_name)
         {
             if (type_name == null)

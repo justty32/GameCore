@@ -211,6 +211,7 @@ namespace GameCore
             p_instance._state.Log.AppendLine("loading init data...");
             if (LoadGame(save_name))
                 return State.AppendLogLine("load game failed");
+            p_instance._state.Log.AppendLine("init game success...");
             return false;
         }
         public static bool ExitGame()

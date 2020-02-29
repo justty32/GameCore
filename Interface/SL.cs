@@ -44,7 +44,7 @@ namespace GameCore
             {
                 "DicIcon", "DicColor", "DicOrganism", "DicPartical", "DicTerrain"
                 , "DicScene", "DicBuild", "DicItem", "DicMaterial", "DicWord", "DicDescript"
-                , "DicTalk", "DicName"
+                , "DicTalk", "DicName", "DicSound"
             };
             // load files
             foreach(var resource_dic in resource_dics)
@@ -135,41 +135,45 @@ namespace GameCore.Interface
         }
         public bool Card(params int[] numbers)
         {
-            for (int i = 0; i < numbers.Length; i++)
+            if (numbers == null)
+                return true;
+            Dictionary<int, List<int>> need_input_numbers = new Dictionary<int, List<int>>();
+            foreach(int number in numbers)
             {
-                if (numbers[i] < 0 || numbers[i] > Core.Cards.MaxNumber)
-                    return true;
+                if (!need_input_numbers.ContainsKey(number / CoreInfo.Card_amount_per_file))
+                    need_input_numbers.Add(number / CoreInfo.Card_amount_per_file, new List<int>());
+                need_input_numbers[number / CoreInfo.Card_amount_per_file].Add(number);
+            }
+            var datas = Core.INeed.ImportCard(Core.DirName, need_input_numbers);
+            if (datas == null)
+                return true;
+            foreach(var data in datas)
+            {
                 try
                 {
-                    string jstr = Core.INeed.ImportCard(Core.DirName, numbers[i]);
+                    string jstr = data.Value;
                     if (jstr == null)
-                    {
-                        Core.State.AppendLogLine("card number - " + numbers[i] + " load file string failed");
                         continue;
-                    }
+                    if (jstr.Length < 2)
+                        continue;
                     JObject json = JObject.Parse(jstr);
-                    Base.Card card = new Card();
+                    Card card = new Card();
                     if (card.FromJsonObject(json))
-                    {
-                        Core.State.AppendLogLine("card number - " + numbers[i] + " load parse json object failed");
                         continue;
-                    }
-                }
-                catch (Exception e)
+                }catch(Exception e)
                 {
-                    return Core.State.WriteException(e);
+                    Core.State.WriteException(e);
+                    continue;
                 }
             }
             return false;
         }
         public bool AllCards()
         {
+            List<int> numbers = new List<int>(Core.Cards.MaxNumber);
             for (int i = 0; i < Core.Cards.MaxNumber; i++)
-            {
-                if (this.Card(i))
-                    return true;
-            }
-            return false;
+                numbers.Add(i);
+            return Card(numbers.ToArray());
         }
         public Card CardFromString(string json_data)
         {
@@ -205,49 +209,6 @@ namespace GameCore.Interface
                     card.Add(c);
                 }
                 Core.State.AppendLogLine("load card from string failed");
-                return card;
-            }
-            catch (Exception e)
-            {
-                return Core.State.WriteException<Card>(e);
-            }
-        }
-        public Card CardFromOtherSave(string save_name, int number)
-        {
-            if (number < 0)
-                return null;
-            try
-            {
-                Core.State.AppendLogLine("load card from other save start");
-                Core.State.AppendLogLine("card number - " + number);
-                string jstr = Core.INeed.ImportCard(save_name, number);
-                if (jstr == null)
-                    return null;
-                JObject ojs = JObject.Parse(jstr);
-                Card card = new Card();
-                if (!Util.JObjectContainsKey(ojs, "Number"))
-                    return null;
-                if (!(Util.JObjectContainsKey(ojs, "Name")))
-                    ojs.Add("Name", "");
-                card.Number = (int)ojs["Number"];
-                card.Name = (string)ojs["Name"];
-                card.concepts = new Dictionary<int, Concept>();
-                JArray cs = (JArray)ojs["Concepts"];
-                for (int i = 0; i < cs.Count; i++)
-                {
-                    if (!(Util.JObjectContainsKey((JObject)cs[i], "TypeName")))
-                        continue;
-                    if (!ConceptManager.ContainsTypeName((string)cs[i]["TypeName"]))
-                        continue;
-                    var csp = ConceptManager.GetSpawner((string)cs[i]["TypeName"]);
-                    if (csp == null)
-                        continue;
-                    var c = csp.SpawnBase().FromJsonObject((JObject)cs[i]);
-                    if (c == null)
-                        continue;
-                    card.Add(c);
-                }
-                Core.State.AppendLogLine("load card from other save finished");
                 return card;
             }
             catch (Exception e)
@@ -340,6 +301,7 @@ namespace GameCore.Interface
         {
             if (numbers == null)
                 return true;
+            Dictionary<int, List<KeyValuePair<int, string>>> datas = new Dictionary<int, List<KeyValuePair<int, string>>>();
             for (int i = 0; i < numbers.Length; i++)
             {
                 if (numbers[i] < 0 || numbers[i] > Core.Cards.MaxNumber)
@@ -360,22 +322,21 @@ namespace GameCore.Interface
                         Core.State.AppendLogLine("card number - " + numbers[i] + " saving to json object failed");
                         continue;
                     }
-                    if (Core.INeed.ExportCard(Core.DirName, numbers[i], json.ToString()))
-                    {
-                        Core.State.AppendLogLine("card number - " + numbers[i] + " saving to file stirng failed");
-                        continue;
-                    }
+                    if(!datas.ContainsKey(numbers[i] / CoreInfo.Card_amount_per_file))
+                        datas.Add(numbers[i]/CoreInfo.Card_amount_per_file, new List<KeyValuePair<int, string>>());
+                    datas[numbers[i] / CoreInfo.Card_amount_per_file].Add(new KeyValuePair<int, string>(numbers[i], json.ToString()));
                 }
                 catch (Exception e)
                 {
-                    return Core.State.WriteException(e);
+                    Core.State.WriteException(e);
+                    continue;
                 }
             }
-            return false;
+            return Core.INeed.ExportCard(Core.DirName, datas);
         }
         public bool AllCards()
         {
-            return this.Card(new List<int>(Core.Cards.cards.Keys).ToArray());
+            return Card(new List<int>(Core.Cards.cards.Keys).ToArray());
         }
     }
 }

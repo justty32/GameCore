@@ -17,14 +17,14 @@ namespace GameCore.Interface
         bool ExportInfo(string save_dir_name, string data);
         string ImportRules(string save_dir_name);
         bool ExportRules(string save_dir_name, string data);
-        string ImportCard(string save_dir_name, int number);
-        bool ExportCard(string save_dir_name, int number, string data);
+        Dictionary<int, string> ImportCard(string save_dir_name, Dictionary<int, List<int>> number_sets);
+        bool ExportCard(string save_dir_name, Dictionary<int, List<KeyValuePair<int, string>>> muldatas);
+        Dictionary<int, bool[]> MulExportCard(string save_dir_name, Dictionary<int, List<KeyValuePair<int, string>>> muldatas);
         bool IsSaveDirExist(string save_dir_name);
         bool NewSaveDir(string save_dir_name);
         bool IsSaveDirLegal(string save_dir_name);
         bool CopyInitSaveData(string source_name, string target_name);
         bool CopySaveData(string source_name, string target_name);
-        Dictionary<int, bool[]> MulExportCard(string save_dir_name, Dictionary<int, List<KeyValuePair<int, string>>> muldatas);
     }
 
     /*

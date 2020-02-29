@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using GameCore.Base;
 using Newtonsoft.Json.Linq;
 
-namespace GameCore.Thing
+namespace GameCore.Creature
 {
-    public class ToolRule : Rule
+    public class KnowledgeRule : Rule
     {
-        public class CTool : Concept
+        public class CKnowledge : Concept
         {
             public override string TypeName => _type_name;
-            private string _type_name = "CTool";
+            private string _type_name = "CKnowledge";
+            public int Difficulty = 0;
+            public int Max = 10;
+            public Dictionary<int, int> NeedKnowledges = new Dictionary<int, int>();
+            public AttainmentRule.Skills NeedSkills = new AttainmentRule.Skills();
+            public List<UpgradeEffect> UpgradeEffects = new List<UpgradeEffect>();
             public override Concept FromJsonObject(JObject ojson)
             {
                 var json = AlignJsonOjbect(ojson);
@@ -21,7 +24,7 @@ namespace GameCore.Thing
                     return null;
                 try
                 {
-                    CTool c = json.ToObject<CTool>();
+                    CKnowledge c = json.ToObject<CKnowledge>();
                     return c;
                 }catch(Exception e)
                 {
@@ -46,49 +49,57 @@ namespace GameCore.Thing
             }
             public override Concept Copy()
             {
-                var c = Spawn<CTool>();
+                var c = Spawn<CKnowledge>();
                 if(c == null)
                     return null;
                 // do something
                 return c;
             }
         }
-        public Hook<int, object> HToolDestroy = new Hook<int, object>();
-        private int _ctn_tool = -1;
-        public ToolRule()
+        public struct UpgradeEffect
         {
-            _ctn_tool = Concept.Spawn<CTool>().TypeNumber;
+            public int TriggerLevel;
+            public int LearnKnowledge;
+            public int LearnKnowledgeLevel;
+            public int GetFeature;
+            public int GetFeatureLevel;
         }
-        public bool BeTool(Card card)
+        public Hook<int, object> HKnowledgeDestroy = new Hook<int, object>();
+        private int _ctn_knowledge = -1;
+        public KnowledgeRule()
+        {
+            _ctn_knowledge = Concept.Spawn<CKnowledge>().TypeNumber;
+        }
+        public bool BeKnowledge(Card card)
         {
             // check condition
             // check has concepts
-            if(!UnHasConcept(card, _ctn_tool))
+            if(!UnHasConcept(card, _ctn_knowledge))
                 return true;
             // add concepts
-            var c = AddConcept<CTool>(card);
+            var c = AddConcept<CKnowledge>(card);
             if(c == null)
                 return true;
             // set attributes
             // do other actions
             return false;
         }
-        public bool DestroyTool(Card card)
+        public bool DestroyKnowledge(Card card)
         {
             // check concepts
             // get concept
-            var c = card.Get<CTool>(_ctn_tool);
+            var c = card.Get<CKnowledge>(_ctn_knowledge);
             if (c == null)
             {
-                card.Remove(_ctn_tool);
+                card.Remove(_ctn_knowledge);
                 return true;
             }
             // make hook input
             // do actions
             // call hook
-            HToolDestroy.CallAll(card.Number);
+            HKnowledgeDestroy.CallAll(card.Number);
             // remove concept
-            card.Remove(_ctn_tool);
+            card.Remove(_ctn_knowledge);
             return false;
         }
         public bool SomeAction(Card card)

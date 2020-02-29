@@ -15,6 +15,7 @@ namespace GameCore.Root
             public override string TypeName => _type_name;
             private string _type_name = "CEntity";
             public int Location = 0;
+            public int Influence = 0;
             public override Concept FromJsonObject(JObject ojson)
             {
                 var json = AlignJsonOjbect(ojson);
@@ -45,6 +46,15 @@ namespace GameCore.Root
                     return Core.State.WriteException<JObject>(e);
                 }
             }
+            public override Concept Copy()
+            {
+                var c = Spawn<CEntity>();
+                if (c == null)
+                    return null;
+                c.Location = Location;
+                c.Influence = Influence;
+                return c;
+            }
         }
         public class HINLocationChange
         {
@@ -52,7 +62,15 @@ namespace GameCore.Root
             public int Previous = 0;
             public int Next = 0;
         }
+        public class HINInfluenceChange
+        {
+            public int Card = 0;
+            public int Previous = 0;
+            public int Next = 0;
+
+        }
         public Hook<HINLocationChange, object> HLocationChange = new Hook<HINLocationChange, object>("HLocationChange");
+        public Hook<HINInfluenceChange, object> HInfluenceChange = new Hook<HINInfluenceChange, object>("HInfluenceChange");
         public Hook<int, object> HEntityDestroy = new Hook<int, object>();
         private int _ctn_entity = -1;
         public EntityRule()
@@ -131,10 +149,8 @@ namespace GameCore.Root
             if (location < 0)
                 return true;
             // check has concepts
-            if (!HasConcept(card, _ctn_entity))
-                return true;
             // get concept
-            var c = card.Get<CEntity>();
+            var c = card.Get<CEntity>(_ctn_entity);
             if (c == null)
                 return false;
             // make hook input
@@ -146,6 +162,26 @@ namespace GameCore.Root
             c.Location = location;
             // make hook calling
             HLocationChange.CallAll(h_in);
+            return false;
+        }
+        public bool SetInfluence(Card card, int influence = 0)
+        {
+            // check condition
+            if (influence < 0)
+                return true;
+            // get concept
+            var c = card.Get<CEntity>(_ctn_entity);
+            if (c == null)
+                return false;
+            // make hook input
+            var h_in = new HINInfluenceChange();
+            h_in.Card = card.Number;
+            h_in.Next = influence;
+            h_in.Previous = c.Influence;
+            // do actions
+            c.Influence = influence;
+            // make hook calling
+            HInfluenceChange.CallAll(h_in);
             return false;
         }
     }

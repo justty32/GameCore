@@ -14,12 +14,11 @@ namespace GameCore.Thing
         {
             public override string TypeName => _type_name;
             private string _type_name = "CMaterial";
-            public int Semblance = 0;
-            public List<int> SemblanceAttributes { get; private set; } = new List<int>();
+            public Semblance Semblance = new Semblance();
             public int Value = 0;
             public int Pretty = 0;
             public int Ageing = 0;
-            public Sort Sort = Sort.None;
+            public Sort Type = Sort.None;
             public Physic Physic = new Physic();
             public Chemist Chemist = new Chemist();
             // magic
@@ -57,8 +56,9 @@ namespace GameCore.Thing
         public enum Sort
         {
             None, Compose, Gas, Water, Mud, Dirt, Rock, Metal,
-            Blood, Meat, Bone, Tendon, Leather, Fur, Animal,
-            Wood, Leaf, Vine, Fungus, Plant,
+            Blood, Meat, Bone, Tendon, Leather, Fur,
+            Feather, Horn, Animal,
+            Wood, Leaf, Fiber, Vine, Fungus, Plant,
             Crystal, Power
         }
         public class Physic
@@ -111,8 +111,8 @@ namespace GameCore.Thing
                 var bc = BasicSortChemists[(int)sort];
                 c.Physic = JObject.FromObject(bp).ToObject<Physic>();
                 c.Chemist = JObject.FromObject(bc).ToObject<Chemist>();
+                c.Semblance.Type = Semblance.Sort.Material;
             }
-            c.Semblance = (int)sort;
             if (c.Physic == null)
                 c.Physic = new Physic();
             if (c.Chemist == null)

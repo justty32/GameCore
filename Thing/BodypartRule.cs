@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using GameCore.Base;
 using Newtonsoft.Json.Linq;
 
 namespace GameCore.Thing
 {
-    public class ToolRule : Rule
+    public class BodypartRule : Rule
     {
-        public class CTool : Concept
+        public class CBodypart : Concept
         {
             public override string TypeName => _type_name;
-            private string _type_name = "CTool";
+            private string _type_name = "CBodypart";
+            public Sort Type;
+            // TODO
+            public int EquipmentFieldAdd = 0;
+            public int AttrAdd = 0;
+            // TODO
             public override Concept FromJsonObject(JObject ojson)
             {
                 var json = AlignJsonOjbect(ojson);
@@ -21,7 +24,7 @@ namespace GameCore.Thing
                     return null;
                 try
                 {
-                    CTool c = json.ToObject<CTool>();
+                    CBodypart c = json.ToObject<CBodypart>();
                     return c;
                 }catch(Exception e)
                 {
@@ -46,49 +49,54 @@ namespace GameCore.Thing
             }
             public override Concept Copy()
             {
-                var c = Spawn<CTool>();
+                var c = Spawn<CBodypart>();
                 if(c == null)
                     return null;
                 // do something
                 return c;
             }
         }
-        public Hook<int, object> HToolDestroy = new Hook<int, object>();
-        private int _ctn_tool = -1;
-        public ToolRule()
+        public enum Sort
         {
-            _ctn_tool = Concept.Spawn<CTool>().TypeNumber;
+            Other, Head, Trunk, Arm, Hand, Finger, Leg, Foot,
+            Tail, Wing, Fin, Antenna
         }
-        public bool BeTool(Card card)
+        public Hook<int, object> HBodypartDestroy = new Hook<int, object>();
+        private int _ctn_bodypart = -1;
+        public BodypartRule()
+        {
+            _ctn_bodypart = Concept.Spawn<CBodypart>().TypeNumber;
+        }
+        public bool BeBodypart(Card card)
         {
             // check condition
             // check has concepts
-            if(!UnHasConcept(card, _ctn_tool))
+            if(!UnHasConcept(card, _ctn_bodypart))
                 return true;
             // add concepts
-            var c = AddConcept<CTool>(card);
+            var c = AddConcept<CBodypart>(card);
             if(c == null)
                 return true;
             // set attributes
             // do other actions
             return false;
         }
-        public bool DestroyTool(Card card)
+        public bool DestroyBodypart(Card card)
         {
             // check concepts
             // get concept
-            var c = card.Get<CTool>(_ctn_tool);
+            var c = card.Get<CBodypart>(_ctn_bodypart);
             if (c == null)
             {
-                card.Remove(_ctn_tool);
+                card.Remove(_ctn_bodypart);
                 return true;
             }
             // make hook input
             // do actions
             // call hook
-            HToolDestroy.CallAll(card.Number);
+            HBodypartDestroy.CallAll(card.Number);
             // remove concept
-            card.Remove(_ctn_tool);
+            card.Remove(_ctn_bodypart);
             return false;
         }
         public bool SomeAction(Card card)

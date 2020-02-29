@@ -19,8 +19,6 @@ namespace GameCore.Thing
             public int Weight = 0; //重量
             public float AgeingPerHour = 0; //老化速度
             public int Burn = 0;
-            public Dictionary<int, int> Materials = new Dictionary<int, int>();
-            public Dictionary<int, int> Components = new Dictionary<int, int>();
             public override Concept FromJsonObject(JObject ojson)
             {
                 var json = AlignJsonOjbect(ojson);
