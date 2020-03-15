@@ -58,7 +58,6 @@ namespace GameCore.Base
         public bool InitBeNew(string name = null)
         {
             // be a new card, with new distributed number and specific name
-            Clear();
             Core.Cards.MaxNumber++;
             return Init(Core.Cards.MaxNumber, name);
         }
@@ -67,11 +66,13 @@ namespace GameCore.Base
             // set number to -1, and things to null
             // remove this from global card list
             if (concepts != null)
-                concepts.Clear();
+                if(concepts.Count > 0)
+                    concepts.Clear();
             concepts = null;
             Name = "";
-            if(Core.Cards.Contains(Number))
-                Core.Cards.Remove(Number);
+            if(Number >= 0)
+                if(Core.Cards.Contains(Number))
+                    Core.Cards.Remove(Number);
             Number = -1;
         }
         public JObject ToJsonObject()

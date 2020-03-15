@@ -120,15 +120,35 @@ namespace GameCore
                 return p_instance._state.T(State.Ar.B, "failed");
             if (load_all_cards)
             {
-                p_instance._state.AppendLogLine("load cards");
-                if (Load.AllCards())
-                    return p_instance._state.T(State.Ar.B, "failed");
+                p_instance._state.AppendLogLine("loading cards");
+                if (p_instance._config.MultiThreadIO)
+                {
+                    p_instance._state.T(State.Ar.B, "load cards multi threading");
+                    int[] numbers = null;
+                    if (Core.Cards.MaxNumber >= 0)
+                    {
+                        numbers = new int[Core.Cards.MaxNumber + 1];
+                        for (int i = 0; i < Core.Cards.MaxNumber + 1; i++)
+                            numbers[i] = i;
+                        if (Load.MulCard(numbers))
+                            return p_instance._state.T(State.Ar.B, "load cards failed");
+                    }
+                    else
+                        p_instance._state.AppendLogLine("cards amount is zero, no need to load");
+                    p_instance._state.T(State.Ar.B, "load cards multi threading finished");
+                }
+                else
+                {
+                    if (Load.AllCards())
+                        return p_instance._state.T(State.Ar.B, "load cards failed");
+                }
             }
             p_instance._state.AppendLogLine("load game successed");
             //TODO: load scripts, modules, dynamic...
             return false;
         }
-        public static bool SaveGame(string save_name = null, bool save_all_cards = false)
+        public static bool SaveGame(string save_name = null
+            , bool save_all_cards = false, bool[] start_new_thread_to_save_card = null)
         {
             if (p_instance == null)
                 return p_instance._state.T(State.Ar.B, "core hasn't initialized yet, load game failed");
@@ -136,7 +156,9 @@ namespace GameCore
                 return p_instance._state.T(State.Ar.B, "save dir's name not specificed while saving game");
             bool is_save_all_cards = save_all_cards;
             // because the accessing of _dir_name will wash it, so make a copy
-            List<int> changed_cards = new List<int>(Cards.ChangedCards.ToArray());
+            List<int> changed_cards = new List<int>(Cards.ChangedCards.Count);
+            foreach(var i in Cards.ChangedCards)
+                changed_cards.Add(i);
             string pre_save_name = p_instance._dir_name;
             p_instance._dir_name = save_name == null ? pre_save_name : save_name;
             p_instance._state.Log.Append("save game into - ");
@@ -156,34 +178,18 @@ namespace GameCore
             p_instance._state.Log.AppendLine("saving cards");
             if (is_save_all_cards)
             {
-                if (Save.AllCards())
-                    return p_instance._state.T(State.Ar.B, "save cards failed");
+                p_instance._state.AppendLog("save all cards");
+                if (Core.Config.MultiThreadIO) { p_instance._state.AppendLog("-- multi thread"); }
+                if (start_new_thread_to_save_card!= null) { p_instance._state.AppendLogLine("-- start new thread"); }
+                if (Save.AllCards(Core.Config.MultiThreadIO, start_new_thread_to_save_card))
+                    return p_instance._state.T(State.Ar.B, "save failed");
             }
             else
             {
-                if (p_instance._config.MultiThreadIO)
-                {
-                    p_instance._state.T(State.Ar.B, "save cards multi threading");
-                    var card_mulsave_result = Save.MulCard(changed_cards.ToArray());
-                    if (card_mulsave_result == null)
-                        return p_instance._state.T(State.Ar.B, "save cards failed");
-                    bool card_mul_save_lock = true;
-                    while (card_mul_save_lock)
-                    {
-                        foreach (var per_card_mulsave_result in card_mulsave_result)
-                        {
-                            if (per_card_mulsave_result.Value == null)
-                                return p_instance._state.T(State.Ar.B, "save card" + per_card_mulsave_result.Key.ToString() + " file failed");
-                            card_mul_save_lock = !per_card_mulsave_result.Value[0];
-                        }
-                    }
-                    p_instance._state.T(State.Ar.B, "save cards multi threading finished");
-                }
-                else
-                {
-                    if (Save.Card(changed_cards.ToArray()))
-                        return p_instance._state.T(State.Ar.B, "save cards failed");
-                }
+                if (Core.Config.MultiThreadIO) { p_instance._state.AppendLog("-- multi thread"); }
+                if (start_new_thread_to_save_card!= null) { p_instance._state.AppendLogLine("-- start new thread"); }
+                if (Save.Cards(changed_cards.ToArray(), Core.Config.MultiThreadIO, start_new_thread_to_save_card))
+                    return p_instance._state.T(State.Ar.B, "save failed");
             }
             p_instance._state.Log.AppendLine("saving rules");
             if (Save.Rules())

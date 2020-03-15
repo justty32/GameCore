@@ -12,10 +12,6 @@ namespace GameCore.Thing
         {
             public override string TypeName => _type_name;
             private string _type_name = "CBodypart";
-            public Sort Type;
-            // TODO
-            public int EquipmentFieldAdd = 0;
-            public int AttrAdd = 0;
             // TODO
             public override Concept FromJsonObject(JObject ojson)
             {
@@ -55,11 +51,6 @@ namespace GameCore.Thing
                 // do something
                 return c;
             }
-        }
-        public enum Sort
-        {
-            Other, Head, Trunk, Arm, Hand, Finger, Leg, Foot,
-            Tail, Wing, Fin, Antenna
         }
         public Hook<int, object> HBodypartDestroy = new Hook<int, object>();
         private int _ctn_bodypart = -1;

@@ -133,6 +133,28 @@ namespace GameCore.Interface
             }
             return false;
         }
+        public bool MulCard(params int[] numbers)
+        {
+            if (numbers == null)
+                return true;
+            var datas = Core.INeed.MulImportCard(Core.DirName, new List<int>(numbers));
+            if (datas == null)
+                return true;
+            foreach(var data in datas)
+            {
+                try
+                {
+                    Card card = new Card();
+                    if (card.FromJsonObject(data.Value))
+                        continue;
+                }catch(Exception e)
+                {
+                    Core.State.WriteException(e);
+                    continue;
+                }
+            }
+            return false;
+        }
         public bool Card(params int[] numbers)
         {
             if (numbers == null)
@@ -170,10 +192,10 @@ namespace GameCore.Interface
         }
         public bool AllCards()
         {
-            List<int> numbers = new List<int>(Core.Cards.MaxNumber);
-            for (int i = 0; i < Core.Cards.MaxNumber; i++)
-                numbers.Add(i);
-            return Card(numbers.ToArray());
+            int[] numbers = new int[Core.Cards.MaxNumber + 1];
+            for (int i = 0; i < Core.Cards.MaxNumber + 1; i++)
+                numbers[i] = i;
+            return Card(numbers);
         }
         public Card CardFromString(string json_data)
         {
@@ -267,16 +289,41 @@ namespace GameCore.Interface
             }
             return false;
         }
-        public Dictionary<int, bool[]> MulCard(params int[] numbers)
+        public bool NewThreadMulCard(bool[] results, params int[] numbers)
         {
-            if (numbers == null)
-                return null;
-            // make multiple indexes
-            Dictionary<int, List<KeyValuePair<int, string>>> indexs = new Dictionary<int, List<KeyValuePair<int, string>>>();
+            if (numbers == null || results == null)
+                return true;
+            Dictionary<int, JObject> indexs = new Dictionary<int, JObject>();
             for (int i = 0; i < numbers.Length; i++)
             {
                 if (numbers[i] < 0 || numbers[i] > Core.Cards.MaxNumber)
-                    return null;
+                    continue;
+                Card card = Core.Cards[numbers[i]];
+                if(card == null)
+                    continue;
+                if (!card.NeedSave)
+                    continue;
+                JObject json = card.ToJsonObject();
+                if (json == null)
+                    continue;
+                try
+                {
+                    indexs.Add(i, json);
+                }
+                catch (Exception) { continue; }
+            }
+            return Core.INeed.NewThreadMulExportCard(Core.DirName, indexs, results);
+        }
+        public bool MulCard(params int[] numbers)
+        {
+            if (numbers == null)
+                return true;
+            // make multiple indexes
+            Dictionary<int, List<KeyValuePair<int, JObject>>> indexs = new Dictionary<int, List<KeyValuePair<int, JObject>>>();
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                if (numbers[i] < 0 || numbers[i] > Core.Cards.MaxNumber)
+                    continue;
                 Card card = Core.Cards[numbers[i]];
                 if(card == null)
                 {
@@ -292,10 +339,35 @@ namespace GameCore.Interface
                     continue;
                 }
                 if (!indexs.ContainsKey(numbers[i] / CoreInfo.Card_amount_per_file))
-                    indexs.Add(numbers[i] / CoreInfo.Card_amount_per_file, new List<KeyValuePair<int, string>>());
-                indexs[numbers[i] / CoreInfo.Card_amount_per_file].Add(new KeyValuePair<int, string>(numbers[i], json.ToString()));
+                    indexs.Add(numbers[i] / CoreInfo.Card_amount_per_file, new List<KeyValuePair<int, JObject>>());
+                indexs[numbers[i] / CoreInfo.Card_amount_per_file].Add(new KeyValuePair<int, JObject>(numbers[i], json));
             }
             return Core.INeed.MulExportCard(Core.DirName, indexs);
+        }
+        public bool NewThreadCard(bool[] results, params int[] numbers)
+        {
+            if (numbers == null || results == null)
+                return true;
+            Dictionary<int, JObject> indexs = new Dictionary<int, JObject>();
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                if (numbers[i] < 0 || numbers[i] > Core.Cards.MaxNumber)
+                    continue;
+                Card card = Core.Cards[numbers[i]];
+                if(card == null)
+                    continue;
+                if (!card.NeedSave)
+                    continue;
+                JObject json = card.ToJsonObject();
+                if (json == null)
+                    continue;
+                try
+                {
+                    indexs.Add(i, json);
+                }
+                catch (Exception) { continue; }
+            }
+            return Core.INeed.NewThreadExportCard(Core.DirName, indexs, results);
         }
         public bool Card(params int[] numbers)
         {
@@ -305,7 +377,7 @@ namespace GameCore.Interface
             for (int i = 0; i < numbers.Length; i++)
             {
                 if (numbers[i] < 0 || numbers[i] > Core.Cards.MaxNumber)
-                    return true;
+                    continue;
                 try
                 {
                     Card card = Core.Cards[numbers[i]];
@@ -334,9 +406,35 @@ namespace GameCore.Interface
             }
             return Core.INeed.ExportCard(Core.DirName, datas);
         }
-        public bool AllCards()
+        public bool Cards(int[] numbers, bool multi_thread = false, bool[] start_new_thread = null)
         {
-            return Card(new List<int>(Core.Cards.cards.Keys).ToArray());
+            try
+            {
+                if (numbers == null)
+                    return true;
+                if (multi_thread)
+                {
+                    if (start_new_thread != null)
+                        return NewThreadMulCard(start_new_thread, numbers);
+                    else
+                        return MulCard(numbers);
+                }
+                else
+                {
+                    if (start_new_thread != null)
+                        return NewThreadCard(start_new_thread, numbers);
+                    else
+                        return Card(numbers);
+                }
+            }catch(Exception e)
+            {
+                Core.State.AppendLogLine(e.Message);
+                return true;
+            }
+        }
+        public bool AllCards(bool multi_thread = false, bool[] start_new_thread = null)
+        {
+            return Cards(new List<int>(Core.Cards.cards.Keys).ToArray(), multi_thread, start_new_thread);
         }
     }
 }

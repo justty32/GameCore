@@ -50,13 +50,13 @@ namespace GameCore.Creature
                 var c = Spawn<CCreature>();
                 if(c == null)
                     return null;
-                c.Basix.CopyFrom(Basix);
-                c.Attr.CopyFrom(Attr);
-                c.Status.CopyFrom(Status);
+                c.Basix = Basix;
+                c.Attr = Attr;
+                c.Status = Status;
                 return c;
             }
         }
-        public class Basix
+        public struct Basix
         {
             public int STR;
             public int DEX;
@@ -64,20 +64,8 @@ namespace GameCore.Creature
             public int PER;
             public int WIL;
             public int MAG;
-            public bool CopyFrom(Basix basix)
-            {
-                if (basix == null)
-                    return true;
-                STR = basix.STR;
-                DEX = basix.DEX;
-                CON = basix.CON;
-                PER = basix.PER;
-                WIL = basix.WIL;
-                MAG = basix.MAG;
-                return false;
-            }
         }
-        public class Attr
+        public struct Attr
         {
             public int HPMax;
             public int MPMax;
@@ -88,23 +76,8 @@ namespace GameCore.Creature
             public int VisionNight;
             public int CarryMax;
             public int MoveSpeed;
-            public bool CopyFrom(Attr attr)
-            {
-                if (attr == null)
-                    return true;
-                HPMax = attr.HPMax;
-                MPMax = attr.MPMax;
-                SPMax = attr.SPMax;
-                Weight = attr.Weight;
-                Size = attr.Size;
-                Vision = attr.Vision;
-                VisionNight = attr.VisionNight;
-                CarryMax = attr.CarryMax;
-                MoveSpeed = attr.MoveSpeed;
-                return false;
-            }
         }
-        public class Status
+        public struct Status
         {
             public int HP;
             public int MP;
@@ -113,19 +86,6 @@ namespace GameCore.Creature
             public int Spirit;
             public int San;
             public int CarryWeight;
-            public bool CopyFrom(Status status)
-            {
-                if (status == null)
-                    return true;
-                HP = status.HP;
-                MP = status.MP;
-                SP = status.SP;
-                Health = status.Health;
-                Spirit = status.Spirit;
-                San = status.San;
-                CarryWeight = status.CarryWeight;
-                return false;
-            }
         }
         public Hook<int, object> HCreatureDestroy = new Hook<int, object>();
         private int _ctn_creaturee = -1;

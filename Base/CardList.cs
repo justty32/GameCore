@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameCore.Base
 {
@@ -6,16 +7,18 @@ namespace GameCore.Base
     {
         // wrap the card list
         public int MaxNumber { get; set; } = -1;
-        public List<int> ChangedCards { get; set; } = new List<int>();
-        public Dictionary<int, Card> cards { get; private set; } = new Dictionary<int, Card>();
+        public HashSet<int> ChangedCards { get; set; } = new HashSet<int>();
+        public SortedDictionary<int, Card> cards { get; private set; } = new SortedDictionary<int, Card>();
         public void ResetChangedCards()
         {
-            ChangedCards = new List<int>();
+            ChangedCards = new HashSet<int>();
         }
-        public bool NewCard(string name = null)
+        public Card NewCard(string name = null)
         {
             Card cd = new Card();
-            return cd.InitBeNew(name);
+            if (cd.InitBeNew(name))
+                return null;
+            return cd;
         }
         public bool Add(Card card)
         {
@@ -24,8 +27,7 @@ namespace GameCore.Base
             if (cards.ContainsKey(card.Number))
                 return true;
             cards.Add(card.Number, card);
-            if (!ChangedCards.Contains(card.Number))
-                ChangedCards.Add(card.Number);
+            ChangedCards.Add(card.Number);
             return false;
         }
         public bool Remove(int number, bool remove_changed_card = true)
@@ -34,8 +36,7 @@ namespace GameCore.Base
                 return true;
             cards.Remove(number);
             if(remove_changed_card)
-                if (ChangedCards.Contains(number))
-                    ChangedCards.Remove(number);
+                ChangedCards.Remove(number);
             return false;
         }
         public bool Release(int count = 0, bool save_cards = false, bool from_last_addition = false)
@@ -48,11 +49,10 @@ namespace GameCore.Base
                 {
                     cards.Remove(cards.Count - i);
                     if (save_cards)
-                        if (ChangedCards.Contains(cards.Count - i))
-                        {
-                            Core.Save.Card(cards.Count - i);
-                            ChangedCards.Remove(cards.Count - i);
-                        }
+                    {
+                        Core.Save.Card(cards.Count - i);
+                        ChangedCards.Remove(cards.Count - i);
+                    }
                 }
             }
             else
@@ -61,12 +61,10 @@ namespace GameCore.Base
                 foreach (var cdn in cards.Keys)
                 {
                     cards.Remove(cdn);
-                    if (save_cards)
-                        if (ChangedCards.Contains(cdn))
-                        {
-                            Core.Save.Card(cdn);
-                            ChangedCards.Remove(cdn);
-                        }
+                    if (save_cards) { 
+                        Core.Save.Card(cdn);
+                        ChangedCards.Remove(cdn);
+                    }
                     i++;
                     if (i > count)
                         break;
@@ -79,18 +77,18 @@ namespace GameCore.Base
         {
             get
             {
-                if (!ChangedCards.Contains(number))
-                    ChangedCards.Add(number);
-                if (!cards.ContainsKey(number))
+                ChangedCards.Add(number);
+                Card cd;
+                if (!cards.TryGetValue(number, out cd))
                 {
                     if (Core.Load.Card(number))
                         return null;
-                    if (!cards.ContainsKey(number))
+                    if (cards.TryGetValue(number, out cd))
                         return null;
-                    return cards[number];
-                }
-                else
-                    return cards[number];
+                    else
+                        return cd;
+                }else
+                    return cd;
             }
         }
     }

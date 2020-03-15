@@ -12,7 +12,11 @@ namespace GameCore.Creature
         {
             public override string TypeName => _type_name;
             private string _type_name = "CBody";
-            public Dictionary<int, Component> Components = new Dictionary<int, Component>();
+            public Dictionary<int, int> DefaultConstruct = new Dictionary<int, int>();
+            public List<Component> OtherPart = new List<Component>();
+            public Dictionary<int, int> DefaultParts = new Dictionary<int, int>();
+            public CreatureRule.Basix Basix = new CreatureRule.Basix();
+            public CreatureRule.Attr Attr = new CreatureRule.Attr();
             public override Concept FromJsonObject(JObject ojson)
             {
                 var json = AlignJsonOjbect(ojson);
@@ -48,17 +52,23 @@ namespace GameCore.Creature
                 var c = Spawn<CBody>();
                 if(c == null)
                     return null;
-                // do something
+                c.DefaultConstruct = new Dictionary<int, int>(DefaultConstruct);
+                c.OtherPart = new List<Component>(OtherPart);
+                c.DefaultParts = new Dictionary<int, int>(DefaultParts);
+                c.Basix = Basix;
+                c.Attr = Attr;
                 return c;
             }
         }
         public struct Component
         {
-            public int Name;
-            public int Number; // if number is 0, go material
-            public Thing.BodypartRule.Sort Type;
-            public int MaterialNumber;
-            public int MaterialAmount;
+            public int Number;
+            public int PartType;
+        }
+        public enum Part
+        {
+            Other, Head, Neck, Trunk, Arm, Hand, Finger, Leg, Foot,
+            Tail, Wing, Fin, Antenna
         }
         public Hook<int, object> HBodyDestroy = new Hook<int, object>();
         private int _ctn_body = -1;

@@ -11,7 +11,9 @@ namespace GameCore.Interface
         // need to be offered a instance in Core, while Core.Init()
         public List<string> RulesInitOrder;
         public bool MultiThreadIO = true;
-        public int MultiThreadIOMaxThreadCount = 3;
+        public int MultiThreadIOMaxThreadCount = 4;
+        public long MultiThreadIOExecuteLimitTimes = 400000000000;
+        public bool MultiThreadIOIgnoreExecuteLimitTimes = true;
         public Config()
         {
             RulesInitOrder = new List<string>();

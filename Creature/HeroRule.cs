@@ -8,16 +8,12 @@ using Newtonsoft.Json.Linq;
 
 namespace GameCore.Creature
 {
-    public class RaceRule : Rule
+    public class HeroRule : Rule
     {
-        public class CRace : Concept
+        public class CHero : Concept
         {
             public override string TypeName => _type_name;
-            private string _type_name = "CRace";
-            public int Sort = (int)RaceRule.Sort.Beast;
-            public List<State> States = new List<State>();
-            public int MaxYears = 100;
-            public int SuperiorRace = 0;
+            private string _type_name = "CHero";
             public override Concept FromJsonObject(JObject ojson)
             {
                 var json = AlignJsonOjbect(ojson);
@@ -25,7 +21,7 @@ namespace GameCore.Creature
                     return null;
                 try
                 {
-                    CRace c = json.ToObject<CRace>();
+                    CHero c = json.ToObject<CHero>();
                     return c;
                 }catch(Exception e)
                 {
@@ -50,63 +46,49 @@ namespace GameCore.Creature
             }
             public override Concept Copy()
             {
-                var c = Spawn<CRace>();
+                var c = Spawn<CHero>();
                 if(c == null)
                     return null;
                 // do something
                 return c;
             }
         }
-        public enum Sort
+        public Hook<int, object> HHeroDestroy = new Hook<int, object>();
+        private int _ctn_hero = -1;
+        public HeroRule()
         {
-            Other, Human, Beast, Plant, Bird, Insect, Mechanic, Undead, Energy, God
+            _ctn_hero = Concept.Spawn<CHero>().TypeNumber;
         }
-        public enum LiveState
-        {
-            Egg, Child, Adult, Elder, Dying
-        }
-        public struct State
-        {
-            public int LiveState;
-            public int Years;
-            public int Body;
-        }
-        public Hook<int, object> HRaceDestroy = new Hook<int, object>();
-        private int _ctn_race = -1;
-        public RaceRule()
-        {
-            _ctn_race = Concept.Spawn<CRace>().TypeNumber;
-        }
-        public bool BeRace(Card card)
+        public bool BeHero(Card card)
         {
             // check condition
             // check has concepts
-            if(!UnHasConcept(card, _ctn_race))
+            if(!UnHasConcept(card, _ctn_hero))
                 return true;
             // add concepts
-            var c = AddConcept<CRace>(card);
+            var c = AddConcept<CHero>(card);
             if(c == null)
                 return true;
             // set attributes
             // do other actions
             return false;
         }
-        public bool DestroyRace(Card card)
+        public bool DestroyHero(Card card)
         {
             // check concepts
             // get concept
-            var c = card.Get<CRace>(_ctn_race);
+            var c = card.Get<CHero>(_ctn_hero);
             if (c == null)
             {
-                card.Remove(_ctn_race);
+                card.Remove(_ctn_hero);
                 return true;
             }
             // make hook input
             // do actions
             // call hook
-            HRaceDestroy.CallAll(card.Number);
+            HHeroDestroy.CallAll(card.Number);
             // remove concept
-            card.Remove(_ctn_race);
+            card.Remove(_ctn_hero);
             return false;
         }
         public bool SomeAction(Card card)
