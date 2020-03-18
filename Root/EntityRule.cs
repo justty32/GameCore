@@ -13,7 +13,7 @@ namespace GameCore.Root
         public class CEntity : Concept
         {
             public override string TypeName => _type_name;
-            private string _type_name = "CEntity";
+            private static string _type_name = "CEntity";
             public int Location = 0;
             public int Influence = 0;
             public override Concept FromJsonObject(JObject ojson)

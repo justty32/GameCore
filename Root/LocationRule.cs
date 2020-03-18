@@ -10,7 +10,7 @@ namespace GameCore.Root
         public class CLocation : Concept
         {
             public override string TypeName => _type_name;
-            private string _type_name = "CLocation";
+            private static string _type_name = "CLocation";
             public List<int> Downs = new List<int>();
             public bool SetUpperCard(int card = 0)
             {

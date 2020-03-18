@@ -220,7 +220,8 @@ namespace GameCore.Root
         }
         public class CTime : Concept
         {
-            public override string TypeName => "CTime";
+            public override string TypeName => _type_name;
+            private static string _type_name = "CTime";
             public Time Time { get; set; } = new Time();
             public override Concept FromJsonObject(JObject ojs)
             {

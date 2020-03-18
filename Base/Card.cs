@@ -65,14 +65,10 @@ namespace GameCore.Base
         {
             // set number to -1, and things to null
             // remove this from global card list
-            if (concepts != null)
-                if(concepts.Count > 0)
-                    concepts.Clear();
             concepts = null;
             Name = "";
             if(Number >= 0)
-                if(Core.Cards.Contains(Number))
-                    Core.Cards.Remove(Number);
+                Core.Cards.Remove(Number);
             Number = -1;
         }
         public JObject ToJsonObject()

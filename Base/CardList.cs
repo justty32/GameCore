@@ -83,7 +83,7 @@ namespace GameCore.Base
                 {
                     if (Core.Load.Card(number))
                         return null;
-                    if (cards.TryGetValue(number, out cd))
+                    if (!cards.TryGetValue(number, out cd))
                         return null;
                     else
                         return cd;
