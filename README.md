@@ -2,40 +2,16 @@
 
 ## Game Flow
 
-Seperate to Core and Data. Core, as Interface, Script, Module. Data, as Hook, Rule, Card.
-Core.Instance()-Core.Init(INeed)-Core.Config.Set() or Core.Load.Config()
-> simple : -Core.Control.Load(save_name) or Core.Control.Save(save_name)
+Seperate to Core and Data.
 
-### load exist save
+Core, as Interface, ScriptEnviroment, ModuleManager. Most things need to be set at first of game start.
 
--Core.Load.WorldInfo(target save)-Core.Load.RuleData()-Core.Rule.TimeRule.Go()
-
-### create new one
-
--make WorldInfo instance-Core.DataInit(world info instance)
--init data prepare-Core.Rule.TimeRule.Go()
-
-## Control Conventions
-
-```c#
-Card card = new Card();
-card.Init();
-SomeRule.AddCSome(card);
+Data, as Hook, Rule, Card. The game's main data location, could be saved and loaded.
+```C#
+Core.Init(new INeed());
+Core.LoadGame("new game");
 ```
-
-```c#
-Card card = new Card();
-card.Init();
-card.BeNew();
-card.AddConcept(Base.Concept.GetSpawner<SomeRule.CSome>().SpawnBase());
-card.GetConcept<SomeRule.CSome>().Init();
-card.GetConcept<SomeRule.CSome>().BeNew();
-```
-
-
 ## Naming Conventions
-
-Most Conventions are reserved from C#'s.
 
 ```c#
 class Big
