@@ -7,16 +7,12 @@ namespace GameCore.Base
     public partial class Card : Util.INode
     {
         // Need Init() after new(), Clear() while not using then.
-        // Name be null, and Number be -1 initially
-        // the Card is not usable, while Number is -1
-        //
+        // Number be -1 initially
+        // the Card is not usable while Number is -1
         // Init() to load a card, BeNewCard() to create a new card
         public int Number { get; set; } = -1;
-        public string Name { get; set; } = "";
         public bool Definition = true;
         public bool NeedSave = true;
-        public int Icon = 0;
-        public List<int> IconAttribute { get; private set; } = new List<int>();
         public static bool IsUsable(Card card)
         {
             if (card == null)
@@ -38,35 +34,30 @@ namespace GameCore.Base
             }
             return true;
         }
-        private bool Init(int number, string name = null)
+        private bool Init(int number)
         {
             // load a card
-            // set number and name, add this to global card list
+            // set number, add this to global card list
             Clear();
             if (number < 0 || number > Core.Cards.MaxNumber)
                 return true;
             Number = number;
-            if (name != null)
-                Name = name;
-            else
-                Name = "";
             concepts = new Dictionary<int, Concept>();
             if (Core.Cards.Add(this))
                 return true;
             return false;
         }
-        public bool InitBeNew(string name = null)
+        public bool InitBeNew()
         {
-            // be a new card, with new distributed number and specific name
+            // be a new card, with new distributed number
             Core.Cards.MaxNumber++;
-            return Init(Core.Cards.MaxNumber, name);
+            return Init(Core.Cards.MaxNumber);
         }
         public void Clear()
         {
             // set number to -1, and things to null
             // remove this from global card list
             concepts = null;
-            Name = "";
             if(Number >= 0)
                 Core.Cards.Remove(Number);
             Number = -1;
@@ -75,17 +66,13 @@ namespace GameCore.Base
         {
             // spawn a json object
             // number : number
-            // name : name
             // concepts : [{c1's json object},{c2},{c3}]
             JObject ojs = new JObject();
             try
             {
                 ojs = new JObject();
                 ojs.Add(new JProperty("Number", Number));
-                ojs.Add(new JProperty("Name", Name));
                 ojs.Add(new JProperty("Definition", Definition));
-                ojs.Add(new JProperty("Icon", Icon));
-                ojs.Add(new JProperty("IconAttribute", IconAttribute));
                 JArray concept_numbers = new JArray();
                 JArray concept_names = new JArray();
                 JArray concepts = new JArray();
@@ -108,7 +95,7 @@ namespace GameCore.Base
         }
         public bool FromJsonObject(JObject ojs)
         {
-            // use Init() to initialize number and name
+            // use Init() to initialize number
             // then took out concept's json object and call concept's FromJsonObject()
             if (ojs == null)
                 return true;
@@ -116,17 +103,10 @@ namespace GameCore.Base
             {
                 if (!(Util.JObjectContainsKey(ojs, "Number")))
                     return true;
-                if (!(Util.JObjectContainsKey(ojs, "Name")))
-                    ojs.Add("Name", "");
-                if (Init((int)ojs["Number"], (string)ojs["Name"]))
+                if (Init((int)ojs["Number"]))
                     return true;
                 Definition = (bool)ojs["Definition"];
                 NeedSave = !Definition;
-                Icon = (int)ojs["Icon"];
-                if(IconAttribute == null) { IconAttribute = new List<int>(); }
-                JArray ja_icon_attribute = (JArray)ojs["IconAttribute"];
-                for(int i = 0; i < ja_icon_attribute.Count; i++)
-                    IconAttribute.Add((int)ja_icon_attribute);
                 JArray cs = (JArray)ojs["Concepts"];
                 for (int i = 0; i < cs.Count; i++)
                 {

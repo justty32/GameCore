@@ -253,7 +253,6 @@ namespace GameCore.Interface
                 if (!(Util.JObjectContainsKey(ojs, "Name")))
                     ojs.Add("Name", "");
                 card.Number = (int)ojs["Number"];
-                card.Name = (string)ojs["Name"];
                 card.concepts = new Dictionary<int, Concept>();
                 JArray cs = (JArray)ojs["Concepts"];
                 for (int i = 0; i < cs.Count; i++)

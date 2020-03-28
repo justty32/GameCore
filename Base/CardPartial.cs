@@ -13,12 +13,6 @@ namespace GameCore.Base
         {
             concepts = new Dictionary<int, Concept>();
         }
-        public Card(string name)
-        {
-            concepts = new Dictionary<int, Concept>();
-            if (name != null)
-                Name = name;
-        }
         public bool Has(int type_number)
         {
             if (!concepts.ContainsKey(type_number))
@@ -146,14 +140,14 @@ namespace GameCore.Base
         {
             Remove(ConceptManager.GetSpawner<TConcept>().TypeNumber);
         }
-        public static Card Copy(Card target, bool init_new_one = true, string name = null, params int[] specific_types)
+        public static Card Copy(Card target, bool init_new_one = true, params int[] specific_types)
         {
             if (target == null)
                 return null;
-            Card card = new Card(name);
+            Card card = new Card();
             if (init_new_one)
             {
-                if (card.InitBeNew(name))
+                if (card.InitBeNew())
                     return null;
             }
             List<int> types = new List<int>(target.ConceptsTypes);

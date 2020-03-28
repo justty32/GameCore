@@ -13,10 +13,10 @@ namespace GameCore.Base
         {
             ChangedCards = new HashSet<int>();
         }
-        public Card NewCard(string name = null)
+        public Card NewCard()
         {
             Card cd = new Card();
-            if (cd.InitBeNew(name))
+            if (cd.InitBeNew())
                 return null;
             return cd;
         }
