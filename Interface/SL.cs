@@ -5,14 +5,16 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.IO;
 
 // TODO: module list, module, language, model list
-
+// TODO: specific language's text generate rule(name, descript),
+//  which is store in common resource folder,
+// there can be lua text, put const parameters in, return text
 namespace GameCore
 {
     public partial class Core
     {
-
         public static bool _LoadConfig()
         {
             string json = Core.INeed.ImportConfig();
@@ -34,61 +36,94 @@ namespace GameCore
         }
         public static bool _LoadCommonResource()
         {
-            Core.State.AppendLogLine("... loading common resource ...");
-            JObject json_resouce_manager = new JObject();
-            var resource_manager = new ResourceManager();
-            // load resource dic
-            Core.State.AppendLogLine("... loading resource dictionary...");
-            string dir = "resourcedictionary";
-            List<string> resource_dics = new List<string>
+            string resource_template_index = Core.INeed.ImportCommonFile(
+                "index.txt", "resourcetemplate");
+            if(resource_template_index != null)
             {
-                "DicIcon", "DicColor", "DicOrganism", "DicPartical", "DicTerrain"
-                , "DicScene", "DicBuild", "DicItem", "DicMaterial", "DicWord", "DicDescript"
-                , "DicTalk", "DicName", "DicSound"
-            };
-            // load files
-            foreach(var resource_dic in resource_dics)
-            {
-                Core.State.AppendLogLine("loading " + resource_dic + ".json");
-                JObject json_resouce_dic = null;
-                string resource_dic_data = Core.INeed.ImportCommonFile(resource_dic + ".json", dir);
-                if (resource_dic_data == null)
+                HashSet<string> file_names = new HashSet<string>();
+                StringReader stringReader = new StringReader(resource_template_index);
+                string file_name = null;
+                do
                 {
-                    Core.State.AppendLogLine(resource_dic + ".json load file failed");
-                    continue;
-                }
-                try
+                    file_name = stringReader.ReadLine();
+                    if(file_name != null) { file_names.Add(file_name); }
+                } while (file_name != null);
+                foreach(var fn in file_names)
                 {
-                    json_resouce_dic = JObject.Parse(resource_dic_data);
-                    if (json_resouce_dic == null)
+                    string content = Core.INeed.ImportCommonFile(fn, "resourcetemplate");
+                    if(content == null) { continue; }
+                    JArray jarray = JArray.Parse(content);
+                    if(jarray == null) { continue; }
+                    foreach(var json in jarray)
                     {
-                        Core.State.AppendLogLine(resource_dic + ".json parse failed");
-                        continue;
+                        var rs = json.ToObject<Resource>();
+                        if(rs == null) { continue; }
+                        try { ResourceManager.ResourceTemplate.Add(rs.Name, rs); }
+                        catch (Exception) { continue; }
                     }
-                    json_resouce_manager.Add(resource_dic, json_resouce_dic);
-                }catch(Exception)
-                {
-                    Core.State.AppendLogLine(resource_dic + ".json load failed");
-                    continue;
                 }
             }
-            Core.State.AppendLogLine("... loading resource dictionary finished...");
-            // after adding all json objects, to object
-            try
+            string scripts_index = Core.INeed.ImportCommonFile(
+                "index.txt", "scripts");
+            if(scripts_index != null)
             {
-                resource_manager = ResourceManager.FromJsonObject(json_resouce_manager);
-                if (resource_manager == null)
+                HashSet<string> file_names = new HashSet<string>();
+                StringReader stringReader = new StringReader(resource_template_index);
+                string file_name = null;
+                do
                 {
-                    Core.State.AppendLogLine("resource manager load failed, be default");
-                    resource_manager = new ResourceManager();
+                    file_name = stringReader.ReadLine();
+                    if(file_name != null) { file_names.Add(file_name); }
+                } while (file_name != null);
+                foreach(var fn in file_names)
+                {
+                    string content = Core.INeed.ImportCommonFile(fn, "scripts");
+                    if(content == null) { continue; }
+                    if (fn.EndsWith(".txt"))
+                        fn.Remove(fn.Length - 4);
+                    else if (fn.EndsWith(".lua"))
+                        fn.Remove(fn.Length - 4);
+                    Core.ResourceManager.Scripts.Add(fn, content);
                 }
             }
-            catch (Exception)
+            string scriptsenvpredo_index = Core.INeed.ImportCommonFile(
+                "index.txt", "scriptsenvpredo");
+            if(scriptsenvpredo_index  != null)
             {
-                Core.State.AppendLogLine("resource manager load failed, be default");
+                HashSet<string> file_names = new HashSet<string>();
+                StringReader stringReader = new StringReader(resource_template_index);
+                string file_name = null;
+                do
+                {
+                    file_name = stringReader.ReadLine();
+                    if(file_name != null) { file_names.Add(file_name); }
+                } while (file_name != null);
+                foreach(var fn in file_names)
+                {
+                    string content = Core.INeed.ImportCommonFile(fn, "scriptsenvpredo");
+                    if(content == null) { continue; }
+                    Core.ResourceManager.ScriptsEnvPreDo.Add(content);
+                }
             }
-            p_instance._resource_manager = resource_manager;
-            Core.State.AppendLogLine("... loading common resource finish ...");
+            string scriptsenvlastdo_index = Core.INeed.ImportCommonFile(
+                "index.txt", "scriptsenvpredo");
+            if(scriptsenvlastdo_index  != null)
+            {
+                HashSet<string> file_names = new HashSet<string>();
+                StringReader stringReader = new StringReader(resource_template_index);
+                string file_name = null;
+                do
+                {
+                    file_name = stringReader.ReadLine();
+                    if(file_name != null) { file_names.Add(file_name); }
+                } while (file_name != null);
+                foreach(var fn in file_names)
+                {
+                    string content = Core.INeed.ImportCommonFile(fn, "scriptsenvlastdo");
+                    if(content == null) { continue; }
+                    Core.ResourceManager.ScriptsEnvLastDo.Add(content);
+                }
+            }
             return false;
         }
     }
@@ -98,7 +133,12 @@ namespace GameCore.Interface
     public class Load
     {
         public bool Config() => Core._LoadConfig();
-        public bool CommonResource() => Core._LoadCommonResource();
+        public bool CommonResource()
+        {
+            if (Core._LoadCommonResource())
+                Core.State.AppendLogLine("load common resource failed");
+            return false;
+        }
         public bool SaveInfo()
         {
             string jstr = Core.INeed.ImportInfo(Core.DirName);
@@ -124,7 +164,7 @@ namespace GameCore.Interface
             try
             {
                 JArray json = JArray.Parse(jstr);
-                if (Core.RuleManager.FromJsonArray(json))
+                if (Core._RuleManager.FromJsonArray(json))
                     return true;
             }
             catch (Exception e)
@@ -277,7 +317,7 @@ namespace GameCore.Interface
         {
             try
             {
-                JArray json = Core.RuleManager.ToJsonArray();
+                JArray json = Core._RuleManager.ToJsonArray();
                 if (json == null)
                     return true;
                 if (Core.INeed.ExportRules(Core.DirName, json.ToString()))

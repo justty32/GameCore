@@ -5,8 +5,6 @@ using System.Text;
 // using a character to descibe the action source
 // using big character of action to descibe the action result
 
-//TODO: if any crash scene happened, export logs and action results into i_need
-
 namespace GameCore.Interface
 {
     public class State
@@ -101,6 +99,30 @@ namespace GameCore.Interface
         public T WriteException<T>(Exception e, T result = default)
         {
             AppendLogLine(e.ToString()); return result;
+        }
+        public object N(string log = null)
+        {
+            if (log != null)
+                Log.AppendLine(log);
+            return null;
+        }
+        public T N<T>(string log = null)
+        {
+            if (log != null)
+                Log.AppendLine(log);
+            return default;
+        }
+        public bool T(string log = null)
+        {
+            if (log != null)
+                Log.AppendLine(log);
+            return true;
+        }
+        public bool F(string log = null)
+        {
+            if (log != null)
+                Log.AppendLine(log);
+            return false;
         }
         public object N(Ar action_result = Ar.B, string log = null)
         {

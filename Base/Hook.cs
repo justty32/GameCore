@@ -81,7 +81,6 @@ namespace GameCore.Base
     {
         public List<HookClient<Tin, Tout>> Clients { get; private set; } = new List<HookClient<Tin, Tout>>();
         public string RegisteredName = null;
-
         public Hook(string register_name = null)
         {
             Register(register_name);

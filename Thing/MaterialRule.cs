@@ -14,7 +14,6 @@ namespace GameCore.Thing
         {
             public override string TypeName => _type_name;
             private string _type_name = "CMaterial";
-            public Semblance Semblance = new Semblance();
             public int Value = 0;
             public int Pretty = 0;
             public int Ageing = 0;
@@ -111,7 +110,6 @@ namespace GameCore.Thing
                 var bc = BasicSortChemists[(int)sort];
                 c.Physic = JObject.FromObject(bp).ToObject<Physic>();
                 c.Chemist = JObject.FromObject(bc).ToObject<Chemist>();
-                c.Semblance.Type = Semblance.Sort.Material;
             }
             if (c.Physic == null)
                 c.Physic = new Physic();

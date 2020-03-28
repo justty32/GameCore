@@ -12,6 +12,9 @@ namespace GameCore.Interface
         bool IsFileExist(string save_dir_name, string file_name, string second_dir_name = null);
         string ImportCommonFile(string file_name, string second_dir_name = null, string third_dir_name = null);
         bool ExportCommonFile(string data, string file_name, string second_dir_name = null, string third_dir_name = null);
+        bool SetScriptEnv(ScriptEnv script_env);
+        bool ClearScriptEnv();
+        Base.Script.Data ExecuteScript(Base.Script script, Base.Script.Data input);
         string ImportConfig();
         bool ExportConfig(string data);
         string ImportInfo(string save_dir_name);
@@ -392,7 +395,7 @@ public class Need : GameCore.Interface.INeed
             string file_name = "card" + file_index.ToString() + ".json";
             string meta_name = "card" + file_index.ToString() + ".cwed";
             string file_path = ComposePaths(ResourceDir, SavesDir, save_dir_name, "cards");
-            string meta_path = String.Copy(file_path);
+            string meta_path = file_path;
             if (file_path == null)
                 continue;
             file_path += file_name;

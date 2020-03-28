@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 //dynamic concept and dynamic rule
 //dynamic rule composed by scripts with hooks
-// TODO: add dynamic rules' init process at rule manager's init()
 
 namespace GameCore.Interface
 {
@@ -11,7 +10,6 @@ namespace GameCore.Interface
     {
         public List<string> CDynamicNames;
         public Dictionary<string, ConceptSpawner<CDynamic>> CDynamicSpawners;
-
         public bool RegisterCDynamic(string name)
         {
             var sp = ConceptManager.GetCDynamicSpawner(name);
@@ -19,9 +17,9 @@ namespace GameCore.Interface
                 return true;
             return false;
         }
-
         public bool SetCDynamicNames(List<string> dynamic_concept_names)
         {
+            //replace cdynamic names list into new one
             if (dynamic_concept_names == null)
                 return true;
             CDynamicNames = new List<string>(dynamic_concept_names);

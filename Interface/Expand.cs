@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GameCore.Base;
+using UnityEngine;
 
-namespace GameCore.Interface
+namespace GameCore.Base
 {
-    
-    class ColorManager
+    public partial class GColor
     {
-        /*
         public static Color ToRGBColor(GColor color)
         {
+            if (color == null)
+                return new Color();
             color.Align();
             return Color.HSVToRGB(
                 (float)color.Hue/360.0f
@@ -51,6 +52,5 @@ namespace GameCore.Interface
             Color32 color32 = new Color32(bs[0], bs[1], bs[2], bs[3]);
             return FromRGB(bs[0], bs[1], bs[2]);
         }
-        */
     }
 }

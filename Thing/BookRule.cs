@@ -14,7 +14,6 @@ namespace GameCore.Thing
         {
             public override string TypeName => _type_name;
             private string _type_name = "CBook";
-            public GText Text = new GText();
             public override Concept FromJsonObject(JObject ojson)
             {
                 var json = AlignJsonOjbect(ojson);
@@ -50,7 +49,6 @@ namespace GameCore.Thing
                 var c = Spawn<CBook>();
                 if (c == null)
                     return null;
-                c.Text.CopyFrom(Text);
                 return c;
             }
         }

@@ -4,7 +4,6 @@ using System.Text;
 using GameCore.Base;
 using GameCore.Interface;
 
-// TODO: object pool for card
 //  rule's init order list, annotations, logs, try catch replacing
 //  Dynamic rules, scripts, modules, simplify concept acess
 //  resources relation in Interface
@@ -18,18 +17,18 @@ namespace GameCore
     {
         public static bool is_debug = false;
         private static Core p_instance = null;
-        public static INeed INeed {get => p_instance._i_need;}
-        public static State State { get => p_instance._state;}
-        public static Config Config { get => p_instance._config;}
-        public static Load Load { get => p_instance._load;}
-        public static Save Save { get => p_instance._save;}
+        public static INeed INeed { get => p_instance._i_need; }
+        public static State State { get => p_instance._state; }
+        public static Config Config { get => p_instance._config; }
+        public static Load Load { get => p_instance._load; }
+        public static Save Save { get => p_instance._save; }
         public static ResourceManager ResourceManager { get => p_instance._resource_manager; }
         private INeed _i_need = null;
         private State _state = null;
         private Config _config = null;
         private Load _load = null;
         private Save _save = null;
-        private ResourceManager _resource_manager = null;
+        private ResourceManager _resource_manager= null;
         private Core(){}
         public static bool Init(INeed needed_interface, Config config = null)
         {
@@ -74,9 +73,10 @@ namespace GameCore
         public static SaveInfo SaveInfo { get => p_instance._save_info; }
         public static CardList Cards{ get => p_instance._cards;}
         public static HookManager HookManager { get => p_instance._hook_manager;}
-        public static RuleManager RuleManager { get => p_instance._rule_manager;}
+        public static RuleManager _RuleManager { get => p_instance._rule_manager;}
         public static RulesCollection Rules { get => p_instance._rules; }
         public static Dynamic Dynamic { get => p_instance._dynamic; }
+        public static ScriptEnv ScriptEnv { get => p_instance._script_env; }
         private string _dir_name {
             get { return _dir_name_in; }
             set {
@@ -91,6 +91,7 @@ namespace GameCore
         private RuleManager _rule_manager = null;
         private RulesCollection _rules = null;
         private Dynamic _dynamic = null;
+        private ScriptEnv _script_env = null;
         public static bool LoadGame(string save_name, bool load_all_cards = false)
         {
             if (p_instance == null)
@@ -108,12 +109,19 @@ namespace GameCore
             p_instance._save_info = new SaveInfo();
             p_instance._hook_manager = new HookManager();
             p_instance._rule_manager = new RuleManager();
+            p_instance._script_env = new ScriptEnv();
             p_instance._rules = new RulesCollection();
             p_instance._rule_manager.Rules = p_instance._rules;
             p_instance._state.AppendLogLine("load save info");
             if (Load.SaveInfo())
                 return p_instance._state.T(State.Ar.B, "failed");
-            p_instance._state.AppendLogLine("rules initializing");
+            p_instance._state.AppendLogLine("clear the script enviroment first");
+            p_instance._i_need.ClearScriptEnv();
+            p_instance._state.AppendLogLine("initailize the script enviroment");
+            if (p_instance._i_need.SetScriptEnv(p_instance._script_env))
+                p_instance._state.AppendLogLine("script enviroment initialize failed");
+            p_instance._state.AppendLogLine("the script enviroment initialize finished");
+            p_instance._state.AppendLogLine("start rules initializing");
             p_instance._rule_manager.Init(p_instance._config.RulesInitOrder);
             p_instance._state.AppendLogLine("load rules");
             if (Load.Rules())
@@ -156,9 +164,8 @@ namespace GameCore
                 return p_instance._state.T(State.Ar.B, "save dir's name not specificed while saving game");
             bool is_save_all_cards = save_all_cards;
             // because the accessing of _dir_name will wash it, so make a copy
-            List<int> changed_cards = new List<int>(Cards.ChangedCards.Count);
-            foreach(var i in Cards.ChangedCards)
-                changed_cards.Add(i);
+            int[] changed_cards = new int[Cards.ChangedCards.Count];
+            Cards.ChangedCards.CopyTo(changed_cards);
             string pre_save_name = p_instance._dir_name;
             p_instance._dir_name = save_name == null ? pre_save_name : save_name;
             p_instance._state.Log.Append("save game into - ");
@@ -188,7 +195,7 @@ namespace GameCore
             {
                 if (Core.Config.MultiThreadIO) { p_instance._state.AppendLog("-- multi thread"); }
                 if (start_new_thread_to_save_card!= null) { p_instance._state.AppendLogLine("-- start new thread"); }
-                if (Save.Cards(changed_cards.ToArray(), Core.Config.MultiThreadIO, start_new_thread_to_save_card))
+                if (Save.Cards(changed_cards, Core.Config.MultiThreadIO, start_new_thread_to_save_card))
                     return p_instance._state.T(State.Ar.B, "save failed");
             }
             p_instance._state.Log.AppendLine("saving rules");
@@ -226,6 +233,9 @@ namespace GameCore
                 return true;
             p_instance._state.Log.AppendLine("release game data...");
             //TODO:release scripts, modules...
+            p_instance._state.AppendLogLine("clear the script enviroment");
+            p_instance._i_need.ClearScriptEnv();
+            p_instance._script_env = null;
             p_instance._dynamic = null;
             p_instance._rules = null;
             p_instance._rule_manager = null;
