@@ -394,7 +394,7 @@ namespace GameCore.Base
                 return null;
             string str;
             Script script = new Script();
-            if(Core.ResourceManager.Scripts.TryGetValue(name, out str))
+            if(Core.Common.Scripts.TryGetValue(name, out str))
             {
                 script.Main = (string)str.Clone();
                 return Core.INeed.ExecuteScript(script, input);

@@ -8,7 +8,7 @@ using GameCore.Base;
 
 namespace GameCore.Interface
 {
-    public class ResourceManager
+    public class Common
     {
         public SortedDictionary<string, Resource> ResourceTemplate = new SortedDictionary<string, Resource>();
         public SortedDictionary<string, string> Scripts = new SortedDictionary<string, string>();

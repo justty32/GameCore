@@ -22,13 +22,13 @@ namespace GameCore
         public static Config Config { get => p_instance._config; }
         public static Load Load { get => p_instance._load; }
         public static Save Save { get => p_instance._save; }
-        public static ResourceManager ResourceManager { get => p_instance._resource_manager; }
+        public static Common Common { get => p_instance._common; }
         private INeed _i_need = null;
         private State _state = null;
         private Config _config = null;
         private Load _load = null;
         private Save _save = null;
-        private ResourceManager _resource_manager= null;
+        private Common _common= null;
         private Core(){}
         public static bool Init(INeed needed_interface, Config config = null)
         {
@@ -40,7 +40,7 @@ namespace GameCore
             p_instance._i_need = needed_interface;
             p_instance._load = new Load();
             p_instance._save = new Save();
-            p_instance._resource_manager = new ResourceManager();
+            p_instance._common = new Common();
             if (config != null)
             {
                 p_instance._state.Log.AppendLine("load config from function's parameter");

@@ -12,10 +12,10 @@ namespace GameCore.Interface
         {
             AddStaticFunction(_ScriptEnvReserved._FunctionPaths, "CS.GameCore.Interface._ScriptEnvReserved.", false);
             Core.State.AppendLogLine("get pre/last do strings from common resource");
-            for(int i = 0; i < Core.ResourceManager.ScriptsEnvPreDo.Count; i++)
-                AddPreDoString(Core.ResourceManager.ScriptsEnvPreDo[i]);
-            for(int i = 0; i < Core.ResourceManager.ScriptsEnvLastDo.Count; i++)
-                AddLastDoString(Core.ResourceManager.ScriptsEnvLastDo[i]);
+            for(int i = 0; i < Core.Common.ScriptsEnvPreDo.Count; i++)
+                AddPreDoString(Core.Common.ScriptsEnvPreDo[i]);
+            for(int i = 0; i < Core.Common.ScriptsEnvLastDo.Count; i++)
+                AddLastDoString(Core.Common.ScriptsEnvLastDo[i]);
         }
         public static readonly string[] ReservedWords = new string[]
         {

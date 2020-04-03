@@ -58,7 +58,7 @@ namespace GameCore
                     {
                         var rs = json.ToObject<Resource>();
                         if(rs == null) { continue; }
-                        try { ResourceManager.ResourceTemplate.Add(rs.Name, rs); }
+                        try { Common.ResourceTemplate.Add(rs.Name, rs); }
                         catch (Exception) { continue; }
                     }
                 }
@@ -83,7 +83,7 @@ namespace GameCore
                         fn.Remove(fn.Length - 4);
                     else if (fn.EndsWith(".lua"))
                         fn.Remove(fn.Length - 4);
-                    Core.ResourceManager.Scripts.Add(fn, content);
+                    Core.Common.Scripts.Add(fn, content);
                 }
             }
             string scriptsenvpredo_index = Core.INeed.ImportCommonFile(
@@ -102,7 +102,7 @@ namespace GameCore
                 {
                     string content = Core.INeed.ImportCommonFile(fn, "scriptsenvpredo");
                     if(content == null) { continue; }
-                    Core.ResourceManager.ScriptsEnvPreDo.Add(content);
+                    Core.Common.ScriptsEnvPreDo.Add(content);
                 }
             }
             string scriptsenvlastdo_index = Core.INeed.ImportCommonFile(
@@ -121,7 +121,7 @@ namespace GameCore
                 {
                     string content = Core.INeed.ImportCommonFile(fn, "scriptsenvlastdo");
                     if(content == null) { continue; }
-                    Core.ResourceManager.ScriptsEnvLastDo.Add(content);
+                    Core.Common.ScriptsEnvLastDo.Add(content);
                 }
             }
             return false;
